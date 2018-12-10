@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>检验记录</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+</head>
+<body>
+	<section class="aui-refresh-content">
+		<ul class="aui-list aui-select-list aui-margin-t-10 aui-margin-b-10" id="iqcInfo"></ul>
+	</section>
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-scroll.js" ></script>
+<script type="text/javascript">
+	//当前页数
+	var curPage = 1;
+	var totalPage;
+	var isLoadData = false;
+	var wrap = document.getElementById("iqcInfo");
+	var checkDate;
+	var deliveryNo;
+	var drawingNumber;
+	var checkUser;
+
+	apiready = function(){
+		api.parseTapmode();
+		loadIqcData();
+		search();
+	};
+	
+	function search(){
+		api.addEventListener({
+		    name: 'search_iqc_examine'
+		}, function(ret, err) {
+			checkDate = ret.value.createTime;
+			deliveryNo = ret.value.deliveryNo;
+			drawingNumber = ret.value.drawingNumber;
+			checkUser = ret.value.checkUser;
+		    reflash();
+		});
+	}
+	
+	function reflash(){
+    	curPage = 1;
+    	isLoadData = false;
+		wrap.innerHTML = "";
+    	loadIqcData();
+    	iqcCount();
+    }
+    
+    function iqcCount(){
+    	api.sendEvent({
+		    name: 'iqcCount'
+		});
+    }
+	
+	var pullRefresh = new auiPullToRefresh({
+		container: document.querySelector('.aui-refresh-content'),
+		triggerDistance: 100
+	},function(ret){
+		if(ret.status=="success"){
+			setTimeout(function(){
+				reflash();
+				pullRefresh.cancelLoading();
+			},1500)
+		}
+	});
+	
+	//到达底部继续加载
+	var scroll = new auiScroll({
+        listen:true,
+        distance:100
+    },function(ret){
+        if(ret.isToBottom){
+    		if(isLoadData){
+    			loadIqcData();
+	        }
+        }
+    });
+    
+    function loadIqcData(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务：获取到货待处理数据
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadIqcList.do'),
+			method : "POST",
+			data : {
+				values : {
+					"page": curPage,
+					"rows": 10,
+					"isEligible" : '2',
+					"deliveryNo" : deliveryNo,
+					"checkDate" : checkDate,
+					"drawingNumber" : drawingNumber,
+					"checkUser" : checkUser
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var iqcJsonData = $.toJson(obj.data);
+					var iqcInfo = iqcJsonData.result;
+					totalPage = iqcJsonData.totalPages;
+					if(curPage<=totalPage){
+						curPage = curPage+1;
+						if(curPage<=totalPage){
+							isLoadData = true;
+						}else{
+							isLoadData = false;
+						}
+						renderIqcData(iqcInfo);
+					}
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    function renderIqcData(iqcInfo){
+    	for(var i = 0; i < iqcInfo.length; i++){
+    		var html = '<li class="aui-list-item">' +   
+							'<div class="aui-list-item-label">' +
+					 			'<img src="../../../../../../image/common/check' + iqcInfo[i].isEligible + '.png" width="70">' +
+					 		'</div>' +   
+					 		'<div class="aui-list-item-inner aui-ellipsis-1">' +
+					 			'<div class="aui-list-item-text">' +   
+					 				'<div class="aui-list-item-title aui-ellipsis-1">' + iqcInfo[i].supplierName + '</div>' +  
+					 				'<div class="aui-list-item-right">' +  
+					 					'<div class="aui-label">' + iqcInfo[i].deliveryNo + '</div>' +    
+									'</div>' +   
+					 			'</div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">产品图号：' + iqcInfo[i].drawingNumber + '</div></div>' +  
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">产品名称：' + iqcInfo[i].itemName + '</div></div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">送检数量：' + iqcInfo[i].applyQty + '</div></div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">产品批次：' + iqcInfo[i].iqcLot + '</div></div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">检验人员：' + iqcInfo[i].checkUser + '</div></div>' + 
+					 			'<div class="aui-list-item-text  aui-border-b aui-padded-b-10"><div class="aui-ellipsis-1">检验时间：' + iqcInfo[i].checkDate + '</div></div>' + 
+					 			'<div class="aui-list-item-text aui-margin-t-10">' +
+					 				'<div class="aui-list-item-title aui-ellipsis-1"></div>' +
+					 				'<div class="aui-list-item-right">' +   
+					 					'<div class="aui-btn aui-btn-danger" onclick="iqcDel(\'' + iqcInfo[i].iqcId + '\')">删除</div>' + 
+									'</div>' +  
+					 			'</div>' +
+					 		'</div>' + 
+					 	'</li>';
+    		wrap.insertAdjacentHTML('beforeend', html);
+    	}
+	}
+	
+	//删除
+	function iqcDel(iqcId){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/delIqcInfo.do'),
+			method : "POST",
+			data : {
+				values : {
+					"iqcId" : iqcId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					reflash();
+					return $.alert("提示", $.toStringify(obj.data));
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+</script>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<widget id="A6099604052688" version="0.0.1">
+  <name>AMA_MES</name>
+  <description>上海飞众MES系统移动应用</description>
+  <author email="3734368@qq.com" href="http://www.ama.com">xiaolj</author>  
+  <content src="login.html"/>
+  <preference name="appBackground" value="rgba(0,0,0,0)"/>
+  <preference name="windowBackground" value="rgba(0,0,0,0)"/>
+  <preference name="frameBackgroundColor" value="rgba(0,0,0,0)"/>
+  <preference name="autoLaunch" value="true"/>
+  <preference name="autoUpdate" value="true"/>
+  <preference name="smartUpdate" value="false"/>
+  <preference name="debug" value="true"/>
+  <preference name="statusBarAppearance" value="true"/>
+  <permission name="location"/>
+  <permission name="internet"/>
+  <preference name="fullScreen" value="true" />
+  <access origin="*"/>
+</widget>

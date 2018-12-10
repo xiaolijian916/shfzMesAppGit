@@ -1,0 +1,264 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>AUI快速完成布局</title>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+		<style type="text/css">
+			.goods-title {
+				color: #757575 !important;
+			}
+			.goods-price {
+				color: #666666 !important;
+				font-weight: 700;
+			}
+			.flex {
+				/*flex 布局*/
+				display: flex;
+				/*实现垂直居中*/
+				align-items: center;
+				/*实现水平居中*/
+				justify-content: center;
+			}
+			.side-by-side-left {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 15%;
+				height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="aui-refresh-content">
+			<div class="aui-tips" id="andonCount"></div>
+			<div class="aui-content" >
+				<ul class="aui-list aui-media-list" id="testww"></ul>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+	<script type="text/javascript">
+		apiready = function() {		
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/audit/qsbAuditRecord/loadQsbAuditPlanList.do'),
+				method : 'post',
+				data:{
+				values:{
+				accountId:"10000188"
+				}
+				}
+				
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常22", $.toStringify(err.body));
+					}
+					var funcList = $.toJson(obj.data);
+					//										document.getElementById("andonCount").innerHTML = "";
+					document.getElementById("andonCount").insertAdjacentHTML('afterbegin', '<div class="aui-tips-title">共有' + funcList.length + '条计划记录</div>');
+					//				-------------------------------------------------------------总数据条数显示---------------------------------
+					if (funcList.length < 1) {
+						$("#sum").append('<span>暂无数据</span>')
+					} else {
+						$("#sum").append('<span>共' + funcList.length + '条数据</span>')
+					}
+					//				------------------------------------------------------------ 循环加载数据----------------------------------
+					for (var i = 0; i < funcList.length; i++) {
+						var date = gettime(funcList[i].happenTime);
+						//日期时间转换
+						var strSrc = funcList[i].mobilePath;
+						if (null == strSrc || strSrc == '') {
+							strSrc = "../../../../../../image/main/qsb/audit.png";
+						}
+						$("#testww").append('<li class="aui-list-item">' 
+						+ '<div class="aui-media-list-item-inner">' 
+						+ '<div class="aui-list-item-label">' 
+						+ '<img src="' + strSrc + '" onclick="delAuditPlanId(\'' + funcList[i].auditPlanId + '\')">' + '</div>' 
+						+ '<div class="aui-list-item-inner">' 
+						+ '<div class="aui-list-item-text">' 
+						+ '<div class="aui-list-item-title">'
+						 +funcList[i].auditCheckItemName+ '</div>' 
+						 + '<div class="aui-list-item-right">' 
+						 + '<div class="aui-label aui-label-info">' 
+						 + '计划' + '</div>' + '</div>' 
+						 + '</div>' + '<div class="aui-list-item-text">' 
+						 +'检查对象:'+funcList[i].checkObjectName + '</div>' 
+						 + '<div class="aui-list-item-text">' + '计划描述：' + funcList[i].planName + '</div>' 
+						 + '<div class="aui-list-item-text">' + '频次描述：' + funcList[i].auditFrequencyDesc + '</div>'
+						 + '<div class="aui-list-item-text">' + '审核角色：' + funcList[i].auditRoleName + '</div>' 
+						 + '<div class="aui-list-item-text">' + '审核人员：' + funcList[i].executeUserName + '</div>' 
+						+ '<div class="aui-list-item-text">' + '审核项目：' + '100' + '</div>' 
+						 + '<div class="aui-list-item-text">' + '审核方式：' + '全检' + '</div>' + '</div>' 
+						 + '</div>'  + '</li>');
+					}
+				}, null, false);
+			});
+		};
+		//时间转换
+		function gettime(t) {
+			var _time = new Date(t);
+			var year = _time.getFullYear();
+			//2017
+			var month = _time.getMonth() + 1;
+			//7
+			var date = _time.getDate();
+			//10
+			var hour = _time.getHours();
+			//10
+			var minute = _time.getMinutes();
+			//56
+			var second = _time.getSeconds();
+			//15
+			//	    return   year+"年"+month+"月"+date+"日   "+hour+":"+minute+":"+second;//这里自己按自己需要的格式拼接
+			return year + "-" + month + "-" + date;
+		}
+
+		//关闭
+		function closeSummaryId(strId) {
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/closeMobile.do'),
+				method : 'post',
+				dataType : 'json',
+				data : {
+					values : {
+						summaryId : strId
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					} else {
+						return $.alert("关闭成功", $.toStringify(err.body));
+					}
+				}, null, false);
+				//刷新当前页
+				location.reload();
+			});
+		}
+
+		//保存检查记录
+		function delAuditPlanId(strId) {
+		
+				api.ajax({
+				url : $.ServerUrl('/app/qsb/audit/qsbAuditRecord/saveAuditRecord.do'),
+				method : 'post',
+				dataType : 'json',
+				data : {
+					values : {
+                     auditPlanId:strId,
+                     accountId:'10000188'
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+				var toast = new auiToast({});
+
+				
+					if ($.isNull(obj)) {
+							toast.success({
+						    title:err.body,
+						    duration:2000
+						                });
+						                return false;
+					} else {									
+					toast.success({
+						    title:err.body,
+						    duration:2000
+						                });
+						                return true;
+					}
+				}, null, false);
+				//刷新当前页
+				location.reload();
+			});
+
+		}
+
+		//编辑
+		function updateSummaryId(strId) {
+			openWin('problem_summary_update_win', strId);
+		}
+
+
+
+		//进度
+		function scheduleSummaryId(strId) {
+			//数据请求等待效果...
+			var toast = new auiToast();
+			toast.success({
+				title : "加载进度中",
+				duration : 2000
+			});
+			//
+			//				api.ajax({
+			//				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/closeMobile.do'),
+			//				method : 'post',
+			//				dataType : 'json',
+			//				data : {
+			//					values : {
+			//                   summaryId:strId
+			//					}
+			//				}
+			//			}, function(obj, err) {
+			//
+			//				//解析响应信息
+			//				$.responseCall(obj, function() {
+			//					if ($.isNull(obj)) {
+			//						return $.alert("异常", $.toStringify(err.body));
+			//					} else {
+			//						return $.alert("关闭成功", $.toStringify(err.body));
+			//					}
+			//				}, null, false);
+			//
+			//				//刷新当前页
+			//				location.reload();
+			//			});
+		}
+
+		//刷新数据
+		function refresh() {
+			alert("刷新成功");
+			location.reload();
+		}
+		
+		//明细显示
+		function detailSummaryId(strId) {
+			openWin('check_detail_list_win', strId);
+		}
+
+		function openWin(name, strId) {
+			$api.setStorage("summaryId", strId);
+			//保存ID
+			var delay = 0;
+			if (api.systemType != 'ios') {
+				delay = 300;
+			}
+			api.openWin({
+				name : '' + name + '',
+				url : '' + name + '.html',
+				bounces : false,
+				date : {
+					values : {
+						"summaryId" : "10000149",
+					}
+				},
+				delay : delay,
+				slidBackEnabled : true,
+				vScrollBarEnabled : false
+			});
+		}
+	</script>
+</html>

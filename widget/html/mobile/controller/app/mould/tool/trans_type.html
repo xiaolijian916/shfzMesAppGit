@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>收发类别</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+
+    <script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+    <script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+    <style>
+    	body{
+
+    	}
+    </style>
+</head>
+<body>
+<!--头部信息-->
+    <header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+        <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">收发类别</div>
+        <div class="aui-pull-right aui-btn">
+            <img src="../../../../../../image/find.png" class="img-btn" width="25px" height="25px" id="find" onclick="findRow()"/>
+        </div>
+    </header>
+    <!--主体信息-->
+    <section class="aui-refresh-content" style="margin-top:2.25rem;">
+        <div class="aui-content" id="content" style=" margin-bottom: 1.5rem">
+            <ul class="aui-list aui-form-list">
+            </ul>
+        </div>
+    </section>
+
+    <!--//底部操作栏-->
+    <!--<footer class="aui-bar aui-bar-tab" id="footer">-->
+        <!--<div class="aui-bar-tab-item" tapmode style="text-align: center" >-->
+            <!--<div class="aui-bar-tab-label" id="sum" style="color: #8B8B00"></div>-->
+            <!--<div class="aui-bar-tab-label" id="selected" style="color:#7CCD7C"></div>-->
+        <!--</div>-->
+        <!--<div class="aui-bar-tab-item" tapmode >-->
+            <!--<div class="aui-bar-tab-label" style="background-color: #03a9f4;width: 100%;height: 100%;text-align: center;font-size: 30px;color: #FFFFFF;padding-top: 8px" id="choose" onclick="chooseRow()">选择</div>-->
+        <!--</div>-->
+    <!--</footer>-->
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var page=1;//定义加载的页数
+    var rows=10;//定义每页显示的行数
+    var funcList;//数据库获取全部数据
+	apiready = function(){
+        initData("出模");
+	};
+    //初始化页面内容
+    function initData(str){
+        api.ajax({
+            url: $.ServerUrl('/app/mould/receive/mdTool/transTypeList.do'),
+            method: 'post',
+            data : {
+                values : {
+                    str:str
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                funcList= $.toJson(obj.data);
+                //初始化列表
+                initItem();
+                //总数据条数显示
+                sum(funcList.length);
+            }, null, false);
+        });
+    }
+    //初始化列表
+    function initItem(){
+        var wrap = document.getElementById("content");
+        for(var i=(page-1)*rows;i<page*rows&&i<funcList.length;i++){
+            console.log(i+"------"+(page*rows-i));
+            var html='' +
+                '<li class="aui-list-item aui-border-b" style="line-height: 2.5rem" onclick="chooseRow('+funcList[i].transTypeId+')">' +
+                '   <div style="float: left;margin-top: 18px;display: none;"><input class="aui-radio" type="radio" name="radio" style="margin-left: 8px;float: right;clear: left;" value='+funcList[i].transTypeId+','+funcList[i].transTypeName+' id="'+funcList[i].transTypeId+'"></div>'+
+                '   <div class="aui-list-item-inner aui-text-center">'+funcList[i].transTypeName+'</div>' +
+                '</li>';
+                // '<li class="aui-list-item aui-card-list" style="float:left;width:100%;border-radius:20px">	'+
+                // '    <div style="float: left;margin-top: 18px;display: none;"><input class="aui-radio" type="radio" name="radio" style="margin-left: 8px;float: right;clear: left;" value='+funcList[i].transTypeId+','+funcList[i].transTypeName+' id="'+funcList[i].transTypeId+'"></div>'+
+                // '    <div class="aui-list-item-inner" style="float:right;width:90%;" id="content_list+'+i+'" onclick="chooseRow('+funcList[i].transTypeId+')">			'+
+                // '       <table style="width:100%;/*border-left: 1px solid #2ecc71;*/background-image: linear-gradient(to right, rgba(99, 184, 255, 0), rgba(99, 184, 255, 0.4), rgba(99, 184, 255, 0));">								    '+
+                // '            <tr>												'+
+                // '                <td style="text-align:center;width:25%;">库&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;房:</td>					'+
+                // '                <td class="content_edit" style="width:75%;nowrap:nowrap;">'+funcList[i].businessTypeName+'</td>						'+
+                // '            </tr>																		'+
+                // '            <tr>																		'+
+                // '                <td style="text-align:center">库房类型:</td>					'+
+                // '                <td class="content_edit">'+funcList[i].transTypeCode+'/'+funcList[i].transTypeName+'</td>						'+
+                // '           </tr> '+
+                // '        </table>																		'+
+                // '    </div>																				'+
+                // '</li>';
+            wrap.insertAdjacentHTML('beforeEnd', html);
+        }
+    }
+    //总条数
+    function sum(sum){
+        $("#sum").html("共有："+sum+"条");
+    }
+    //选中目标
+    function  chooseRow(id) {
+        /*if (isChoose()){
+            // choose.setAttribute("href","../md-receive/md-receive-create.html?,"+isChoose());
+            // document.cookie="whData="+isChoose();
+            setCookie("transType",isChoose());
+            window.history.back();
+        }else{
+            alert("请先选中一条信息!(oﾟ▽ﾟ)o  ");
+        }*/
+        setCookie("transType",document.getElementById(id).value);
+        window.history.back();
+    }
+    //判断是否有信息被选中
+    function isChoose(){
+        var str;
+        var radioBtn=document.getElementsByName("radio");
+        for(var i=0;i<radioBtn.length;i++){
+            if (radioBtn[i].checked){
+                str=radioBtn[i].value;
+            }
+        }
+        return str;
+    }
+    //查找按钮
+    function findRow() {
+        document.getElementById("top").style.marginTop=0;
+        document.getElementById("top").style.display="none";
+        document.getElementById("search").style.display="block";
+    }
+    //点击搜索框事件
+    function doSearch() {
+
+    }
+    //开始搜索
+    function search(){
+        getLi();//清理li
+        var str=$("#search-input").val();
+        initData(str);
+        document.getElementById("top").style.display="block";
+    }
+    //取消
+    function cancel() {
+        document.getElementById("search").style.display="none";
+        document.getElementById("top").style.display="block";
+        document.getElementById("top").style.marginTop="2.25rem";
+        // location.reload();
+        getLi();
+        initItem();
+    }
+    //清除li
+    function getLi(){
+        var li=document.getElementsByTagName("li");
+        for (var i=0;i<li.length;i++){
+            li[i].remove();
+        }
+    }
+    //获取cookie
+    function getCookie(name){
+        var arr,reg=new RegExp(name+"=([^;]*)");
+        if(arr=document.cookie.match(reg))
+            return unescape(arr[1]);
+        // alert(unescape(arr[0]));
+        else
+            return null;
+    }
+    //删除cookie
+    function delCookie(name){
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval=getCookie(name);
+        if(cval!=null)
+            setCookie(name);
+    }
+    //设置cookie
+    function setCookie(name,value) {
+        var Days = 30;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days*24*60*60*1000);
+        document.cookie=name + "="+ escape (value) + ";expires=" + exp.toGMTString()+"; path=/";
+    }
+</script>
+</html>

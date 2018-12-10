@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/angma-dialog.css" /> 
+		<link rel="stylesheet" href="../../../../../../css/hwLayer.css">  
+		
+		<style type="text/css">
+         .side-by-side-left{ position:absolute; top:0; left:0; width:15%; height:100%; } 
+        		.side-by-side-right{ margin-left:10%; height:100%; }  
+		
+		.flex{
+		    /*flex 布局*/
+		    display: flex;
+		    /*实现垂直居中*/
+		    align-items: center;
+		    /*实现水平居中*/
+		    justify-content: center;
+        }
+	
+		.display-tabel-cell {
+	    	display: table-cell;
+		}
+			
+		.hr1{ height:1px;border:none;border-top:1px solid #E5E5E5;}  
+    </style>
+	</head>
+	<body>
+		<div class="aui-tips aui-margin-b-15" id="tips-1" style="position: fixed;display: none;top: 0px;">
+		    <i class="aui-iconfont aui-icon-info"></i>
+		    <div class="aui-tips-title" id="tips-cont">共0条数据</div>
+		    <i class="aui-iconfont aui-icon-close" id="tips-close"></i>
+		</div>
+		<section class="aui-refresh-content">
+
+				<div id="demo" style="height: 400px;">
+		        </div>
+
+	    </section>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+	<script src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-scroll.js" ></script>
+	
+	<script type="text/javascript">
+	var globalDeliveryDetailId = 0;
+	//当前页数
+	var curPage = 1;
+	//是否加载数据
+	var isLoadData = true;
+	var totalCount = 0;
+	//每次加载数据多少
+	var gRows = 100;
+	
+	var globalSearchParam = null;
+	
+	apiready = function(){
+        api.parseTapmode();
+        
+		//查询页面监听
+        api.addEventListener({
+		    name: 'closeSearchPage'
+		}, function(ret, err) {
+			var tempretvalue = JSON.stringify(ret.value);
+			var retvalue = JSON.parse(tempretvalue);
+			curPage = 1;
+			
+			globalSearchParam = retvalue;
+			
+			loadArrivalNotConfirmData("1");
+		});
+
+			loadArrivalNotConfirmData();
+        };
+
+		var pullRefresh = new auiPullToRefresh({
+			container: document.querySelector('.aui-refresh-content'),
+			triggerDistance: 100
+		},function(ret){
+			if(ret.status=="success"){
+				setTimeout(function(){
+					pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+					curPage = 1;
+					totalCount = 0;
+					$("#demo").empty();
+					loadArrivalNotConfirmData();
+				},100)
+			}
+		})
+		
+    var swipe = new auiListSwipe(function(ret){
+        // console.log(ret)
+    });
+    
+    //到达底部继续加载
+	var scroll = new auiScroll({
+        listen:true,
+        distance:100 //判断到达底部的距离，isToBottom为true
+    },function(ret){
+        if(ret.isToBottom){
+        	if(isLoadData){
+        		isLoadData = false;
+        		
+	        	loadArrivalNotConfirmData();
+        	}
+        }
+    });
+    
+    function renderData(getInfo){
+					for(var i = 0; i < getInfo.length; i++){
+						console.log(getInfo[i].billId);
+						var html = '<div class="aui-card-list"  onclick="cardToCheckUpdate('+getInfo[i].billId+')">'+
+								'<div class="side-by-side-left flex">'+
+						        	//'<input class="aui-radio" type="checkbox" name="checkbox" value="'+getInfo[i].deliveryDetailId+'">'+
+						        '<img src="../../../../../../image/common/accoStock.png" width="50px;" height="50px;"/>'+
+						        '</div>'+
+						        '<div class="side-by-side-right card-to-check">'+
+					            '<div class="aui-card-list-header">'+
+					                getInfo[i].billCode+'<div class="aui-label aui-label-primary">已出库|'+getInfo[i].detailCount+'条</div>'+
+					            '</div>'+
+					            '<div class="aui-card-list-content-padded">'+
+					                
+					                '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">供 &nbsp;应 &nbsp;商:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].supplierName+'</span>'+
+				            		
+				            	'</div>'+
+					             '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">领用部门:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].deptName+'||'+getInfo[i].billManagerName+'</span>'+
+				            		
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">出库仓库:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].whName+'</span>'+
+				            		
+				            	'</div>'+
+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">出库时间:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].timed+'||'+getInfo[i].billerName+'</span>'+
+
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">描述:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].remark+'</span>'+
+				            		
+				            	'</div>'+
+					                
+					            '</div>'+
+					            //'<hr class="hr1" /> '+
+					            //'<div class="aui-card-list-footer">'+
+					                //'<div class="aui-btn aui-btn-info">不符合</div>'+
+					                //'<div class="aui-btn aui-btn-info show-layer" data-show-layer="hw-layer" style="position: fixed;right:10px;" onclick="incompatible(this,'+getInfo[i].deliveryDetailId+')">不符合</div>'+
+					            //'</div>'+
+					            '</div>'+
+					        '</div>';
+					        $("#demo").append(html);
+						//wrap.insertAdjacentHTML('beforeEnd', html);
+										        
+					}
+					
+    }
+    
+    function loadArrivalNotConfirmData(loadStatus){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+		    if("1"==loadStatus){
+	    		$("#demo").empty();
+	    	}
+			    	
+    		if($.isNull(globalSearchParam)){
+    			globalSearchParam = {};
+    		}
+    		globalSearchParam.page = curPage;
+    		globalSearchParam.rows = gRows;
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/purchaseReturn/loadListAccoOutStock.do'),
+				method : "POST",
+				data : {
+					values : globalSearchParam
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var resultJsonData = $.toJson(obj.data);
+						var getInfo = resultJsonData.result;
+						$("#tips-cont").html("共"+resultJsonData.totalRows+"条数据");
+						
+						if(getInfo.length>0){
+							curPage = curPage+1;
+						} 
+						renderData(getInfo);
+					}
+				}, null, false);
+				isLoadData = true;
+				
+				$("#tips-1").css("display","flex");
+				setTimeout(function(){
+					$("#tips-1").css("display","none");
+				},3000);
+			});
+    }
+    
+    	function cardToCheckUpdate(billId){
+        	$.openFrame("mainDetailShow", 'main_detail_show.html', {"billId":billId,"openFrameName":"mainDetailShow"});
+        }
+	</script>
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+		
+		
+		<!-- <link rel="stylesheet" href="../../../../../../css/bootstrap.min.css"> -->
+		 <link rel="stylesheet" type="text/css" href="../../../../../../css/angma-dialog.css" /> 
+		 <link rel="stylesheet" href="../../../../../../css/hwLayer.css">  
+		
+		    <style type="text/css">
+        .aui-list-item-inner.aui-swipe-handle {
+            overflow-x: hidden;
+            position: relative;
+            z-index: 1;
+            background-color: #ffffff;
+        }
+        .aui-swipe-btn {
+            position: absolute;
+            right: 0;
+            z-index: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-flex: 1;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+        }
+        .aui-swipe-btn .aui-btn {
+            border-radius: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+
+        }
+        .donghua {
+            -webkit-transition-duration:300ms;
+            transition-duration:300ms;
+        }
+        
+        .side-by-side-left{ position:absolute; top:0; left:0; width:15%; height:100%; } 
+		.side-by-side-right{ margin-left:10%; height:100%; } 
+		
+		.flex{
+		    /*flex 布局*/
+		    display: flex;
+		    /*实现垂直居中*/
+		    align-items: center;
+		    /*实现水平居中*/
+		    justify-content: center;
+        }
+        
+        /*单选、多选、开关*/
+	.aui-radio {
+	    width: 1.6rem;
+	    height: 1.6rem;
+	    background-color: #ffffff;
+	    border: solid 1px #dddddd;
+	    -webkit-border-radius: 0.6rem;
+	    border-radius: 0.8rem;
+
+	}
+	
+	.display-tabel-cell {
+    	display: table-cell;
+	}
+
+	
+.hr1{ height:1px;border:none;border-top:1px solid #E5E5E5;}  
+    </style>
+	</head>
+	<body style="background: #E5E5E5;" id="body_id">
+	
+	
+		<div id="outerMostLayer" class="aui-bar aui-bar-nav" style="position: fixed;">
+    <header class="aui-bar aui-bar-nav" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">入库申请</div>
+        <a class="aui-btn aui-pull-right">
+        	<div class="aui-btn" style="background-color: red !important;height: 30px;line-height: 30px;" onclick="childConfirmDelivery();">确认</div>
+        	
+        </a>
+    </header>
+        	    <div class="aui-content">
+			        <ul class="aui-list">
+			            <li class="aui-list-header" style="height: 30px;">
+			                <input class="aui-radio" type="checkbox" name="checkbox" onclick="cardToCheckOfAll(this)">
+			                <div class="aui-bar-tab-label aui-text-warning" id="checkTotalText">已选：0条</div>
+			                <div class="aui-bar-tab-label aui-text-default" id="checkTotalTextRecord">共：0条</div>
+			            </li>
+			        </ul>
+			    </div>
+</div>
+
+<div style="margin: 90px 0px 0px 0px;">
+
+</div>		            	   
+
+		<section class="aui-refresh-content">
+
+				<div id="demo" style="height: 100%;background-color:#E5E5E5;">
+
+		        </div>
+
+	    </section>
+
+	</body>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+	<script src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	
+	<script type="text/javascript">
+	var globalDeliveryDetailId = 0;
+    var globalMap = new Map(); // 空Map
+	//var selectMap = new Map();
+	var chMap = new Map();
+    
+        //关闭当前窗体
+    function closeWin(){
+    	api.execScript({
+    		name:'addInvWin',
+		    script: 'getApplyInvToShow();'
+		});
+		
+        api.closeFrame({
+        	name:"addInv"
+        });
+    }
+    
+    function getSelected(){
+    	var storage=window.localStorage;
+    	var c=storage.getItem("poInvApply");
+		
+		chMap = $.jsonToMap(c);
+		
+		
+    }
+
+    
+        function loadListErrorType(){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/productionReturn/loadErrorTypeList.do'),
+				method : "POST",
+				data : {
+					values : {
+						
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var getInfo = $.toJson(obj.data); 
+						var area = document.getElementById("errorTypeSelect");      
+						var optionstring = "";           
+						//公共变量加载一次清空            
+						if (getInfo.length > 0) {                
+						for (var i = 0; i < getInfo.length; i++) {                                       
+						optionstring += "<option value=" + getInfo[i].value + ">" + getInfo[i].label + "</option>"; 
+						//公共变量赋值                
+						}            
+						}             
+						//if (area.options.length==0) {                 
+						//如果下拉框没有数据才进行加载                
+						$("#errorTypeSelect").html(optionstring);   
+						//下拉框加载数据                
+						//$('#errorTypeSelect').selectpicker('refresh');            
+						//}
+
+					} else {
+						api.closeWin({});
+						
+					}
+					api.addEventListener({
+						name : 'viewdisappear'
+					}, function() {
+						api.closeWin();
+					});
+				}, null, false);
+			});
+    }
+    
+    
+        function saveErrorMsgData(){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/productionReturn/inconformityPurchase.do'),
+				method : "POST",
+				data : {
+					values : {
+					    "deliveryDetailId":globalDeliveryDetailId,
+						"errorType":$("#errorTypeSelect").val(),
+						"remark":$("#errorReason").val()
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						$.alert("提示信息", obj.data);
+						//api.closeWin({});
+						hideLayer();
+
+					} else {
+						$.alert("异常", obj.data);
+					}
+					api.addEventListener({
+						name : 'viewdisappear'
+					}, function() {
+						api.closeWin();
+					});
+				}, null, false);
+			});
+    }
+//});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	apiready = function(){
+        api.parseTapmode();
+        
+        
+$(".card-to-check").on("click", function(){
+alert( $(this).text() );
+});
+        
+        //打开自定义的frame页面
+        setTimeout(function(){
+          
+	        loadArrivalNotConfirmData();
+        },0);
+        
+        
+        
+        //浏览器当前窗口可视区域高度 
+		$("#body_id").height($(window).height()-90);
+
+		
+        };
+	
+	function funcCheckToAllOrNull(checkStatus){
+		var checkboxList = $("#demo").find("input[type='checkbox']");
+		if(0==checkStatus) {
+			checkboxList.prop('checked',false);
+		}else{
+			checkboxList.prop('checked',true);
+		}
+		
+		funcCheckToAllOrNullBack();
+	}
+	
+    //确认按钮
+    function childConfirmDelivery(){
+        var prodRetLibrIds = getCheckedValueList();
+
+        if($.isNull(prodRetLibrIds)){
+		     return $.alert("错误提示", "请至少选择一条记录");
+	    }
+
+       var checkboxList = $("#demo").find("input[type='checkbox']:checked");
+		
+		var storage=window.localStorage;
+		var c=storage.getItem("poInvApply");
+		
+		chMap = $.jsonToMap(c);
+		
+		var tempDeliveryNo = "";
+		var tempSupplierId = 0;
+		var tempStatus = true;
+		checkboxList.each(function(index,element){
+			if(0==index){
+				tempDeliveryNo = globalMap.get(element.value+"").deliveryNo;
+				tempSupplierId = globalMap.get(element.value+"").supplierId;
+			}else{
+				if(tempDeliveryNo !=globalMap.get(element.value+"").deliveryNo){
+					tempStatus = false;
+					return $.alert("错误提示", "选择记录中有送货单号不一致");
+				}
+				if(tempSupplierId != globalMap.get(element.value+"").supplierId){
+					tempStatus = false;
+					return $.alert("错误提示", "选择记录中有供应商不一致");
+				}
+			}
+			chMap.set(element.value+"",globalMap.get(element.value+""));
+		});
+
+		
+		if(tempStatus){
+			storage.setItem("poInvApply",$.mapToArrayJson(chMap));
+			
+			closeWin();
+		
+		}
+    }
+    
+
+	
+	function getCheckedValueList(){
+		var checkboxList = $("#demo").find("input[type='checkbox']:checked");
+		
+		var arrayObj = new Array();
+		checkboxList.each(function(index,element){
+			arrayObj.push(element.value);
+		});
+			
+		return arrayObj.join(',');
+		
+	}
+	
+	    function inspectionPurchase(prodRetLibrIds){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+			var userInfo = $api.getStorage('userInfo');
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/productionReturn/inspectionPurchase.do'),
+				method : "POST",
+				data : {
+					values : {
+					    "prodRetLibrIds":prodRetLibrIds,
+						"workcenterId":userInfo.workcenterId,
+						"accountId":userInfo.accountId
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						$.alert("提示信息", obj.data);
+						loadArrivalNotConfirmData();
+					} else {
+						$.alert("异常", obj.data);
+					}
+					
+					api.addEventListener({
+						name : 'viewdisappear'
+					}, function() {
+						api.closeWin();
+					});
+
+				}, null, false);
+			});
+    }
+    
+    function childReturnedPurchase(){
+        var prodRetLibrIds = getCheckedValueList();
+
+        if($.isNull(prodRetLibrIds)){
+		     return $.alert("错误提示", "请至少选择一条记录");
+	    }
+
+        //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+			var userInfo = $api.getStorage('userInfo');
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/productionReturn/returnedPurchase.do'),
+				method : "POST",
+				data : {
+					values : {
+					    "prodRetLibrIds":prodRetLibrIds,
+						"workcenterId":userInfo.workcenterId,
+						"accountId":userInfo.accountId
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						$.alert("提示信息", obj.data);
+						loadArrivalNotConfirmData();
+					} else {
+						$.alert("异常", obj.data);
+					}
+					
+					api.addEventListener({
+						name : 'viewdisappear'
+					}, function() {
+						api.closeWin();
+					});
+
+				}, null, false);
+			});
+    }
+	
+	
+	function funcCheckToAllOrNullBack(){
+		var checkboxList = $("#demo").find("input[type='checkbox']:checked");
+		    
+    	$("#checkTotalText").html("已选："+checkboxList.length+"条");
+
+	}
+	
+	    //全选，全不选
+    function cardToCheckOfAll(target){
+    
+    	var checkStatus = 0;
+	    if($(target).prop('checked')) {
+	    	checkStatus = 1;
+	    }
+    
+	    funcCheckToAllOrNull(checkStatus);
+
+    }
+	
+	    $(".card-to-check").click(function() {
+        //clear();
+        //$(this).addClass("bgColor");
+	        //var input_checkbox = $(this).find("input[type='checkbox']"); //获取div的子元素的value值
+	        //var input_checkbox = $(this).children().children();
+	        //console.log($(this).find("input[type='checkbox']")[0].checked);
+	        var input_checkbox = $(this).parent().find("input[type='checkbox']");
+	        console.log(input_checkbox);
+
+	        
+	        if(input_checkbox.prop('checked')) {
+			    console.log(1);
+		        input_checkbox.prop('checked',false); 
+		        //input_checkbox.removeProp('checked');
+		        //input_checkbox.attr('checked',false);
+		        //$(this).find("input[type='checkbox']")[0].checked = false;
+			}else{
+		        //input_checkbox.attr("checked","checked");
+				console.log(2);
+				input_checkbox.prop('checked',true); 
+				//input_checkbox.checked="checked";
+				//$(this).find("input[type='checkbox']")[0].checked = true;
+			}
+        });
+        
+        
+        function cardToCheck(target) {
+        //clear();
+        //$(this).addClass("bgColor");
+	        //var input_checkbox = $(this).find("input[type='checkbox']"); //获取div的子元素的value值
+	        //var input_checkbox = $(this).children().children();
+	        //console.log($(this).find("input[type='checkbox']")[0].checked);
+	        var input_checkbox = $(target).parent().find("input[type='checkbox']");
+	        console.log(input_checkbox);
+
+	        
+	        if(input_checkbox.prop('checked')) {
+			    console.log(1);
+		        input_checkbox.prop('checked',false); 
+		        //input_checkbox.removeProp('checked');
+		        //input_checkbox.attr('checked',false);
+		        //$(this).find("input[type='checkbox']")[0].checked = false;
+			}else{
+		        //input_checkbox.attr("checked","checked");
+				console.log(2);
+				input_checkbox.prop('checked',true); 
+				//input_checkbox.checked="checked";
+				//$(this).find("input[type='checkbox']")[0].checked = true;
+			}
+			
+			//
+			funcCheckToAllOrNullBack();
+        }
+        
+        //div单选样式
+function clear() {
+    $(".rows").each(function() {
+    if ($(this).hasClass("bgColor")) {
+            $(this).removeClass("bgColor");
+        }
+    });
+}
+
+
+		var pullRefresh = new auiPullToRefresh({
+			container: document.querySelector('.aui-refresh-content'),
+			triggerDistance: 100
+		},function(ret){
+			if(ret.status=="success"){
+				setTimeout(function(){
+					pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+					loadArrivalNotConfirmData();
+				},100)
+			}
+		})
+		
+    var swipe = new auiListSwipe(function(ret){
+        // console.log(ret)
+    });
+    
+
+    
+    function renderData(getInfo){
+    			    var wrap = document.getElementById("demo")
+					wrap.innerHTML = "";
+					//var lis = wrap.querySelectorAll('.aui-card-list');
+					
+					getSelected();
+					var totalcolumn = 0;
+					for(var i = 0; i < getInfo.length; i++){
+						if(chMap.has(getInfo[i].prodRetLibrId+"")){
+							continue;
+						}
+						totalcolumn++;
+					    //存入map
+					    globalMap.set(getInfo[i].prodRetLibrId+"",getInfo[i]);
+						
+						var html = '<div class="aui-card-list" >'+
+								'<div class="side-by-side-left flex">'+
+						        	'<input class="aui-radio" type="checkbox" name="checkbox" value="'+getInfo[i].prodRetLibrId+'">'+
+						        
+						        '</div>'+
+						        '<div class="side-by-side-right card-to-check" onclick="cardToCheck(this)">'+
+					            '<div class="aui-card-list-header">'+
+					                '['+totalcolumn+']  '+getInfo[i].workcenterName+
+					            '</div>'+
+					            '<div class="aui-card-list-content-padded">'+
+					                
+					             '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">申请数量:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 42%">'+getInfo[i].applyQty+'</span>'+
+				            		'<label class="display-tabel-cell" style="width: 20%">接收数量:</label>'+
+				            		'<span class="display-tabel-cell">'+getInfo[i].invQty+'</span>'+
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">物料图号:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 42%">'+getInfo[i].drawingNumber+'</span>'+
+				            		'<label class="display-tabel-cell" style="width: 20%">单位:</label>'+
+				            		'<span class="display-tabel-cell">'+getInfo[i].uomName+'</span>'+
+				            	'</div>'+
+					                
+					            '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">物料名称:</label>'+
+				            		'<span class="display-tabel-cell">'+getInfo[i].itemName+'</span>'+
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">出库仓库:</label>'+
+				            		'<span class="display-tabel-cell">'+getInfo[i].whName+'</span>'+
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">申请日期:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 42%">'+getInfo[i].busiDate+'</span>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">申请人:</label>'+
+				            		'<span class="display-tabel-cell" >'+getInfo[i].busiUserName+'</span>'+
+				            	'</div>'+
+				            	
+				            	
+					                
+					            '</div>'+
+					            
+					            '</div>'+
+					        '</div>';
+						wrap.insertAdjacentHTML('afterbegin', html);
+										        
+					}
+					$("#checkTotalTextRecord").html("共："+totalcolumn+"条");
+					
+    }
+    
+    function loadArrivalNotConfirmData(){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/productionReturn/getInvApplyData.do'),
+				method : "POST",
+				data : {
+					values : {
+						"manuApplyPrlCommand":{}
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var getInfo = $.toJson(obj.data); 
+						
+						renderData(getInfo);
+					} else {
+						
+						
+					}
+				}, null, false);
+			});
+    }
+	</script>
+</html>

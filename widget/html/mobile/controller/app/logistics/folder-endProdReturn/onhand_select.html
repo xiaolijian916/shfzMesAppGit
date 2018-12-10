@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/api.css"/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/ectouch.css" /> 
+    <style>
+    	.menu-right{
+    		margin-top:0rem;
+    	}
+    	.menu-left{
+    		top: 0rem;
+    	}
+    	.w-3 {
+		    width: 100%;
+		}
+		.menu-right ul li{
+			text-align: left;
+		}
+		
+
+
+    	.Accordion{
+           /*  margin: 20px auto auto auto; */
+            /* width: 60%; */
+        }
+        .Accordion-box{
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+            box-shadow: 0 1px 1px rgba(0,0,0,.05)
+        }
+        .Accordion-box > label{
+            display: block;
+            margin: 0;
+            padding: 10px 1px;
+            color: #333;
+            background-color: #f5f5f5;
+            border-color: #ddd;
+            /*border-bottom: 1px solid transparent;*/
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            font-size: 1.4rem;
+        }
+        .Accordion  input{
+             display: none; 
+        }
+        .Accordion-box__content{
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: opacity .8s ;
+            -webkit-transition: opacity .8s; /* Safari */
+        }
+/*         .Accordion-box  input[type=radio]:checked + div {
+            padding: 15px;
+            opacity: 1;
+            height: auto;
+            border-top: 1px solid #ddd;
+        } */
+        
+        .Accordition-box-show{
+        	padding: 15px;
+            opacity: 1;
+            height: auto;
+            border-top: 1px solid #ddd;
+        }
+        
+    .display-tabel-cell {
+    	display: inline-block !important;
+    	/* overflow: hidden; */
+	}
+
+
+/*   	input[type=number]{
+  	 			display: inline;
+  	 			font-size: 1.8rem;
+  	 			height: 3.0rem !important; 
+  	 		} */
+ 		
+ 		.aui-iconfont {
+ 		    font-size: 2.0rem !important;
+ 		
+ 		} 
+ 		
+/*  		.content-margin-bot{
+ 			margin-bottom: 20px;
+ 		} */
+ 		
+ 		.txt-sty{
+ 			width: 60%;
+ 			border-top-width:0px;
+ 			border-left-width:0px;
+ 			border-right-width:0px;
+ 			/* float: right;
+ 			font-size: 2.0rem;
+ 			height: 25px; */
+ 			border-bottom:0.5px solid #378888;
+ 		}
+ 		
+ 			.aui-badge {
+    display: inline-block;
+    width: auto;
+    text-align: center;
+    min-width: 0.8rem;
+    height: 0.8rem;
+    line-height: 0.8rem;
+    padding: 0 0.2rem;
+    font-size: 0.6rem;
+    color: #ffffff;
+    background-color: #ff2600;
+    border-radius: 0.4rem;
+    position: absolute;
+    top: 0.2rem;
+    left: 60%;
+    z-index: 99;
+}
+ 	
+ 		.aui-badge {
+ 			height: 1.4rem;
+ 		    line-height: 1.4rem;
+ 		    font-size: 1.0rem;
+ 		    top:-0.7rem;
+ 		}
+ 		
+ 		.aui-content-padded {
+ 		    margin: 0rem;
+ 		    position: relative;
+ 		    word-break: break-all;
+ 		    -webkit-overflow-scrolling: touch;
+ 		} 
+	
+	.displayNone{
+		display:none;
+	} 
+	
+
+
+    </style>
+</head>
+<body>
+	   <aside>
+			<div class="menu-left scrollbar-none" id="sidebar">
+				<ul id="assort-id">
+					<li class="active"><section class="aui-content-padded"><div class="aui-badge displayNone"></div></section>
+						All
+					</li>
+					
+				</ul>
+			</div>
+		</aside>
+	
+
+	 <section class="menu-right padding-all j-content">
+		<h5>全部</h5>
+		<ul class="assort-ul-content">
+	
+		
+		</ul>
+		
+	</section>
+	<!--<section class="menu-right padding-all j-content" style="display:none">
+	<h5>珠宝首饰/手表眼镜</h5>
+	<input value="ddd" type="button" onclick="grabOnhandToSave()"/>
+	<ul> 
+	 <li class="w-3"> 
+	
+	
+	
+	 <div class="Accordion"> 
+	     <div class="Accordion-box">
+	        <label for="headingOne" class="panel click-panel">
+	        	<div>
+	        		<div>
+	                	<label class="display-tabel-cell" style="width: 30%">物料名称:</label>
+	            		<span class="display-tabel-cell">左前门防撞杠 (公斤)</span>
+	            	</div>
+	            	<div>
+	                	<label class="display-tabel-cell" style="width: 30%">物料图号:</label>
+	            		<span class="display-tabel-cell">SGM A10.10.01 </span>
+	            	</div>
+	            	<div>
+	                	<label class="display-tabel-cell" style="width: 30%">型号:</label>
+	            		<span class="display-tabel-cell">A 10</span>
+	            		<label class="display-tabel-cell" style="width: 30%">当前库存:</label>
+	            		<span class="display-tabel-cell">2000</span>
+	            	</div>
+	        		
+	        	</div>
+	        
+	        </label>
+	        <div class="aui-pull-right aui-btn aui-btn-outlined">
+	        <span class="aui-iconfont aui-icon-search"></span>
+	    </div>
+	        
+	        <div class="Accordion-box__content">
+	        <input type="checkbox" name="checkbox" value="'+555555+'">
+	        	<div>
+	        	
+	        	<div class="content-margin-bot click-number">
+	        	<label class="display-tabel-cell">数量:</label>
+	        	<input type="number" class="display-tabel-cell txt-sty" value="1" min="0" style="width:60%;">
+	        	<div class="aui-bar aui-bar-btn aui-bar-btn-sm display-tabel-cell" style="width:60%;float:right">
+	        		
+	        		                <div class="aui-bar-btn-item">
+	        		                    <i class="aui-iconfont aui-icon-minus"></i>
+	        		                </div>
+	        		                <div class="aui-bar-btn-item" style="width: 10%">
+	        		                    <input type="number" class="aui-input aui-text-center" value="1" min="0">
+	        		                </div>
+	        		                <div class="aui-bar-btn-item">
+	        		                    <i class="aui-iconfont aui-icon-plus"></i>
+	        		                </div>
+	        		            </div>
+	            </div>
+	            
+	            <div class="content-margin-bot">
+	            <label class="display-tabel-cell">货位:</label>
+	            <select class="display-tabel-cell txt-sty">
+	            	<option value="d">A货位</option>
+	            	<option value="3">B货位</option>
+	            </select>
+	            </div>
+	            
+	            
+	            <div class="content-margin-bot">
+	            <label class="display-tabel-cell">备注:</label>
+	            <textarea class="display-tabel-cell txt-sty" style="height: 50px;"></textarea>
+	            </div>
+	            </div>
+	        </div>
+	    	
+	    </div>
+	    <div class="Accordion-box">
+	        <label for="headingTwo" class="panel click-panel">
+	            Collapsible Group Item #2
+	        </label>
+	        <input type="radio" name="Collapsible" value="">
+	        <div class="Accordion-box__content">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</div>
+	    </div>
+	    <div class="Accordion-box">
+	        <label for="headingThree" class="panel click-panel">
+	            Collapsible Group Item #3
+	        </label>
+	        <input type="radio" name="Collapsible">
+	        <div class="Accordion-box__content">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</div>
+	    	
+	    </div> 
+	 </div>  
+	
+	
+	
+	
+	
+	 </li> 
+	
+	
+	</ul>
+	</section> 
+	    	<div id="demo">滚动高度：</div>  -->
+</body>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-collapse.js" ></script>
+	<script type="text/javascript" src="../../../../../../script/aui-scroll.js" ></script>
+
+<script type="text/javascript">
+//是否从后台加载数据
+var mapIsLoadData = new Map();
+//分类选中位置
+var assortPosiIndex = 0;
+//是否加载数据
+var isLoadData = true;
+//被选中中数量大于0的现有量数据
+var isSelectOnhand = new Map();
+//物料map
+var mapItem = new Map();
+//放入内存map
+var mapLoca = new Map();
+//分类ID
+var clazzId = "";
+//当前页存储
+var mapCurrentPage =  new Map();
+//仓库ID
+var sWhId = null;
+//供应商
+var sSupplierId = null;
+//客户
+var sCustomerId = null;
+
+	apiready = function(){
+		setTimeout(function(){
+			loadListAssort();
+			loadListAssortDetail(0,clazzId);
+			
+		},0);
+		
+		sWhId = api.pageParam.whId;
+		sSupplierId = api.pageParam.supplierId;
+		sCustomerId = api.pageParam.customerId;
+	
+	    //$('#sidebar ul li').click(function(){
+			//$(this).addClass('active').siblings('li').removeClass('active');
+			//var index = $(this).index();
+			//$('.j-content').eq(index).show().siblings('.j-content').hide();
+		//})
+	};
+	
+	var scroll = new auiScroll({
+        listen:true,
+        distance:200 //判断到达底部的距离，isToBottom为true
+    },function(ret){
+        if(ret.isToBottom){
+        	if(isLoadData){
+        		isLoadData = false;
+        		loadListAssortDetail(assortPosiIndex,clazzId);
+        	}
+            //document.getElementById("demo").textContent = "已到达底部";
+            //console.log("已到达底部："+ret.scrollTop);
+        }//else{
+        	//console.log("滚动高度："+ret.scrollTop);
+            //document.getElementById("demo").textContent = "滚动高度："+ret.scrollTop;
+        //}
+    });
+
+
+	
+	$(function(){
+		$('#sidebar ul').on('click', 'li', function(){
+			//console.log($(this).val());
+		 	$(this).addClass('active').siblings('li').removeClass('active');
+			var index = $(this).index();
+			$('.j-content').eq(index).show().siblings('.j-content').hide();
+			assortPosiIndex = index;
+			clazzId = $(this).val();
+			loadData(index,$(this).val());
+		});
+		
+	    $('.Accordion-box').on('click', '.click-panel', function(){
+	    	//alert();
+	    	if($(this).siblings('div').hasClass("Accordition-box-show")){
+	    		$(this).siblings('div').removeClass('Accordition-box-show');
+	    	}else{
+			 	$(this).siblings('div').addClass('Accordition-box-show');
+	    	}
+
+		});
+
+		
+		//appendContentLiTag(88);
+	})
+	
+	function changeQty(target,itemId){
+		var flag = -1;
+		try {
+			    var qty = parseInt($(target).val());
+			    
+			    if(qty<0){
+			    	alert("输入值请大于0");
+			    	flag = -1;
+			    	mapLoca.delete(itemId+'');
+			    }else if(qty>0){
+					flag = 1;
+			    }else{
+			    	mapLoca.delete(itemId+'');
+			    }
+			}
+			catch(err) {
+			    alert("请输入数字");
+			    flag = -1;
+			    mapLoca.delete(itemId+'');
+			}
+			
+			changeBadge(flag,target);
+	}
+	
+	function loadData(index,classId){
+		if(!mapIsLoadData.has(index+"")){
+			loadListAssortDetail(index,classId);
+		}
+	}
+	
+	function clickPanel(target){
+    	if($(target).siblings('div').hasClass("Accordition-box-show")){
+    		$(target).siblings('div').removeClass('Accordition-box-show');
+    	}else{
+		 	$(target).siblings('div').addClass('Accordition-box-show');
+    	}
+	}
+	//-1减去1加
+	function minusPlus(target,status,itemId){
+		var ipt = $(target).siblings('.minus-plus').find('input');
+	    		
+        var num = parseInt(ipt.val());
+        var flag = -1;
+        if(-1==status){
+        	if(num <= 1){
+	            ipt.val("0");
+	            flag = -1;
+	            mapLoca.delete(itemId+'');
+	        }else{
+		        ipt.val(--num);
+		        flag = 1;
+	        }
+        }else if(1==status){
+        	if(num < 0){
+                ipt.val("0");
+                flag = -1;
+                mapLoca.delete(itemId+'');
+            }else{
+	            ipt.val(++num);
+	            flag = 1;
+            }
+        }
+		//改变角标
+		changeBadge(flag,target);
+	}
+	
+	//改变角标值
+	function changeBadge(flag,target){
+		var ic = $(target).parents(".Accordion-box__content").children("input[type='checkbox']");
+		if(1==flag){
+			ic.attr("checked","checked");
+		}else{
+			ic.removeAttr("checked");
+		}
+		//console.log($.mapToArrayJson(mapItem));
+		var checkboxList = $('.j-content').eq(assortPosiIndex).find("input[type='checkbox']:checked");
+		var auiBadge = $('#sidebar ul li').eq(assortPosiIndex).find('.aui-badge');
+		if(checkboxList.length>0){
+			auiBadge.removeClass("displayNone");
+		}else{
+			auiBadge.addClass("displayNone");
+		}
+		
+		auiBadge.html(checkboxList.length);
+		updateMainSelectedTitle();
+	}
+	//跟新父页面选中值
+	function updateMainSelectedTitle(){
+		var total = $('body').find("input[type='checkbox']:checked").length;
+		api.execScript({
+		    frameName :'handAddOutStockFrame',
+		    script: 'updateSelectedTitle('+total+');'
+		});
+	}
+	
+	//获取有数量的列表
+	function grabOnhandToSave(){
+		
+		var checkboxList = $("body").find("input[type='checkbox']:checked");
+		var storage=window.localStorage;
+		var c=storage.getItem("onhandLoca");
+		mapLoca = $.jsonToMap(c);
+		
+		var iscontinue = true;
+		
+		$.each(checkboxList,function(index,docu){
+			var pt = $(docu).parent(".Accordion-box__content");
+			//alert($(docu).val());
+			var itemDetail = mapItem.get($(docu).val()+'');
+			if(""==pt.find("input[name='lot']").val()){
+				iscontinue = false;
+				return;
+			}
+			
+			var sWhCellName = ""
+			if(""!=pt.find("select").val()){
+				sWhCellName = pt.find("select").find("option:selected").text();
+			}
+			
+			mapLoca.set($(docu).val()+'',{"invQty":pt.find("input[type='number']").val(),
+			"lot":pt.find("input[name='lot']").val(),
+			"whCellId":pt.find("select").val(),
+			"whCellName":sWhCellName,
+			"drawingNumber":itemDetail.drawingNumber,
+			"itemId":itemDetail.itemId,
+			"itemName":itemDetail.itemName,
+			"uomName":itemDetail.uomName,
+			"whId":itemDetail.whId,
+			"whName":itemDetail.whName,
+			"itemCustomerCode":itemDetail.itemCustomerCode,
+			"itemCustomerId":itemDetail.itemCustomerId,
+			"remark":pt.find("textarea").val()
+			});
+			
+			//console.log(pt.find("input[type='number']").val());
+			//console.log(pt.find("select").val());
+			//console.log(pt.find("textarea").val());
+			//console.log(index);
+		});
+		if(!iscontinue){
+			alert("请输入批次");
+			return;
+		}
+		
+			//console.log("yy"+$.mapToArrayJson(mapLoca));
+		storage.setItem("onhandLoca",$.mapToArrayJson(mapLoca));
+		
+		//
+		//$('.Accordion-box__content')
+		
+	    api.execScript({
+		    frameName :'handAddOutStockFrame',
+		    script: 'grabOnhandCallback();'
+		});
+		//closeWin();
+	}
+	
+
+	
+	//加载分类
+    function loadListAssort(){
+		api.ajax({
+			url : $.ServerUrl('/app/logistics/endProdReturn/loadListAssort.do'),
+			method : "POST",
+			data : {
+				values : {
+				}
+			}
+		}, 
+		function(obj, err) {
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+			
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var getInfo = $.toJson(obj.data);
+					renderListAssort(getInfo);
+					appendContentSelectTag(getInfo.length);
+				} else {	
+				}
+				
+			}, null, false);
+		});
+    }
+    
+    function renderListAssort(data){
+    	var wrap = document.getElementById("assort-id")
+		wrap.innerHTML = "";
+		
+    	$.each(data,function(index,docu){
+    		var html = '<li value="'+docu.value+'"><section class="aui-content-padded"><div class="aui-badge displayNone"></div></section>'+docu.label+'</li>';
+
+    		$("#assort-id").append(html);
+    		//wrap.insertAdjacentHTML('afterbegin', html);
+    	});
+    	$('#sidebar ul li').eq(0).addClass('active');
+    }
+    
+    //添加右侧内容标签载体
+    function appendContentSelectTag(len){
+    	for(var i=0;i<len-1;i++){
+    	var html = '<section class="menu-right padding-all j-content" style="display:none">'+
+			//'<h5>'+i+'</h5>'+
+			'<ul class="assort-ul-content">'+
+			//'<li class="w-3"><a href="#"></a> <img src="./所有分类_files/tp.png"><span>珠宝</span></li>'+
+			//'<li class="w-3"><a href="#"></a> <img src="./所有分类_files/tp.png"><span>饰品</span></li>'+
+			
+			'</ul>'+
+			'</section>';
+	    	$("body").append(html);
+    	}
+    }
+    
+    //加载右侧数据
+    function loadListAssortDetail(clickIndex,classId){
+    	var curPage = 1;
+    	if(mapCurrentPage.has(clickIndex+"")){
+    		curPage = mapCurrentPage.get(clickIndex+"");
+    	}
+		api.ajax({
+			url : $.ServerUrl('/app/logistics/endProdReturn/loadListAssortDetail.do'),
+			method : "POST",
+			data : {
+				values : {
+					"page":curPage,
+					"rows":100,
+					"classId":classId,
+					"customerId":sCustomerId,
+					"whId":sWhId
+				}
+			}
+		}, 
+		function(obj, err) {
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+			
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var getInfo = $.toJson(obj.data);
+					//renderListAssort(getInfo);
+					appendContentLiTag(getInfo,clickIndex);
+					if(getInfo.length>0){
+						mapCurrentPage.set(clickIndex+"",curPage+1);
+						mapIsLoadData.set(clickIndex+"",clickIndex);
+					}
+				} else {	
+				}
+				
+			}, null, false);
+			
+			isLoadData = true;
+		});
+    }
+    
+        //添加右侧内容LI标签载体
+    function appendContentLiTag(data,clickIndex){
+    	var strWhCell = '<option value="">----请选择----</option>';
+    	if(data.length>0&&data[0].listWhCell !=null){
+	    	var whCellArray = data[0].listWhCell.split(",");
+	    	alert(data[0].listWhCell);
+	    	for(var j=0;j<whCellArray.length;j++){
+	    		strWhCell +='<option value="'+whCellArray[j].split("|]")[0]+'">'+whCellArray[j].split("|]")[1]+'</option>'
+	    	}
+    	
+    	}
+    	
+    for(var i=0;i<data.length;i++){
+    	var getInfo = data[i];
+    	//console.log(whCellArray);
+    	//console.log("88"+getInfo.listWhCell);
+    	mapItem.set(getInfo.itemId+","+getInfo.whId,{"itemName":getInfo.itemName,
+    	"itemId":getInfo.itemId,
+    	"drawingNumber":getInfo.drawingNumber,
+    	"whId":getInfo.whId,
+    	"whName":getInfo.whName,
+    	"itemCustomerCode":getInfo.itemCustomerCode,
+    	"itemCustomerId":getInfo.itemCustomerId,
+    	"uomName":getInfo.uomName});
+    	var html = '<li>'+
+    	    '<div class="Accordion-box">'+
+        '<label for="headingOne" class="panel click-panel" onclick="clickPanel(this);">'+
+        	'<div>'+
+        		'<div>'+
+                	'<label class="display-tabel-cell" style="width: 40%">客户物料编码:</label>'+
+            		'<span class="display-tabel-cell">'+getInfo.itemCustomerCode+'</span>'+
+            	'</div>'+
+        		'<div>'+
+                	'<label class="display-tabel-cell" style="width: 30%">物料名称:</label>'+
+            		'<span class="display-tabel-cell">'+getInfo.itemName+'['+getInfo.uomName+']</span>'+
+            	'</div>'+
+            	'<div>'+
+                	'<label class="display-tabel-cell" style="width: 30%">物料图号:</label>'+
+            		'<span class="display-tabel-cell">'+getInfo.drawingNumber+'</span>'+
+            	'</div>'+
+            	'<div>'+
+                	'<label class="display-tabel-cell" style="width: 20%">型号:</label>'+
+            		'<span class="display-tabel-cell">'+getInfo.vclModel+'</span>'+
+            		//'<label class="display-tabel-cell" style="width: 30%;margin-left:10px;">当前库存:</label>'+
+            		//'<span class="display-tabel-cell">'+getInfo.invQtySum+'</span>'+
+            	'</div>'+
+            	//'<div>'+
+                	//'<label class="display-tabel-cell" style="width: 30%">库房:</label>'+
+            		//'<span class="display-tabel-cell">'+getInfo.whName+'</span>'+
+            	//'</div>'+
+        		
+        	'</div>'+
+        
+        '</label>'+
+        
+        '<div class="Accordion-box__content">'+
+        '<input type="checkbox" name="checkbox" value="'+getInfo.itemId+","+getInfo.whId+'" style="display:none;">'+
+        	'<div>'+
+        	
+        	'<div class="content-margin-bot click-number">'+
+        	'<label class="display-tabel-cell">数量:</label>'+
+        	//'<div class="aui-bar aui-bar-btn aui-bar-btn-sm display-tabel-cell" style="width:60%;float:right">'+
+        		
+                //'<div class="aui-bar-btn-item" onclick="minusPlus(this,-1,'+getInfo.itemId+')">'+
+                    //'<i class="aui-iconfont aui-icon-minus"></i>'+
+                //'</div>'+
+                //'<div class="aui-bar-btn-item minus-plus" style="width: 10%">'+
+                    //'<input type="number" class="aui-input aui-text-center" value="0" min="0" onchange="changeQty(this,'+getInfo.itemId+')">'+
+                //'</div>'+
+                //'<div class="aui-bar-btn-item" onclick="minusPlus(this,1,'+getInfo.itemId+')">'+
+                    //'<i class="aui-iconfont aui-icon-plus"></i>'+
+                //'</div>'+
+            //'</div>'+
+            
+		
+		
+		
+		
+            '<input type="number" style="border: 0 none;border-bottom:0.5px solid #378888;font-size:18px;width: 60%;" class="display-tabel-cell txt-sty" value="0" min="0" onchange="changeQty(this,'+getInfo.itemId+')">'+
+            '</div>'+
+            
+            '<div class="content-margin-bot">'+
+            '<label class="display-tabel-cell">货位:</label>'+
+            '<select class="display-tabel-cell txt-sty" style="font-size:18px;">'+strWhCell+
+            	//'<option value="1">A货位</option>'+
+            	//'<option value="2">B货位</option>'+
+            '</select>'+
+            '</div>'+
+            
+            
+            '<div class="content-margin-bot">'+
+            '<label class="display-tabel-cell">批次:</label>'+
+            '<input name="lot" class="display-tabel-cell txt-sty" style="border: 0 none;border-bottom:0.5px solid #378888;font-size:18px;width: 60%;"></input>'+
+            '</div>'+
+            
+            
+            '<div class="content-margin-bot">'+
+            '<label class="display-tabel-cell">备注:</label>'+
+            '<textarea class="display-tabel-cell txt-sty" style="height: 20px;font-size:18px;"></textarea>'+
+            '</div>'+
+            '</div>'+
+        '</div>'+
+
+    '</div>'+
+    	'</li>';
+    	
+    		$('.j-content').eq(clickIndex).find('.assort-ul-content').append(html);
+    	}
+    }
+</script>
+</html>

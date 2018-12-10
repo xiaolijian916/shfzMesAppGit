@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>模具初始化</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+
+    <script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+    <script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-toast.js" ></script>
+    <style>
+        body{
+
+        }
+    </style>
+</head>
+<body>
+<header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;right: 0">
+    <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+        <span class="aui-iconfont aui-icon-left"></span>返回
+    </a>
+    <div class="aui-title">模具初始化</div>
+    <!--<div class="aui-pull-right aui-btn" onclick="save()">-->
+        <!--<img src="../../../../../../image/save.png" class="img-btn" width="25px" height="25px"/>-->
+    <!--</div>-->
+    <!--<div class="aui-pull-right aui-btn" onclick="cancel()">-->
+        <!--<img src="../../../../../../image/cancel.png" class="img-btn" width="25px" height="25px"/>-->
+    <!--</div>-->
+    <div class="aui-pull-right aui-btn aui-col-xs-3">
+        <i class="aui-iconfont aui-icon-correct" onclick="save()"></i>
+        <i class="aui-iconfont aui-icon-close" style="margin-left: 2rem;margin-right: 1rem" onclick="cancel()"></i>
+    </div>
+</header>
+<div class="aui-content" style="margin-top:2.25rem;">
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">模具编号:</div>
+                    <div class="aui-list-item-input" onclick="javascript:location.href='../tool/mdLedger.html'">
+                        <input id="mdLedgerNo" placeholder="选择模具" readonly="true" class="cancel" required="required"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                        <input id="mdLedgerId" placeholder="选择模具" readonly="true" class="cancel aui-hide">
+                    </div>
+                    <div class="aui-list-item-right">
+                        <img src="../../../../../../image/qrcode.png" width="70px" height="50px" onclick="scanSingle('md')"/>
+                    </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-text-primary">存放状态:</div>
+                <div class="aui-list-item-input" onclick="javascript:location.href='../tool/storageCondition.html'">
+                    <input id="positionLabel" placeholder="选择状态" readonly="true" class="cancel"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                    <input id="position" placeholder="选择状态" readonly="true" class="cancel aui-hide">
+                </div>
+                <div class="aui-list-item-right" style="width: 70px"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-text-primary">存放仓库:</div>
+                <div class="aui-list-item-input"  onclick="javascript:location.href='../tool/wh.html'">
+                    <input id="whName" placeholder="选择仓库" readonly="true"  class="cancel"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                    <input id="whId" placeholder="选择仓库" readonly="true"  class="cancel aui-hide">
+                </div>
+                <div class="aui-list-item-right">
+                    <img src="../../../../../../image/qrcode.png" width="70px" height="50px" onclick="scanSingle('wh')"/>
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-text-primary">模具代号:</div>
+                <div class="aui-list-item-input">
+                    <input id="mdNo" placeholder="不&nbsp;&nbsp;可&nbsp;&nbsp;选" readonly="true" class="cancel"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                </div>
+                <div class="aui-list-item-right" style="width: 70px"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-text-primary">模具名称:</div>
+                <div class="aui-list-item-input">
+                    <input id="mdLedgerName" placeholder="不&nbsp;&nbsp;可&nbsp;&nbsp;选" readonly="true" style="width: 115%" class="cancel"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                </div>
+                <div class="aui-list-item-right" style="width: 70px"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-text-primary">零&nbsp;&nbsp;件&nbsp;&nbsp;号:</div>
+                <div class="aui-list-item-input">
+                    <input id="partNo" placeholder="不&nbsp;&nbsp;可&nbsp;&nbsp;选" readonly="true" style="width: 115%" class="cancel"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                </div>
+                <div class="aui-list-item-right" style="width: 70px"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-text-primary">产品工序:</div>
+                <div class="aui-list-item-input">
+                    <input id="name" placeholder="不&nbsp;&nbsp;可&nbsp;&nbsp;选" readonly="true" style="width: 115%" class="cancel"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                </div>
+                <div class="aui-list-item-right" style="width: 70px"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label aui-text-primary">初始化时间:</div>
+                <div class="aui-list-item-input">
+                    <input id="initTime"  readonly="true"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                </div>
+                <div class="aui-list-item-right" style="width: 70px"></div>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+<script type="text/javascript">
+    apiready = function(){
+        setMd();
+        setMdLedgerPosition();
+        setWh();
+        var date=new Date();
+        document.getElementById("initTime").value=date.toLocaleString();
+    };
+
+    /**
+     * 设置模具的内容
+     * @author lzj
+     * @date 20181026
+     */
+    function setMd() {
+        if (getCookie("mdLedgerData") === "undefined" || getCookie("mdLedgerData") === null) return;
+        document.getElementById("mdLedgerId").value=getCookie("mdLedgerData");
+        getMdLedger(getCookie("mdLedgerData"),initMdData);
+        delCookie("mdLedgerData");
+    }
+    /**
+     * 设置存放状态内容
+     * @author lzj
+     * @date 20181026
+     */
+    function setMdLedgerPosition() {
+        var strs=getCookie("mdLedgerPositionData");
+        if (strs === "undefined" || strs === null) return;
+        var str=strs.split(" ");
+        document.getElementById("positionLabel").value=str[0];
+        document.getElementById("position").value=str[1];
+        delCookie("mdLedgerPositionData");
+    }
+    /**
+     * 货位
+     * @author lzj
+     * @date 20181026
+     */
+    function setWh() {
+        var strs=getCookie("whData");
+        delCookie("whData");
+        if (strs === "undefined" || strs === null) return;
+        var str=strs.split(",");
+        document.getElementById("whId").value=str[0];
+        document.getElementById("whName").value=str[1]+" || "+str[2];
+    }
+    /**
+     * 根据模具id获取模具信息
+     * @author lzj
+     * @date 20181026
+     */
+    function getMdLedger(mdLedgerId,callback) {
+        api.ajax({
+            url: $.ServerUrl("/app/mould/receive/mdTool/mdLedger.do"),
+            method: 'post',
+            data:{
+                values:{
+                    "mdLedgerId":mdLedgerId,
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                callback($.toJson(obj.data));
+            }, null, false);
+        });
+    }
+    /**
+     * 根据根据id获取仓库信息
+     * @author lzj
+     * @date 20181026
+     */
+    function getWh(whId,callback) {
+        api.ajax({
+            url: $.ServerUrl("/app/mould/receive/mdTool/wh.do"),
+            method: 'post',
+            data:{
+                values:{
+                    "whId":whId,
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                callback($.toJson(obj.data));
+            }, null, false);
+        });
+    }
+    /**
+     * 初始化模具信息
+     * @author lzj
+     * @date 20181026
+     */
+    function initMdData(obj) {
+        var funcList=obj;
+        document.getElementById("mdLedgerNo").value=funcList[0].mdLedgerNo;
+        document.getElementById("mdNo").value=funcList[0].mdNo;
+        document.getElementById("mdLedgerName").value=funcList[0].mdLedgerName;
+        document.getElementById("partNo").value=funcList[0].partNo==""?"未维护相关信息":funcList[0].partNo;
+        document.getElementById("name").value=funcList[0].partNo==""?"未维护相关信息":funcList[0].processNo+" ||  "+funcList[0].processNo;
+    }
+    /**
+     * 初始化仓库信息
+     * @author lzj
+     * @date 20181026
+     */
+    function initWh(obj) {
+        var funcList=obj;
+        document.getElementById("whId").value=funcList[0].whId;
+        document.getElementById("whName").value=funcList[0].whName;
+    }
+    /**
+     * 保存初始化信息
+     * @author lzj
+     * @date 20181026
+     */
+    function save() {
+        if (document.getElementById("mdLedgerId").value==""){
+            alert("模具不能为空!");
+            return;
+        }
+        if (document.getElementById("position").value==""){
+            alert("存放状态不能为空!");
+            return;
+        }
+        if (isSave()){
+            alert("请选择存放货位!");
+            return ;
+        }
+        api.ajax({
+            url: $.ServerUrl("/app/mould/init/mdInit/saveInit.do"),
+            method: 'post',
+            data:{
+                values:{
+                    "mdLedgerId":document.getElementById("mdLedgerId").value,
+                    "position":document.getElementById("position").value,
+                    "whId":document.getElementById("whId").value,
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                //弹窗提醒
+                var toast = new auiToast({});
+                toast.success({
+                    title : "初始化成功",
+                    duration : 1000
+                });
+                //清除表单
+                cancel();
+            }, null, false);
+        });
+    }
+    /**
+     * 取消   清空表单
+     * @author lzj
+     * @date 20181026
+     */
+    function cancel(){
+        $(".cancel").val('');
+    }
+    /**
+     * 判断是否可以保存
+     * 若存放状态选择在库则必选货位
+     * @author lzj
+     * @date 20181026
+     */
+    function isSave(){
+        if(document.getElementById("positionLabel").value=="在库"&&document.getElementById("whId").value=="") return true;
+        return false;
+    }
+    /**
+     * 二维码扫描
+     * 根据参数判断是仓库还是模具
+     * @author lzj
+     * @date 20181106
+     */
+    function scanSingle(type) {
+        var FNScanner = api.require('FNScanner');
+        FNScanner.openScanner({
+            autorotation : true,
+        }, function(ret, err) {
+            if (ret) {
+                if (ret.eventType == 'success') {
+
+                    if (type=="md") getMdLedger(ret.content,initMdData) ;
+                    else if (type="wh") getWh(ret.content,initWh);
+
+                    var oderid = $api.dom("#waybill_num");
+                    $api.val(oderid, ret.content);
+                } else if (ret.eventType == 'fail') {
+                    api.toast({
+                        msg : '扫描失败，请稍后重试'
+                    });
+                }
+            } else {
+                api.toast({
+                    msg : err.msg
+                });
+            }
+        });
+    }
+</script>
+</html>

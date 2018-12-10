@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>不良品记录详细信息</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav" style="padding-top:25px;" id="header">
+	    <a class="aui-pull-left aui-btn" onclick="closeHtml()">
+	        <span class="aui-iconfont aui-icon-left"></span>
+	    </a>
+	    <div class="aui-title">不良品判定记录</div>
+	</header>
+	<ul class="aui-list aui-select-list aui-margin-t-10">
+		<li class="aui-list-header">不良品信息</li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner" id="defInfo"></div>
+        </li>
+    </ul>
+	<ul class="aui-list aui-list-in aui-margin-t-10" id="resultInfo"></ul>
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript">
+	var defectiveId;
+	
+	apiready = function(){
+		defectiveId = api.pageParam.defectiveId;
+		loadDefectiveData();
+	};
+	
+	function loadDefectiveData(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务：获取到货待处理数据
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadDefectiveInfo.do'),
+			method : "POST",
+			data : {
+				values : {
+					defectiveId : defectiveId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var defInfo = $.toJson(obj.data);
+					renderDefectiveData(defInfo);
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    function renderDefectiveData(defInfo){
+    	var wrap = document.getElementById("defInfo");
+    	wrap.innerHTML = "";
+    	var html =  '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">产品图号：' + defInfo.drawingNumber + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">物料名称：' + defInfo.itemName + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">物料批次：' + defInfo.defectiveLot + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">生产班组：' + defInfo.workteam + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">操作人员：' + defInfo.worker + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">问题发现工序：' + defInfo.discoveryLoc + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">问题产生工序：' + defInfo.produceLoc + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">质量处理类型：' + defInfo.qualityJudgeType + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div class="aui-ellipsis-1">缺陷原因：' + defInfo.faultName + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div>缺陷描述：' + defInfo.faultDesc + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div>处理意见：' + defInfo.dealOption + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div>检验人员：' + defInfo.checkUser + '</div></div>'+
+	                '<div class="aui-list-item-text aui-text-default"><div>检验时间：' + defInfo.checkDate + '</div></div>';
+		wrap.insertAdjacentHTML('afterbegin', html);
+		
+		var resultWrap = document.getElementById("resultInfo");
+    	resultWrap.innerHTML = "";
+    	var resultHtml = '<li class="aui-list-header">不良品处理结论</li>';
+    	var resultInfo = defInfo.listDefectiveResultVo;
+    	if(resultInfo.length==0){
+    		resultHtml += '<li class="aui-list-item">' +
+					            '<div class="aui-list-item-inner">' +
+					                '<div class="aui-list-item-title">' +
+					                	'<div class="aui-list-item-text aui-text-default">不良品记录无处理结论</div>' +
+					                '</div>' +
+					                '<div class="aui-list-item-right"></div>' +
+					            '</div>' +
+					        '</li>';
+    	}else{
+	    	for(var i = 0; i < resultInfo.length; i++){
+	    		resultHtml +=  '<li class="aui-list-item">' +
+						            '<div class="aui-list-item-inner">' +
+						                '<div class="aui-list-item-title">' +
+						                	'<div class="aui-list-item-text aui-text-default">' + 
+						                	'处理结论：' + resultInfo[i].concludeName + 
+						                	'<span class="aui-margin-l-15">处理数量：' + resultInfo[i].handleQty + '</span></div>' +
+						                '</div>' +
+						                '<div class="aui-list-item-right">' +
+						                    '<div class="aui-btn aui-btn-danger" onclick="delunqualifiedResult(\'' + resultInfo[i].defectiveResultId + '\')">删除</div>' +
+						                '</div>' +
+						            '</div>' +
+						        '</li>';
+	    	}
+    	}
+    	resultWrap.insertAdjacentHTML('afterbegin', resultHtml);
+	}
+	
+	//删除
+	function delunqualifiedResult(defectiveResultId){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务：获取到货待处理数据
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/delDefectiveResult.do'),
+			method : "POST",
+			data : {
+				values : {
+					"defectiveResultId": defectiveResultId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					loadDefectiveData();
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+	
+	function closeHtml(){
+    	api.closeWin({});
+    }
+</script>
+</html>

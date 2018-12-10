@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../../../css/icomoonstyle.css" />
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+
+<style>
+
+
+</style>
+</head>
+<body>
+	<div id="outerMostLayer" class="aui-bar aui-bar-nav">
+    <header class="aui-bar aui-bar-nav" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">模糊查询界面</div>
+        <a class="aui-btn aui-pull-right">
+        	<div class="aui-btn aui-btn-info aui-margin-r-5" id="form_sub_id">查询</div>
+        	<!-- <div class="aui-btn aui-btn-info aui-margin-r-5" onclick="saveBillAndLineData();">保存</div> -->
+        </a>
+    </header>
+    </div>
+    
+    <form method="POST" id="form1" action="#">
+    
+    
+        <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list">
+            
+
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        物料图号
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="drawingNumber" style="color:#eea6a6;" >
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        物料名称
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="itemName" style="color:#eea6a6;" >
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        供应商名称
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="supplierName" style="color:#eea6a6;" >
+                    </div>
+                </div>
+            </li>
+            
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                       送货单号
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="deliveryNo" >
+                    </div>
+                </div>
+            </li>
+            
+            <!-- <li class="aui-list-item">
+                <div class="aui-list-item-inner aui-list-item-center aui-list-item-btn">
+                	<input type="submit" value="Submit" id="submit_id" style="display: none;">
+                    <div class="aui-btn aui-btn-info aui-margin-r-5" id="form_sub_id">查询</div>
+                    <div class="aui-btn aui-btn-danger aui-margin-l-5">取消</div>
+                </div>
+            </li> -->
+        </ul>
+    </div>
+</form>    
+
+</body>
+<!-- <script type="text/javascript" src="../../../../../../js/ama-head.js"></script>   -->
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery.form.js"></script>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript">
+var headerPos = 0;
+
+    apiready = function(){
+        api.parseTapmode();
+
+        var header = $api.byId('outerMostLayer');
+        $api.fixStatusBar(header);
+        headerPos = $api.offset(header);
+        var body_h = $api.offset($api.dom('body')).h;
+
+		var storage=window.localStorage;
+    	var c=storage.getItem("searchParamLoca");
+    	
+    	console.log(c);
+    	if($.isNotNull(c)){
+    		var getc = JSON.parse(c);
+	    	$('#drawingNumber').val(getc.drawingNumber);
+			$('#itemName').val(getc.itemName);
+			$('#supplierName').val(getc.supplierName);
+			$('#deliveryNo').val(getc.deliveryNo);
+    	}
+    };
+
+    
+    //关闭当前窗体
+    function closeWin(){
+    	
+    	
+        api.closeFrame({
+        	name:"searchPage"
+        });
+    }
+    
+    function getSearchParam(){
+		    
+    	var drawingNumber =  $('#drawingNumber').val();
+		var itemName =  $('#itemName').val();
+		var supplierName =  $('#supplierName').val();
+		var deliveryNo =  $('#deliveryNo').val();
+		
+    	var tempextra = {
+		        drawingNumber: drawingNumber,
+		        supplierName: supplierName,
+		        deliveryNo: deliveryNo,
+		        itemName: itemName
+		    };
+		var storage=window.localStorage;
+    	var c=storage.setItem("searchParamLoca",JSON.stringify(tempextra));
+		
+    	api.sendEvent({
+		    name: 'closeSearchPage',
+		    extra: tempextra
+		});
+    }
+
+	$('#form_sub_id').on('click', function() {
+		getSearchParam();
+		closeWin();
+	});
+</script>
+</html>

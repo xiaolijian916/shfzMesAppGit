@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<style>
+		.angma-grid-title{
+    background-color: #2d9eff;
+    width: 150px;
+    height: 25px;
+    line-height : 25px;
+    font-size: 14px;
+    padding-left: 5px;
+}
+		</style>
+	</head>
+	<body>
+		<section class="aui-refresh-content">
+			<div class="aui-content aui-margin-b-15" >
+				<ul class="aui-list aui-media-list" id="testww"></ul>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-scroll.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript">	
+	var picPath = null;	
+		apiready = function() {
+			api.parseTapmode();	
+			
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/updateMobileQsbQuaPromSummary.do'),
+				method : 'post',
+				data: {             
+				      values:{
+                     "summaryId":$api.getStorage("summaryId"),
+                }}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					}
+					var funcList = $.toJson(obj.data);
+					//				-------------------------------------------------------------总数据条数显示---------------------------------
+					//				------------------------------------------------------------ 循环加载数据----------------------------------
+						var strHappenDate = gettime(funcList.happenTime);
+						var strTempCompTime = gettime(funcList.tempCompTime);
+						var strLongTermMeaCompTime = gettime(funcList.longTermMeaCompTime);
+						var strProblemSup='';
+						if($.isNotNull(funcList.problemSup))
+						{
+						strProblemSup=funcList.problemSup;
+						}
+						
+						//问题分类渲染
+						var strProblemClass='';											
+						if($.isNotNull(funcList.problemClass)){
+						strProblemClass=funcList.problemClass;
+						if("A"==funcList.problemClass){
+						strProblemClass="顾客";
+						}else if("B"==funcList.problemClass){
+						strProblemClass="内部";
+						}else if("C"==funcList.problemClass)
+						{
+						strProblemClass="供应商";
+						}		
+						}
+						
+						//日期时间转换
+						var strSrc =funcList.mobilePath;					
+						if(null==strSrc||strSrc=='')
+						{strSrc="../../../../../../image/main/qsb/noPicture.png";}						
+						$("#testww").append('<li class="aui-list-item">' 
+						+ '<div class="aui-media-list-item-inner">' 
+					
+						+ '<div class="aui-list-item-inner">' 
+				 
+						
+						
+						+ '<div class="aui-list-item-text">' 
+						+ '零件名称：' + funcList.partName + '</div>'
+					
+					 
+						+ '<div class="aui-list-item-text">' 
+						+ '问题分类：' + strProblemClass + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '问题供应商：' + strProblemSup + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '缺陷模式：' + funcList.defectMode + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '缺陷等级：' + funcList.defectGrade + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '缺陷数量：' + funcList.defectNumberInt + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '单位：&nbsp;&nbsp;&nbsp;&nbsp;' + funcList.defectNumberNuit + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '是否重复发生：' + funcList.isReoccur + '</div>'
+					
+						+ '</div>' + '</div>'  + '</li>')
+					
+				}, null, false);
+			});	
+ 		
+		}
+
+				//时间转换
+		function gettime(t) {
+			var _time = new Date(t);
+			var year = _time.getFullYear();
+			//2017
+			var month = _time.getMonth() + 1;
+			//7
+			var date = _time.getDate();
+			//10
+			var hour = _time.getHours();
+			//10
+			var minute = _time.getMinutes();
+			//56
+			var second = _time.getSeconds();
+			//15
+			//	    return   year+"年"+month+"月"+date+"日   "+hour+":"+minute+":"+second;//这里自己按自己需要的格式拼接
+			return year + "-" + month + "-" + date;
+		}
+
+		//关闭窗口
+		function closeWin() {
+			api.closeWin({
+			});
+			location.reload();
+		}
+
+	</script>
+</html>

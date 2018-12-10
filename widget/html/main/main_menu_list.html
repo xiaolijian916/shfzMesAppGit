@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>系统主菜单功能列表</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link type="text/css" rel="stylesheet" href="../../css/api.css"/>
+	<link type="text/css" rel="stylesheet" href="../../css/aui.css"/>
+	<link type="text/css" rel="stylesheet" href="../../css/mui.min.css"/>
+	<link type="text/css" rel="stylesheet" href="../../css/mstyle.css"/>
+	<link type="text/css" rel="stylesheet" href="../../assets/iconfont/xs-menu-iconfont.css"/>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/aui-popup.js"></script>
+	<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+	<script type="text/javascript" src="../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../assets/js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../script/aui-popup-new.js"></script>
+	<script type="text/javascript" src="../../conf/application.js"></script>
+    <style>
+		html, body{ background-color: #fff }
+	</style>
+</head>
+<script type="text/javascript">
+
+	/**
+	 * 1、获取登陆用户ID
+	 * 2、根据用户ID请求服务器获取用户功能权限
+	 * 3、 将功能列表渲染到主菜单列表中
+	 * 4、资源文件及对应的名称匹配才能正确显示菜单
+	 * 5、给功能图片增加点击事件(菜单ID加载对应功能?)
+	 * 6、再次点击时不再进行二次菜单加载
+	 */
+	apiready = function(){
+		//下拉刷新重新加载菜单...
+		api.setRefreshHeaderInfo({
+			visible : true,
+			loadingImg : '../../imange/loading_more.info',
+			bgColor: '#ccc', //背景色
+			textColor: '#ccc',//文本色
+			textLoading: '加载中....',
+			textDown: '下拉刷新文字...',
+			textUp: '松开加载数据...',
+			showTime: true,
+		},function(ret,err){
+			alert("刷新菜单和消息");
+			$api.byId("noticeTips").style.display = null;
+			api.refreshHeaderLoadDone();//加载完成
+		});
+
+		//监听消息点击事件
+		$api.addEvt($api.byId("noticeMsg"), 'click', function(){
+			alert("调用打开消息通知页面...");
+			$api.byId("noticeTips").style.display = 'none';
+		});
+
+		//初始化加载功能列表
+		this.initLoadMenuList();//执行了两次？
+
+		//设置消息通知醒目效果
+    	this.setInterval('$.FlickerEffect("noticeMsg", ["#FFFFFF", "#FF0000"])', 200);
+
+//		var marquee={
+//		    id:"marquee-wrapper",
+//		    decoration:"left",
+//		    width:500,
+//		    height:50,
+//		    speed:10
+//		};
+//		scroll(marquee);
+	};
+
+	//加载用户功能菜单列表
+	function initLoadMenuList(){
+		api.ajax({
+			url : $.ServerUrl('/security/authentication/userAuthorization.do'),
+			method : "POST",
+			data : {
+				values : {
+					userInfo: $api.getStorage("userInfo")
+				}
+			}
+		},
+		function(obj, err) { //服务器响应结果
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status;
+				if ($.isNull(status) ||  status == 2) { //服务器响应状态码
+					var menuTreeMap = {}; //菜单存储
+					var funcList = $.toJson(obj.data);
+					var topTreeId = getParseMenuTree(menuTreeMap, funcList); // Map<PID, [SID1, SID2...]>
+					if($.isNull(topTreeId)){
+						return $.alert("系统权限：错误", "系统功能权限加载失败，请检查菜单配置是否正确!");
+					}
+					$api.setStorage("menuTreeMap", menuTreeMap);
+					renderMainMenuList(menuTreeMap[topTreeId]);
+				} else {
+					$.alert("系统权限：错误", "加载菜单失败：" + obj.data);
+				}
+			}, null, false);
+		});
+	}
+
+	/** 解析菜单功能列表  */
+	function getParseMenuTree(menuTreeMap, funcList){
+		var topTreeId;
+		$.each(funcList, function(index, funcObj){ //渲染菜单:多级菜单渲染
+			if($.isNull(funcObj.parent)){
+				topTreeId = funcObj.id;
+			}else{
+				funcObj.menuName = $.FormatString("{0}_{1}", [funcObj.id, funcObj.name]);
+				var parentKey = menuTreeMap[funcObj.parent];
+				if($.isNull(parentKey)){
+					menuTreeMap[funcObj.parent] = [funcObj];
+				}else{
+					parentKey.push(funcObj);
+				}
+			}
+		});
+		return topTreeId;
+	}
+
+	/** 系统主菜单渲染加载  */
+	function renderMainMenuList(menuList){
+		//alert($.ConvertToLine("RedLineService"));
+		//alert($.ConvertToHump("acb_def_fgk"));
+		var name = "";
+		$.each(menuList, function(i, funcObj){
+			//$.print("功能列表", funcObj);
+			var reqParams;
+			var pageCode = "";
+			if($.isNotNull(funcObj.code)){//一级菜单
+				var reqUrl = funcObj.code.replace(/[A-Z].*/g, "").replace(/[.]/g, "/");
+				pageCode = $.ConvertToUnLine(funcObj.code, /[A-Z].*Controller/g);
+				name += pageCode + ",";
+				reqParams = $.FormatString("'../{0}{1}.html', '{2}'", [reqUrl, pageCode, funcObj.name]);
+
+				//装载菜单列表[一级菜单]
+				$("#menuList").append(
+					'<div class="aui-col-xs-4">' +
+						'<i class="xs-menu-iconfont xs-icon-menu-'+ pageCode.replace(/_/g, "-") +'" onclick="openFuncWin('+ reqParams +')"></i>' +
+						'<div class="aui-grid-label" style="font-size:0.6rem">'+ funcObj.name +'</div>' +
+					'</div>'
+				);
+			}else if($.isNotNull(funcObj.remark)){
+				pageCode = $.ConvertToLine(funcObj.remark);
+				reqParams = $.FormatString("'{0}','{1}','{2}'", ['main_menu_level_list.html', funcObj.name, funcObj.id]);
+
+				//装载菜单列表[二级菜单]
+				$("#menuList").append(
+					'<div class="aui-col-xs-4" aui-popup-for="top-left" onclick="openFuncWin('+ reqParams +')">' +
+						'<i class="xs-menu-iconfont xs-icon-menu-'+ pageCode.replace(/_/g, "-") +'"></i>' +
+						'<div class="aui-grid-label" style="font-size:0.6rem">'+ funcObj.name +'</div>' +
+						//渲染子菜单（改为新页面加载二级菜单）
+					'</div>'
+				);
+			}else{
+				//菜单格式错误
+			}
+		});
+	}
+
+	/** 打开功能窗口 ：理论支持无限层级菜单...（建议不超过二级菜单）*/
+	function openFuncWin(reqUrl, menuName, menuId){
+      //$.print("", [reqUrl, menuName, menuId]);
+		$.openWin(menuName, reqUrl, {'menuName': menuName, 'menuId' : menuId});
+	}
+
+</script>
+<body>
+	<!--系统通知消息栏-->
+	<!--下拉刷新加载消息，根据是否存在消息显示和隐藏消息栏-->
+	<div class="aui-tips" id="noticeTips" style="background-color:orange;">
+	    <i class="aui-iconfont aui-icon-info"></i>
+	    	<div id="noticeMsg" class="aui-tips-title">
+		    	您有一条未读消息,点击查看...
+		    </div>
+	    <i class="aui-iconfont aui-icon-close"></i>
+		<div class="aui-badge">2</div>
+	</div>
+
+	<!--系统功能菜单列表-->
+	<section class="aui-grid">
+	    <div id="menuList" class="aui-row"></div>
+	</section>
+</body>
+</html>

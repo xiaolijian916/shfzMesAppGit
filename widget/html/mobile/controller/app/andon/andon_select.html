@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../css/api.css" />
+</head>
+<body>
+	<div class="aui-content">
+		<header class="aui-bar aui-bar-nav" style="padding-top:25px;">
+		    <a class="aui-pull-left aui-btn" onclick="closeHtml()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title" id="andon-title"></div>
+		</header>
+	    <ul class="aui-list" id="andon-list"></ul>
+	</div>
+</body>
+<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		var andonInfo = $.toJson(api.pageParam.andonList);
+		var andonType = api.pageParam.andonType;
+		var wrap = document.getElementById("andon-title")
+        wrap.innerHTML = "";
+        if(andonType == 1){
+	    	wrap.insertAdjacentHTML('afterbegin', '异常事件类型');
+	    }else if(andonType == 2){
+	    	wrap.insertAdjacentHTML('afterbegin', '异常发生产线');
+	    }else if(andonType == 3){
+	    	wrap.insertAdjacentHTML('afterbegin', '异常发生单元');
+	    }else{
+	    	return;
+	    }
+		renderAndonData(andonInfo,andonType);
+	}
+	
+	function renderAndonData(andonInfo,andonType){
+		var wrap = document.getElementById("andon-list")
+        wrap.innerHTML = "";
+		for(var i = 0; i < andonInfo.length; i++){
+			var html = 
+				'<li class="aui-list-item aui-list-item-center" onclick="selectedInfo(\'' + andonInfo[i].label + '\',\'' + andonInfo[i].value + '\',\'' + andonType + '\')">'+
+	            	'<div class="aui-list-item-inner">'+
+	                	andonInfo[i].label +
+	            	'</div>'+
+	        	'</li>';
+			wrap.insertAdjacentHTML('afterbegin', html);
+		}
+	}
+	
+	function selectedInfo(label,value,andonType){
+	    var andonSelect = 'andonSelect("' + label + '",' + value + ',' + andonType + ')';
+    	api.execScript({
+		    name: 'andon_feedback',
+		    script: andonSelect
+		});
+    	api.closeWin({
+    		name : 'andon_select'
+    	});
+    }
+    
+    function closeHtml(){
+    	api.closeWin({
+    		name : 'andon_select'
+    	});
+    }
+</script>
+</html>

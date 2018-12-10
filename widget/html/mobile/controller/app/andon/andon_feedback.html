@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+</head>
+<body>
+	<div class="aui-content aui-margin-b-15">
+		<header class="aui-bar aui-bar-nav" style="padding-top:25px;">
+		    <a class="aui-pull-left aui-btn" tapmode onclick="closeHtml()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title">异常反馈</div>
+		    <a class="aui-pull-right aui-btn" tapmode onclick="saveAndonAndPic()">
+		        <span class="aui-iconfont aui-icon-correct"></span>
+		    </a>
+		</header>
+        <ul class="aui-list aui-form-list">
+        	<li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		异常类型
+                    </div>
+                    <div class="aui-list-item-input" tapmode onclick="loadAndonClassData(1)">
+                        <input type="text" id="faultClassName" placeholder="请选择" readonly="true">
+                        <input type="hidden" id="faultClassId">
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                        <div class="aui-label aui-label-warning" id="secondBack" style="display:none">二</div>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		异常产线
+                    </div>
+                    <div class="aui-list-item-input" tapmode onclick="loadWorkcenterData(2)">
+                        <input type="text" id="workcenterName" placeholder="请选择" readonly="true">
+                        <input type="hidden" id="workcenterId">
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		异常单元
+                    </div>
+                    <div class="aui-list-item-input" tapmode onclick="loadWorkcenterStationData(3)">
+                        <input type="text" id="workcenterStationName" placeholder="请选择" readonly="true">
+                        <input type="hidden" id="workcenterStationId">
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        	故障名称
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="exceptionName">
+                        <input type="hidden" id="equipmentId">
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                    	<img src="../../../../../image/common/qrcode.png" id="scanning" style="display:none" width="30" tapmode onclick="openEquipmentQRCode()">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        	故障图片
+                    </div>
+                    <div class="aui-list-item-input" style="margin-top: 10px; margin-bottom: 10px;">
+                        <div class="head" tapmode onclick="selectPhoto()">
+                        	<img id="img_src" src="../../../../../image/common/photo_select.png" width="100"/>
+                        </div>
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        	故障描述
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea id="exceptionDescribe"></textarea>
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        	反馈时间
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="finderTime" readonly="true">
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        	反馈人员
+                    </div>
+                    <div class="aui-list-item-input">
+                    	<input type="hidden" id="finderUser" />
+                        <input type="text" id="finderUserName" readonly="true">
+                    </div>
+                    <div class="aui-list-item-label-icon">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+<script type="text/javascript">
+	var picPath;
+
+    apiready = function(){
+        api.parseTapmode();
+        $("#finderUser").val($api.getStorage('userInfo').accountId);
+        $("#finderUserName").val($api.getStorage('userInfo').userName);
+    }
+    
+    function nowClock(){
+	    var time=new Date();
+	    document.getElementById("finderTime").value = time.toLocaleString();
+  	}
+  	setInterval(nowClock,1000);
+    
+    //异常类型
+    function loadAndonClassData(andonType){
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/loadFaultClassList.do'),
+			method : "POST"
+		}, 
+		function(obj, err) { //服务器响应结果
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; 
+				//服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var andonInfo = $.toJson(obj.data); 
+					selectFrame(obj.data,andonType);
+				} else {
+					return $.alert("异常", "获取异常类型信息失败");
+				}
+			}, null, false);
+		});
+    }
+    
+    //异常产线
+    function loadWorkcenterData(andonType){
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/loadWorkcenterList.do'),
+			method : "POST",
+			data : {
+				values : {
+					"accountId" : $api.getStorage('userInfo').accountId,
+					"workcenterId" : $api.getStorage('userInfo').workcenterId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; 
+				//服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var andonInfo = $.toJson(obj.data); 
+					selectFrame(obj.data,andonType);
+				} else {
+					return $.alert("异常", "获取异常产线信息失败");
+				}
+			}, null, false);
+		});
+    }
+    
+    //异常单元
+    function loadWorkcenterStationData(andonType){
+    	if($.isNull($("#workcenterId").val())){
+    		return $.alert("错误", "请选择异常产线");
+    	}
+    
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/loadWorkcenterStationList.do'),
+			method : "POST",
+			data : {
+				values : {
+					"workcenterId" : $("#workcenterId").val()
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; 
+				//服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var andonInfo = $.toJson(obj.data); 
+					selectFrame(obj.data,andonType);
+				} else {
+					return $.alert("异常", "获取异常单元信息失败");
+				}
+			}, null, false);
+		});
+    }
+    
+    //弹出选择页面
+    function selectFrame(andonInfo,andonType){
+    	api.openWin({
+			name : 'andon_select',
+			url : 'andon_select.html',
+			pageParam: {
+		        andonList: andonInfo,
+		        andonType: andonType
+		    },
+		    delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+    
+    function andonSelect(label,value,andonType){
+	    if(andonType == 1){
+	    	$("#faultClassName").val(label);
+	    	$("#faultClassId").val(value);
+	    	loadFaultClassData(value);
+	    }else if(andonType == 2){
+	    	$("#workcenterName").val(label);
+	    	$("#workcenterId").val(value);
+	    	$("#workcenterStationName").val("");
+	    	$("#workcenterStationId").val("");
+	    	$("#exceptionName").val("");
+			$("#equipmentId").val("");
+	    }else if(andonType == 3){
+	    	$("#workcenterStationName").val(label);
+	    	$("#workcenterStationId").val(value);
+	    }else{
+	    	return;
+	    }
+    }
+    
+    //获取异常事件类型信息
+    function loadFaultClassData(faultClassId){
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/loadFaultClassInfo.do'),
+			method : "POST",
+			data : {
+				values : {
+					"faultClassId" : faultClassId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; 
+				//服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var faultClassInfo = $.toJson(obj.data);
+					if(faultClassInfo.isSecondFeedback=="1"){
+						$("#scanning").css('display','block');
+						$("#secondBack").css('display','block');
+						$("#exceptionName").attr('readonly','readonly');
+					}else{
+						$("#scanning").css('display','none');
+						$("#secondBack").css('display','none');
+						$("#exceptionName").removeAttr('readonly');
+					}
+				} else {
+					return;
+				}
+			}, null, false);
+		});
+    }
+    
+    //扫描二维码 
+    function openEquipmentQRCode() {  // 打开自定义样式的二维码功能模块
+    	var FNScanner = api.require('FNScanner');
+		FNScanner.open({
+		    autorotation: true
+		}, function(ret, err) {
+		    if (ret) {
+		    	if($.isNull(ret.content)){
+		    		return console.log("获取设备信息失败");
+		    	}else{
+		    		loadEquipmentData(ret.content);
+		    	}
+		    } else {
+		        return console.log("获取设备信息失败");
+		    }
+		});
+    }
+    
+    //获取设备信息
+    function loadEquipmentData(equipmentId){
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/loadEquipmentInfo.do'),
+			method : "POST",
+			data : {
+				values : {
+					"equipmentId" : equipmentId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; 
+				//服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var equipInfo = $.toJson(obj.data);
+					$("#exceptionName").val(equipInfo.equipmentName);
+					$("#equipmentId").val(equipInfo.equipmentId);
+				} else {
+					return $.alert("异常", "获取设备信息失败");
+				}
+			}, null, false);
+		});
+    }
+
+	function selectPhoto() {
+		api.actionSheet({
+			cancelTitle: '取消',
+			buttons: ['拍照', '从手机相册选择']
+		}, function(ret, err) {
+			if (ret) {
+				getPicture(ret.buttonIndex);
+			}
+		});
+	}
+	function getPicture(sourceType) {
+	    if (sourceType == 1) { // 拍照
+	        api.getPicture({
+	            sourceType: 'camera',
+	            encodingType: 'jpg',
+	            mediaValue: 'pic',
+	            allowEdit: false,
+	            destinationType: 'base64',
+	            quality: 100,
+	            saveToPhotoAlbum: true
+	        }, function(ret, err) {
+	            if(ret){
+					$api.byId("img_src").src = ret.base64Data;
+					picPath = ret.data;
+	            }
+	        });
+	    } else if (sourceType == 2) { // 从相机中选择
+	        api.getPicture({
+	            sourceType: 'library',
+	            encodingType: 'jpg',
+	            mediaValue: 'pic',
+	            destinationType: 'base64',
+	            quality: 100
+	        }, function(ret, err) {
+	            if(ret){
+					$api.byId("img_src").src = ret.base64Data;
+					picPath = ret.data;
+	            }
+	        });
+	    }else{
+	        return;
+	    }
+	}
+     
+    //保存异常事件明细信息
+    function saveAndonAndPic(){
+    	if($.isNull(picPath)){
+    		return $.alert("错误", "请先上传异常事件照片");
+    	}
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/saveAndonAndPic.do'),
+			method : "POST",
+			data : {
+				values : {
+					"faultClassId" : $("#faultClassId").val(),
+					"workcenterId" : $("#workcenterId").val(),
+					"workcenterStationId" : $("#workcenterStationId").val(),
+					"exceptionName" : $("#exceptionName").val(),
+					"equipmentId" : $("#equipmentId").val(),
+					"exceptionDescribe" : $("#exceptionDescribe").val(),
+					"finderUser" : $("#finderUser").val(),
+					"finderWorkcenterId" : $api.getStorage('userInfo').workcenterId
+				},
+				files : {
+                     myFile : picPath
+                }
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; 
+				//服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					api.sendEvent({
+					    name: 'feedback'
+					});
+					closeHtml();
+			    	$.alert("提示", obj.data);
+				} else {
+					return $.alert("错误", obj.data);
+				}
+			}, null, false);
+		});
+    }
+     
+     function closeHtml(){
+    	api.closeWin({});
+     }
+</script>
+</html>

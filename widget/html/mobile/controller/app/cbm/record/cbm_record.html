@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>变化点反馈</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;right: 0">
+        <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">变化点反馈</div>
+        <a class="aui-pull-right aui-btn aui-iconfont aui-icon-plus" href="cbm_record_create.html">
+
+        </a>
+        <div class="aui-tab" id="tab" style="margin-top: 2.25rem;position: fixed;top: 0;left: 0;width: 100%;height: 2.25rem;">
+            <div class="aui-tab-item aui-active">未确认</div>
+            <div class="aui-tab-item">已确认</div>
+        </div>
+        <!--查询显示-->
+        <div class="aui-searchbar" id="search" style="margin-top: 4.5rem;position: fixed;top:0;">
+            <div class="aui-searchbar-input aui-border-radius" tapmode onclick="doSearch()">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="变化点分类/项目" id="search-input">
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!--主体信息-->
+    <section class="aui-refresh-content" style="margin-top:6.75rem;">
+        <div class="aui-content" id="content" style=" margin-bottom: 1.5rem">
+            <ul class="aui-list aui-media-list">
+            </ul>
+        </div>
+        <div id="aaa"></div>
+    </section>
+    <!--加载更多-->
+    <div class="spinner" id="loading" style="position: fixed;bottom: 0;margin: 0 auto;width: 100%;display: none">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+    <div id="load_over" style="position: fixed;bottom: 0;margin: 0 auto;width: 100%;font-size: smaller;color: #4eccc4;text-align: center"></div>
+    <!--返回顶部-->
+    <img class="go-back-top" src="../../../../../../image/goBackTop.png" onclick="goBack()" style="display: none;background-color: bisque" id="goBackTop">
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js" ></script>
+<script type="text/javascript" src="../../../../../../script/aui-scroll.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-tab.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+<script type="text/javascript">
+    page=0;//定义加载的页数
+    rows=20;//定义每页显示的行数
+    var sum=0;//定义是否加载全部
+    tabIndex=1;
+    apiready = function(){
+        initData(initItem);
+        isShowGoBackBtn();
+    };
+
+    /**
+     * 描述:下拉刷新
+     *
+     * @author lzj
+     * @date 2018/12/2 16:19
+     */
+    var pullRefresh = new auiPullToRefresh({
+        container: document.querySelector('.aui-refresh-content'),
+        triggerDistance: 200
+    },function(ret){
+        if(ret.status=="success"){
+            setTimeout(function(){
+                cleanLi();
+                //刷新当前页
+                initData(initItem);
+                var toast = new auiToast({});
+                toast.success({
+                    title : "刷新成功",
+                    duration : 2000
+                });
+                pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+            },1500)
+        }
+    });
+    /**
+     * 描述:初始化变化点反馈
+     *
+     * @author lzj
+     * @date 2018/11/29 13:18
+     */
+    function initData(callback){
+        api.ajax({
+            url: $.ServerUrl("/app/cbm/record/cbmRecord/list.do"),
+            method: 'post',
+            data:{
+                values:{
+                    "status":tabIndex-1,
+                    "findParam":document.getElementById("search-input").value,
+                    "Pagination":page+" "+rows
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)) {
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                callback($.toJson(obj.data));
+                sum=$.toJson(obj.data).length;
+            }, null, false);
+        });
+    }
+
+    /**
+     * 描述:渲染数据
+     *
+     * @author lzj
+     * @date 2018/11/29 14:05
+     */
+    function initItem(obj){
+        var funcList=obj;
+        sum=obj.length;
+        var wrap = document.getElementById("content");
+        var number=page*rows;
+        var imgSrc="";
+        for(var i=0;i<((page+1)*rows)&&i<funcList.length;i++){
+            // var date=getTimeFormat(funcList[i].mdBillDate);
+            imgSrc=funcList[i].isConfirm==0?"../../../../../../image/common/stay-affirm.png":"../../../../../../image/common/affirm.png";
+            var isHide=funcList[i].isConfirm==0?"":"aui-hide";
+            var html =  '' +
+                '<li class="aui-list-item aui-margin-l-10 aui-border-b">' +
+                '   <div class="aui-margin-l-10 aui-font-size-14 aui-media-list-item-inner">' +
+                '       <div class="aui-list-item-label-icon">' +
+                '           <img src='+imgSrc+' height="64px" width="64px" class="aui-margin-t-15">' +
+                '       </div>' +
+                '       <div class="aui-list-item-inner aui-margin-l-10">' +
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media">反馈日期:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-10">'+funcList[i].feedbackDate+'</div>' +
+                '       </div>' +
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media">变化点类型:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-10">'+funcList[i].cbmClass+'</div>' +
+                '       </div>' +
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media ">变化点等级:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-10">'+funcList[i].cbmGrade+'</div>' +
+                '       </div>' +
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media">变化点分类:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-10">'+funcList[i].cbmTypeName+'</div>' +
+                '       </div>' +
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media">变化点项目:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-10">'+funcList[i].cbmItemName+'</div>' +
+                '       </div>' +
+                '       </div>' +
+                '   </div>' +
+                '   <div class="aui-card-list-footer aui-border-t '+isHide+'" id="operation">'+showBtn(funcList[i].isConfirm,funcList[i].cbmRecordId)+'</div>' +
+                '</li>';
+            wrap.insertAdjacentHTML('beforeEnd', html);
+        }
+    }
+    /**
+     * 描述:状态
+     *
+     * @author lzj
+     * @date 2018/11/29 16:34
+     */
+    function showState(status) {
+        // alert(typeof status+typeof 0);
+        switch (parseInt(status, 10)) {
+            case 0:
+                status="未确认"
+                break;
+            case 1:
+                status="已确认";
+                break;
+            default:
+                status="无状态";
+                break;
+        }
+        return status;
+    }
+
+    /**
+     * 描述:根据状态显示不同操作按钮
+     *
+     * @author lzj
+     * @date 2018/11/29 16:47
+     */
+    function  showBtn(status,cbmRecordId) {
+        var html='<div class="aui-btn aui-btn aui-btn-outlined aui-btn-success" onclick="confirm('+cbmRecordId+')">确认</div>' +
+                '<div class="aui-btn aui-btn aui-btn-outlined aui-btn-warning" onclick="deleteRow('+cbmRecordId+')">删除</div>';
+        return html;
+    }
+
+    /**
+     * 描述:标签页
+     *
+     * @author lzj
+     * @date 2018/11/29 16:55
+     */
+    var tab = new auiTab({
+        element:document.getElementById("tab"),
+        index:1,
+        repeatClick:false
+    },function(ret){
+        switch (ret.index) {
+            case 1:
+                tabIndex=1;
+                cleanLi();
+                page=0;
+                initData(initItem);
+                break;
+            case 2:
+                tabIndex=2;
+                page=0;
+                cleanLi();
+                initData(initItem);
+                break;
+            default:
+                break;
+        }
+    });
+
+    /**
+     * 描述:确认
+     *
+     * @author lzj
+     * @date 2018/12/2 16:08
+     */
+    function confirm(cbmRecordId) {
+        initDateParam("/app/cbm/record/cbmRecord/confirm.do",function () {
+            var toast = new auiToast({});
+            toast.success({
+                title : "操作成功",
+                duration : 1000
+            });
+            cleanLi();
+            page=0;
+            initData(initItem);
+        },{ "cbmRecordId":cbmRecordId});
+    }
+
+    /**
+     * 描述:删除
+     *
+     * @author lzj
+     * @date 2018/12/2 16:11
+     */
+    function deleteRow(cbmRecordId) {
+        initDateParam("/app/cbm/record/cbmRecord/delete.do",function () {
+            var toast = new auiToast({});
+            toast.success({
+                title : "删除成功",
+                duration : 1000
+            });
+            cleanLi();
+            page=0;
+            initData(initItem);
+        },{ "cbmRecordId":cbmRecordId});
+
+    }
+    function isShowGoBackBtn(){
+        /*监听加载更多*/
+        $(window).scroll(function(){
+            if($(this).scrollTop()>2000) $("#goBackTop").css("display","block");
+            else $("#goBackTop").css("display","none");
+
+            // 当滚动到最底部以上100像素时， 加载新内容
+            // 核心代码
+            if ($(document).height() - $(this).scrollTop() - $(this).height()<=1){
+                if (sum<rows){
+                    document.getElementById("load_over").style.display="block";
+                    document.getElementById("load_over").innerText="我也是有底线的 (・ω<) ﾃﾍﾍﾟﾛ";//没有更多啦!//做到这里忽然有个想法  写很多加载完成语句  产生一个随机数用switch去选择不同的语句
+                    return;
+                }
+                $("#loading").css("display", "block");
+                againLoad();
+            }else {
+                $("#loading").css("display", "none");
+                document.getElementById("load_over").style.display = "none";
+            }
+        });
+    }
+    //是否需要加载下一页
+    function againLoad() {
+            $("#loading").css("display", "none");
+            page+=1;
+            initData(initItem);
+            return;
+    }
+    function doSearch() {
+        cleanLi();//清理li
+    }
+    //开始搜索
+    function search(){
+        cleanLi();//清理li
+        if ($("#search-input").val()==""){
+            alert("请输入搜索内容!");
+            return;
+        }
+        page=0;//初始化页数
+        initData(initItem);
+    }
+</script>
+</html>

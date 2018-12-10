@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../css/api.css" />
+</head>
+<body>
+	<div class="aui-content">
+		<header class="aui-bar aui-bar-nav" style="padding-top:25px;">
+		    <a class="aui-pull-left aui-btn" onclick="closeHtml()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title" id="quantity-title"></div>
+		</header>
+	    <ul class="aui-list" id="quantity-list"></ul>
+	</div>
+</body>
+<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		var quantityInfo = $.toJson(api.pageParam.quantityList);
+		var quantityTitle = api.pageParam.quantityTitle;
+		var quantityType = api.pageParam.quantityType;
+		var wrap = document.getElementById("quantity-title")
+        wrap.innerHTML = "";
+    	wrap.insertAdjacentHTML('afterbegin', quantityTitle);
+		renderQuantityData(quantityInfo, quantityType);
+	}
+	
+	function renderQuantityData(quantityInfo,quantityType){
+		var wrap = document.getElementById("quantity-list")
+        wrap.innerHTML = "";
+		for(var i = 0; i < quantityInfo.length; i++){
+			var html = 
+				'<li class="aui-list-item aui-list-item-center" onclick="selectedInfo(\'' + quantityInfo[i].label + '\',\'' + quantityInfo[i].value + '\',\'' + quantityType + '\')">'+
+	            	'<div class="aui-list-item-inner">'+
+	                	quantityInfo[i].label +
+	            	'</div>'+
+	        	'</li>';
+			wrap.insertAdjacentHTML('afterbegin', html);
+		}
+	}
+	
+	function selectedInfo(label,value,quantityType){
+		api.sendEvent({
+		    name: 'quantitySelect',
+		    extra: {
+		        label: label,
+		        value: value,
+		        quantityType: quantityType
+		    }
+		});
+    	closeHtml();
+    }
+    
+    function closeHtml(){
+    	api.closeWin({});
+    }
+</script>
+</html>

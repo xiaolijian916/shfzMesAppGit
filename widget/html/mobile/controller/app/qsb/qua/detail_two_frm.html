@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<style>
+		.angma-grid-title{
+    background-color: #2d9eff;
+    width: 150px;
+    height: 25px;
+    line-height : 25px;
+    font-size: 14px;
+    padding-left: 5px;
+}
+		</style>
+	</head>
+	<body>
+	
+				<section class="aui-refresh-content">
+			<div class="aui-content aui-margin-b-15" >
+				<ul class="aui-list aui-media-list" id="testww"></ul>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-scroll.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript">	
+	var picPath = null;	
+		apiready = function() {
+			api.parseTapmode();	
+			
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/updateMobileQsbQuaPromSummary.do'),
+				method : 'post',
+				data: {             
+				      values:{
+                     "summaryId":$api.getStorage("summaryId"),
+                }}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					}
+					var funcList = $.toJson(obj.data);
+					//				-------------------------------------------------------------总数据条数显示---------------------------------
+					//				------------------------------------------------------------ 循环加载数据----------------------------------
+					    //临时完成时间
+						var strTempCompTime ='';
+						if($.isNotNull(funcList.tempCompTime)){
+						strTempCompTime=gettime(funcList.tempCompTime);
+						}
+					
+						//长期完成时间
+						var strLongTermMeaCompTime ='';
+						
+						if($.isNotNull(funcList.longTermMeaCompTime))
+						{
+						strLongTermMeaCompTime=gettime(funcList.longTermMeaCompTime);
+						}
+						
+						//遏制数量
+						var strContainNumber='';
+						if($.isNotNull(funcList.containNumber))
+						{
+						strContainNumber=funcList.containNumber;
+						}
+						//临时措施
+						var strTempMeasures='';
+						if($.isNotNull(funcList.tempMeasures))
+						{
+						strTempMeasures=funcList.tempMeasures;
+						}
+						//原因分析
+						var strCauseAnalysis='';
+						if($.isNotNull(funcList.causeAnalysis))
+						{
+						strCauseAnalysis=funcList.causeAnalysis;
+						}
+						//长期措施
+						var strLongTermMea='';
+						if($.isNotNull(funcList.longTermMea))
+						{
+						strLongTermMea=funcList.longTermMea;
+						}
+						//影响因素分类
+						var strInfluenceFactorType='';
+						if($.isNotNull(funcList.influenceFactorType))
+						{
+						strInfluenceFactorType=funcList.influenceFactorType;
+						}
+						//问题整改部门
+						var strRespGroup='';
+						if($.isNotNull(funcList.respGroup))
+						{
+						strRespGroup=funcList.respGroup;
+						}
+						//验证
+						var strCheckout='';
+						if($.isNotNull(funcList.checkout))
+						{
+						strCheckout=funcList.checkout;
+						}
+						
+						//日期时间转换
+						var strSrc =funcList.mobilePath;					
+						if(null==strSrc||strSrc=='')
+						{strSrc="../../../../../../image/aui/noPicture.png";}						
+						$("#testww").append('<li class="aui-list-item">' 
+						+ '<div class="aui-media-list-item-inner">' 
+						
+						+ '<div class="aui-card-list-footer aui-border-t">' 
+                        + '<div class="aui-list-item-inner aui-padded-t-10 aui-padded-b-10" style="display: block;">'
+                     
+                        
+                        + '<div class="aui-list-item-text">' 
+						+ '遏制数量：' + strContainNumber + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '临时措施：' + strTempMeasures + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '临时完成时间：' +strTempCompTime + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '原因分析：' + strCauseAnalysis + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '长期措施：' + strLongTermMea + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '长期措施完成时间：' + strLongTermMeaCompTime + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '影响因素分类：' + strInfluenceFactorType + '</div>'
+						+ '<div class="aui-list-item-text">' 
+						+ '问题整改部门：' + strRespGroup + '</div>' 
+						+ '<div class="aui-list-item-text">' 
+						+ '验证：' + strCheckout + '</div>' 
+                        + '</div>' + '</li>')
+					
+				}, null, false);
+			});	
+			
+			
+//				
+//	       
+//	       var url="window.location.href = 'http://imtt.dd.qq.com/16891/26747DD8B125A8479AD0C9D22CA47BC9.apk?fsname=com.snda.wifilocating_4.2.91_3211.apk&csr=1bbd";
+//	document.getElementById('aa').setAttribute('href',url); 
+
+ 		
+		}
+		
+
+
+				//时间转换
+		function gettime(t) {
+			var _time = new Date(t);
+			var year = _time.getFullYear();
+			//2017
+			var month = _time.getMonth() + 1;
+			//7
+			var date = _time.getDate();
+			//10
+			var hour = _time.getHours();
+			//10
+			var minute = _time.getMinutes();
+			//56
+			var second = _time.getSeconds();
+			//15
+			//	    return   year+"年"+month+"月"+date+"日   "+hour+":"+minute+":"+second;//这里自己按自己需要的格式拼接
+			return year + "-" + month + "-" + date;
+		}
+
+		//关闭窗口
+		function closeWin() {
+			api.closeWin({
+			});
+			location.reload();
+		}
+
+	</script>
+</html>

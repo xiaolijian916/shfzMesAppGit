@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="css/aui.css" rel="stylesheet" type="text/css"/>
+	<style type="text/css">
+        #demo {
+            width: 90%;
+            height: 20rem;
+            position: absolute;
+            top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin: auto;
+            text-align: center;
+            color: #212121;
+            font-size: 1.2rem;
+            background-color: rgba(255,255,255,0.7);
+        }
+
+        body{
+        	/*background-image: url(../../image/common/12.jpg);
+        	background-repeat: no-repeat;
+			background-size: cover;
+			background-attachment: fixed;*/
+			background-color: #FFFFFF;
+        }
+
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+			color: #575757;
+		}
+
+		::-moz-placeholder { /* Mozilla Firefox 19+ */
+			color: #575757;
+		}
+
+		input:-ms-input-placeholder,
+		textarea:-ms-input-placeholder {
+			color: #575757;
+		}
+
+		input::-webkit-input-placeholder,
+		textarea::-webkit-input-placeholder {
+			color: #575757;
+		}
+    </style>
+	<script type="text/javascript" src="script/api.js" ></script>
+	<script type="text/javascript" src="script/jquery-3.3.1.min.js" ></script>
+	<script type="text/javascript" src="conf/application.js"></script>
+	<script type="text/javascript" src="assets/js/ama-custom.js"></script>
+	<script type="text/javascript" src="script/aui-toast.js"></script>
+	<script type="text/javascript">
+		var flag;
+		//判断用户选择自动登陆
+		apiready = function() {
+			api.parseTapmode();
+
+			//判断是否自动登陆
+			if (flag) {
+				//login();
+			}
+
+			//监听返回键退出程序
+			api.addEventListener({
+				name : 'keyback'
+			}, function(ret, err) {
+				api.closeWidget({ silent : true });
+			});
+		}
+
+		$(function(){
+			if ($api.getStorage('flag') == null) {
+				flag == false;
+			}
+			if ($api.getStorage('flag') == "true") {
+				flag = true
+				if ($api.getStorage('userId') != null) {
+					$("#userId").val($api.getStorage('userId'))
+				}
+				if ($api.getStorage('password') != null) {
+					$("#password").val($api.getStorage('password'))
+				}
+				$("input[name='autoLogin']").prop('checked',true);
+			} else {
+				flag = false;
+				$("input[name='autoLogin']").prop('checked',false);
+				$api.clearStorage();
+			}
+		});
+
+		$('#autoLogin').click(function(){
+			if(this.checked) {
+				$("input[name='autoLogin']").prop('checked',true);
+				flag = true;
+			}else{
+				$("input[name='autoLogin']").prop('checked',false);
+				flag = false;
+			}
+		});
+
+		//用户点击登陆事件
+		function login() {
+			var userId = $("#userId").val();
+			var password = $("#password").val();
+			if($.isNull(password)){
+				return $.alert("提示", "密码不能为空 ");
+			}
+
+			//数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在登录",
+				duration : 2000
+			});
+
+			//请求服务：登陆系统身份认证
+			api.ajax({
+				url : $.ServerUrl('/security/authentication/userAuthentication.do'),
+				method : "POST",
+				data : {
+					values : {
+						"userId" : userId,
+						"password" : password
+					}
+				}
+			},
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+					var userInfo = $.toJson(obj.data); //保存登陆信息：工作中心、班次等信息存入对象
+					$api.setStorage('flag', flag);
+					$api.setStorage('password', password);
+					$api.setStorage('userInfo', userInfo);
+					$.openWin("main", "html/main/main.html", {});
+				}, null, false);
+			});
+		}
+	</script>
+</head>
+<body>
+	<div id="demo">
+		<div style="padding-top: 1.5rem; width: 100%;">
+			<img src="assets/logo/shfz_logo.png" style="margin: auto;" />
+		</div>
+		<div style="height:3rem; padding-top: 1.5rem; padding-bottom: 0.5rem;">
+			<b style="color: #0062CC">生产制造执行系统</b>
+		</div>
+		<div style="height: 9rem" class="aui-padded-15">
+			<ul class="aui-list aui-form-list aui-list-noborder" style="background-color: rgba(255,255,255,0);">
+	        	<li class="aui-list-item">
+	                <div class="aui-list-item-inner">
+	                    <div class="aui-list-item-text">
+	                		<i class="aui-iconfont aui-icon-my aui-text-default"></i>
+	                    </div>
+	                    <div class="aui-list-item-input aui-margin-l-15">
+	                        <input type="text" id="userId" placeholder="用户">
+	                    </div>
+	                </div>
+	            </li>
+	            <li class="aui-list-item">
+	                <div class="aui-list-item-inner">
+	                    <div class="aui-list-item-text">
+	                		<i class="aui-iconfont aui-icon-lock aui-text-default"></i>
+	                    </div>
+	                    <div class="aui-list-item-input aui-margin-l-15">
+	                        <input type="password" id="password" placeholder="密码">
+	                    </div>
+	                </div>
+	            </li>
+	            <li class="aui-list-item">
+	                <div class="aui-list-item-inner">
+	                    <div class="aui-list-item-label">
+	                		记住密码
+	                    </div>
+	                    <!--
+	                    	<div class="aui-list-item-input" tapmode></div>
+	                    -->
+	                    <div class="aui-list-item-text">
+	                        <input type="checkbox" class="aui-switch" name="autoLogin" id="autoLogin">
+	                    </div>
+	                </div>
+	            </li>
+            </ul>
+            <div class="aui-btn aui-btn-info aui-margin-t-15" onclick="login()" style="width:100%; height:2.2rem; line-height: 2.2rem; font-size: 1.2rem;">登陆</div>
+		</div>
+	</div>
+</body>
+</html>

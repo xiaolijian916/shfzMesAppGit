@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    
+
+<style>
+.aui-icon-cart:before {
+    font-size: 25px;
+}
+
+	
+	.displayNone{
+		display:none;
+	} 
+</style>
+</head>
+<body>
+	<div id="outerMostLayer" class="aui-bar aui-bar-nav">
+    <header class="aui-bar aui-bar-nav" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">成品退库</div>
+        <a class="aui-btn aui-pull-right">
+        	
+        	<!-- <div class="aui-btn aui-btn-info aui-margin-r-5" onclick="saveBillAndLineData();">保存</div> -->
+        </a>
+    </header>
+</div>
+
+
+
+
+		            	    <footer class="aui-bar aui-bar-tab aui-margin-t-15" style="line-height: 1.25rem;">
+						        <div class="aui-bar-tab-item aui-border-r" tapmode style="width: 3rem;" >
+
+						                    <div class="aui-col-xs-3" style="float: none;width: 100%;">
+									            <i class="aui-iconfont aui-icon-cart"></i>
+									            <div class="aui-badge displayNone" id="totalSelectId"></div>
+									        </div>
+						        </div>
+						         <div class="aui-bar-tab-item" tapmode style="width: 4rem;">
+						            
+						            <div class="aui-bar-tab-label aui-text-warning" id="checkTotalText">数量：0</div>
+						        </div> 
+						        <div class="aui-bar-tab-item aui-bg-warning aui-text-white" tapmode style="width: auto;" onclick="grabOnhand()"><h1>选好了</h1></div>
+						        <!-- <div class="aui-bar-tab-item aui-bg-warning aui-text-white" tapmode style="width: auto;" onclick="returnedPurchase()"><h1>退 货</h1></div> -->
+						    </footer>
+
+    
+
+</body>
+<!-- <script type="text/javascript" src="../../../../../../js/ama-head.js"></script>   -->
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+
+<script type="text/javascript">
+var headerPos = 0;
+var body_h;
+var chMap = new Map();
+var openFrameName = "";
+
+    apiready = function(){
+    
+        api.parseTapmode();
+        openFrameName = api.pageParam.openFrameName;
+
+        var header = $api.byId('outerMostLayer');
+        $api.fixStatusBar(header);
+        headerPos = $api.offset(header);
+        body_h = $api.offset($api.dom('body')).h;
+
+		openTabFrame("onhandSelect", 'onhand_select.html',50,{"openFrameName":"onhandSelect","whId":api.pageParam.whId});
+    };
+
+    
+    //打开
+    function openTabFrame(varName,varUrl,varMarginBottom,varpageParam){
+	    api.openFrame({
+	        name: varName,
+	        url: varUrl,
+	        bounces: false,
+	        pageParam:varpageParam,
+	        rect: {
+	            x: 0,
+	            y: headerPos.h,
+	            w: 'auto',
+	            h: 'auto',
+	            marginBottom:varMarginBottom
+	        },
+	        progress:{
+	        	type :"page",
+	        	title:"1",
+	        	text:"2"
+	        }
+	    }) 
+    }
+    
+    //选好了
+     function grabOnhand(){
+        api.execScript({
+		    frameName: 'onhandSelect',
+		    script: 'grabOnhandToSave();'
+		});
+		
+    }
+    
+    function grabOnhandCallback(){
+		//var storage=window.localStorage;
+    	//var c=storage.getItem("onhandLoca");
+		
+		//chMap = $.jsonToMap(c);
+		//console.log("KKK"+$.mapToArrayJson(chMap));
+		
+		closeWin();
+    }
+    
+    function updateSelectedTitle(total){
+    	
+    	$("#totalSelectId").html(total);
+        if(total>0){
+			$("#totalSelectId").removeClass("displayNone");
+		}else{
+			$("#totalSelectId").addClass("displayNone");
+		}
+    }
+    
+    	    //关闭当前窗体
+    function closeWin(){
+        api.execScript({
+		    frameName: 'addOutStockFrame',
+		    script: 'getApplyInvToShow();'
+		});
+        
+        api.closeFrame({
+        	name:'onhandSelect'
+        });
+        
+        api.closeFrame({
+        	name:openFrameName
+        });
+        
+    }
+
+</script>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>模具回收-新增</title>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+		<script type="text/javascript" src="../../../../../../script/api.js" ></script>
+		<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+		<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+		<script type="text/javascript" src="../../../../../../script/aui-toast.js" ></script>
+		<script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+			<a class="aui-pull-left aui-btn" href="javascript:" onclick="self.location=document.referrer;"> <!--返回上一页？并刷新？--> <span class="aui-iconfont aui-icon-left"></span>返回 </a>
+			<div class="aui-title">
+				新增-模具回收
+			</div>
+			<div class="aui-pull-right aui-btn" onclick="save()">
+				<img src="../../../../../../image/save.png" class="img-btn" width="25px" height="25px"/>
+			</div>
+		</header>
+		<div class="aui-content" style="margin-top:2.25rem;">
+			<ul class="aui-list aui-form-list" id="detail_content">
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-label aui-text-primary">接收仓库:</div>
+						<div class="aui-list-item-input">
+							<input placeholder="选择仓库" onclick="javascript:window.location.href = '../tool/wh.html'" id="whName" readonly="true">
+							<input class="aui-hide" id="whId" readonly="true">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-label aui-text-primary">收发类别:</div>
+						<div class="aui-list-item-input">
+							<input placeholder="选择类别" readonly="true" id="transTypeName" onclick="javascript:window.location.href = '../tool/trans_type.html'">
+							<input class="aui-hide" id="transTypeId" readonly="true">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-label aui-text-primary">零&nbsp;&nbsp;件&nbsp;&nbsp;号:</div>
+						<div class="aui-list-item-input">
+							<input placeholder="选择产品" readonly="true" id="itemName" onclick="javascript:location.href='../tool/item.html'">
+							<input id="itemId" readonly="true" style="display: none">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-label aui-text-primary">回&nbsp;&nbsp;收&nbsp;&nbsp;人:</div>
+						<div class="aui-list-item-input">
+							<input placeholder="选择人员" readonly="true" id="userName" onclick="openUser()">
+							<input placeholder="选择人员" readonly="true" id="accountId" style="display: none">
+                            <input placeholder="部门" readonly="true" id="deptId" style="display: none">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label aui-text-primary">描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述:</div>
+						<div class="aui-list-item-input">
+							<textarea id="remark" value=" "></textarea>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div>
+			<div  style="margin: 0 auto;height: 35px;width: 120px" onclick="foldRow()">
+				<img src="../../../../../../image/fold_down.png" width="25px" height="25px" style="margin: 5px auto"  id="fold">
+			</div>
+		</div>
+		<div class="aui-content aui-margin-b-15" id="son" style="display: none;">
+			<ul class="aui-list aui-form-list">
+				<li class="aui-list-item" style="text-align: center">
+					<img src="../../../../../../image/qrcode.png" width="40" height="40" onclick="scanSingle()" style="margin-left: 20%"/>
+					<img src="../../../../../../image/add(1).png" width="40" height="40" onclick="manualAdd()" id="manual" style="margin-right: 20%"/>
+				</li>
+				<li class="aui-list-header" style="background-color: #03a9f4;color: #ffffff">
+					子表信息
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-label aui-text-primary">接收货位:</div>
+						<div class="aui-list-item-input">
+							<input placeholder="选择货位" onclick="javascript:window.location.href = '../tool/whCell.html?whId=10000070'" id="whCellName" readonly="true">
+							<input placeholder="选择货位" type="text" id="cellId" class="aui-hide">
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var status=0;//定义是否折叠
+		apiready = function() {
+			// var url = location.search;
+			// //获取url中"?"符后的字串
+			// var str = url.split(",");
+			// //第一个为？,所以跳过0
+			// for (var i = 1; i < str.length; i++) {
+			// 	getData(str[i]);
+			// }
+			// alert(getCookie("whData"));
+			//获取cookie  并赋值
+			setWh();
+			setTransType();
+			setUser();
+			setItem();
+			setDetail();
+			setWhCell();
+		};
+        /**
+         * 设置货位
+         * 若有whcell cookie则显示子信息 若无则隐藏
+         * @author lzj
+         * @date 20181026
+         */
+		function setWhCell(){
+			var whCell=getCookie("whCellData");
+			if(whCell==="undefined"||whCell===null){
+			}else{
+			    document.getElementById("son").style.display="block";
+			    var str=whCell.split(",");
+			    document.getElementById("whCellName").value=str[1]+"  /  "+str[2];
+                document.getElementById("cellId").value=str[0];
+			    delCookie("whCellData");
+			}
+			if (document.getElementById("cellId").value=="")document.getElementById("son").style.display="none";
+			else document.getElementById("son").style.display="block";
+		}
+		//设置仓库值
+		function setWh() {
+			if (getCookie("whData") === "undefined" || getCookie("whData") === null) {
+			} else {
+				var strs = getCookie("whData").split(",");
+				document.getElementById("whName").value = strs[1] + "  /  " + strs[2];
+				document.getElementById("whId").value = strs[0];
+                delCookie("whData");
+			}
+		}
+
+		//设置收发类别
+		function setTransType() {
+			if (getCookie("transType") === "undefined" || getCookie("transType") === null) {
+			} else {
+				strs = getCookie("transType").split(",");
+				document.getElementById("transTypeName").value = strs[1];
+				document.getElementById("transTypeId").value = strs[0];
+                delCookie("transType");
+			}
+		}
+
+		//设置人员
+		function setUser() {
+			if (getCookie("user") === "undefined" || getCookie("user") === null) {
+			} else {
+				strs = getCookie("user").split(",");
+				document.getElementById("userName").value = strs[1] + "/" + strs[2]+"/"+strs[4];
+				document.getElementById("accountId").value = strs[0];
+                document.getElementById("deptId").value=strs[3];
+                delCookie("user");
+			}
+		}
+
+		//设置产品
+		function setItem() {
+			if (getCookie("itemData") === "undefined" || getCookie("itemData") === null) {
+			} else {
+				strs = getCookie("itemData").split(",");
+				document.getElementById("itemName").value = strs[1] + "/" + strs[2];
+				document.getElementById("itemId").value = strs[0];
+                delCookie("itemData");
+			}
+		}
+
+        /**
+         * 手动添加后获取值
+         * 参数：
+         * 调用方法:
+         * 返回值:
+         */
+		function  setDetail() {
+            var res = getCookie("mdLedgerId");
+            delCookie("mdLedgerId")
+            if (res === "undefined" || res === null) {
+            } else {
+                if (res.indexOf(",") == -1)
+                    getData(res);
+                else {
+                    strs = res.split(",");
+                    for (var i = 1; i < strs.length; i++) {
+                        getData(strs[i]);
+                    }
+                }
+            }
+        }
+		//获取子表数据
+		function getData(mdLedgerId) {
+			api.ajax({
+				url : $.ServerUrl('/app/mould/recycle/mdRecycle/getData.do'),
+				method : 'post',
+				data : {
+					values : {
+						mdLedgerId : mdLedgerId
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					}
+					var funcList = $.toJson(obj.data);
+					//				alert("-----------------"+funcList[0].mdLedgerId);
+					var wrap = document.getElementById("son");
+					var pic=funcList[0].picPath==null||funcList[0].picPath==""?"../../../../../../image/common/no_picture.png":funcList[0].picPath;
+                    var html='<li class="aui-list-item aui-border-b" style="background-color: #fffffe">' +
+                        '<input class="aui-checkbox aui-hide" type="checkbox" name="checkbox" value="'+funcList[0].mdLedgerId+'" checked="checked">' +
+                        '<div class="aui-list-item aui-list-item-arrow">' +
+                        '	<div class="aui-media-list-item-inner">' +
+                        '		<div class="aui-list-item-media" style="height: 80px;width: 120px">' +
+                        '			<img src="'+pic+'" width="120px" height="80px" style="margin: 3px auto">' +
+                        '		</div>' +
+                        '		<div class="aui-list-item-inner">' +
+                        '       	<div class="aui-media-list-item-inner">' +
+                        '          		<div class="aui-list-item-media aui-text-primary">编码 || 名&nbsp;&nbsp;&nbsp;&nbsp;称:</div>' +
+                        '           	<div class="aui-list-item-inner aui-margin-l-10">'+funcList[0].mdLedgerNo+'  ||  '+funcList[0].mdLedgerName+'</div>' +
+                        '      		</div>' +
+                        '      		<div class="aui-media-list-item-inner">' +
+                        '        	  	<div class="aui-list-item-media aui-text-primary">代号 || 零件号:</div>' +
+                        '         		<div class="aui-list-item-inner aui-margin-l-10">'+funcList[0].mdNo+'  ||  '+funcList[0].partNo+'</div>' +
+                        '      		 </div>' +
+                        '      		 <div class="aui-media-list-item-inner">' +
+                        '           	<div class="aui-list-item-media aui-text-primary">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;序:</div>' +
+                        '           	<div class="aui-list-item-inner aui-margin-l-10">'+funcList[0].processNo+'  ||  '+funcList[0].processName+'</div>' +
+                        '      		 </div>' +
+                        '		</div>' +
+						'	</div>' +
+                        '</li>';
+					wrap.insertAdjacentHTML('beforeEnd', html);
+				}, null, false);
+			});
+		}
+
+		//二维码扫描
+		function scanSingle() {
+			var FNScanner = api.require('FNScanner');
+			FNScanner.openScanner({
+				autorotation : true,
+			}, function(ret, err) {
+				if (ret) {
+					if (ret.eventType == 'success') {
+						//						alert(ret.content)
+						//将扫描到的id在数据库中查出对应信息
+						getData(ret.content);
+						var oderid = $api.dom("#waybill_num");
+						$api.val(oderid, ret.content);
+					} else if (ret.eventType == 'fail') {
+						api.toast({
+							msg : '扫描失败，请稍后重试'
+						});
+					}
+				} else {
+					api.toast({
+						msg : err.msg
+					});
+				}
+			});
+		}
+		//手动添加
+		function  manualAdd() {
+		    var itemId=document.getElementById("itemId").value;
+            var itemName=document.getElementById("itemName").value;
+            var whCellId=document.getElementById("cellId").value;
+		    if (itemId==="undefined"||itemId===null||itemId===undefined||itemId===""){
+		        alert("请先选择产品");
+			}else if (whCellId==="undefined"||whCellId===null||whCellId===undefined||whCellId===""){
+                alert("请先选择货位");
+			} else{
+		        setCookie("itemId",itemId);
+		        setCookie("itemName",itemName);
+		        // document.getElementById("manual").setAttribute("href","../receive/md_receive_create_detail.html?typeId=10000000");
+                window.location.href = "../receive/md_receive_create_detail.html?typeId=10000000";
+			}
+        }
+
+		//保存
+		function save() {
+		    //表单中显示的信息
+			var whId = document.getElementById("whId").value;//仓库Id
+			var transTypeId = document.getElementById("transTypeId").value;//收发类别
+			var itemId = document.getElementById("itemId").value;//产品id
+			var agent = document.getElementById("accountId").value;
+			var deptId=document.getElementById("deptId").value;
+			var remark = document.getElementById("remark").value;
+
+            var userInfo = $api.getStorage('userInfo');
+            if (whId==""||transTypeId==""||itemId==""||agent==""){
+                alert("请添加内容");
+                return;
+			}
+			//备注
+			add(whId + " " + transTypeId + " " + itemId + " " + agent + " "+ deptId + " " + remark + " "+ userInfo.accountId);
+		}
+		//新增
+		function add(str) {
+			api.ajax({
+				url : $.ServerUrl('/app/mould/recycle/mdRecycle/add.do'),
+				method : 'post',
+				data : {
+					values : {
+						strs : str
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					}
+					var toast = new auiToast({});
+					toast.success({
+						title : "新增成功",
+						duration : 1000
+					});
+            		var res = $.toJson(obj.data);
+                    //是否需要添加子表
+					if(document.getElementById("whCell")=="") return ;
+                    //添加子表
+                    var check_box = document.getElementsByName("checkbox");
+                    var check_val = [];
+                    for(var k in check_box){
+                        if(check_box[k].checked)
+                            check_val.push(check_box[k].value);
+                    }
+                    addDerailBatch(res.mdBillId,check_val);
+
+                    //清除表单
+                    // clean();
+                    self.location=document.referrer;
+				}, null, false);
+			});
+		}
+		//批量新增
+		function addDerailBatch(mdBillId,obj){
+			for (var i in obj){
+                if(typeof(obj[i])!="function"){
+                    addDetail(mdBillId,obj[i]);
+                }
+
+			}
+		}
+		//新增子表
+		function addDetail(mdBillId,mdLedgerId){
+            var userInfo = $api.getStorage('userInfo');
+            var str=document.getElementById("cellId").value+" "+mdBillId+" "+mdLedgerId;
+            api.ajax({
+                url : $.ServerUrl('/app/mould/recycle/mdRecycle/addDetail.do'),
+                method : 'post',
+                data : {
+                    values : {
+                        "strs":str,
+                        "accountId":userInfo.accountId
+                    }
+                }
+            }, function(obj, err) {
+                //解析响应信息
+                $.responseCall(obj, function() {
+                    if ($.isNull(obj)) {
+                        return $.alert("异常", $.toStringify(err.body));
+                    }
+                }, null, false);
+            });
+        }
+
+		//清空表单
+		function clean() {
+            // //仓库Id
+			// document.getElementById("whId").value = "";
+            // document.getElementById("whName").value = "";
+			// //收发类别
+			// document.getElementById("transTypeId").value = "";
+            // document.getElementById("transTypeName").value = "";
+			// //产品
+			// document.getElementById("itemId").value = "";
+            // document.getElementById("itemName").value = "";
+            // //人员
+			// document.getElementById("accountId").value = "";
+            // document.getElementById("userName").value = "";
+            // document.getElementById("deptId").value = "";
+            // //备注
+			document.getElementById("remark").value = "";
+            $('input').val("");//框架不是没有道理的
+		}
+		//人员
+		function openUser() {
+			window.location.href = "../tool/user.html";
+		}
+		//折叠
+		function foldRow(){
+		    if (status==0){
+                status=1;
+                document.getElementById("fold").src="../../../../../../image/fold_up.png";
+                document.getElementById("son").style.display="block";
+                //显示内容
+
+			} else{
+                status=0;
+                document.getElementById("fold").src="../../../../../../image/fold_down.png";
+                document.getElementById("son").style.display="none";
+			}
+		}
+	</script>
+</html>

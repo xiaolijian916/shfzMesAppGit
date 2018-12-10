@@ -1,0 +1,104 @@
+
+@font-face {
+	font-family: 'xs-menu-iconfont';
+	src: url('xs-menu-iconfont.ttf') format('truetype');
+}
+
+.xs-menu-iconfont {
+	/* use !important to prevent issues with browser extensions that change fonts */
+	position: relative;
+	font-family: "xs-menu-iconfont" !important;
+	font-size: 1.8rem;
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/**
+ * 功能主菜单文字图标[IconFont]样式定义
+ */
+/*-- 异常反馈 --*/
+.xs-icon-menu-andon-answer:before { content: "\e600"; color:#FF2600 }
+
+/*-- 质量问题汇总--*/
+.xs-icon-menu-qsb-qua-prom-summary:before { content: "\e601"; color:#FFC107 }
+
+/*-- 分层审核管理--*/
+.xs-icon-menu-qsb-audit-record:before { content: "\e602"; color:#3ABA63 }
+
+/*-- 原材料--*/
+.xs-icon-menu-material-module:before { content: "\e603"; color:#424242 }
+
+/*-- 分层审核--*/
+.xs-icon-menu-hierarchical-review:before { content: "\e604"; color:#0062CC; }
+
+/*-- 来料检验 --*/
+.xs-icon-menu-incoming-quality-control:before { content: "\e605"; color:#0062CC; }
+
+/*-- 工序检验 --*/
+.xs-icon-menu-process-quality-control:before { content: "\e60a"; color:#0062CC; }
+
+/*-- 模具领用 --*/
+.xs-icon-menu-md-receive:before { content: "\e606"; color:#0062CC; }
+
+/*-- 模具回收 --*/
+.xs-icon-menu-md-recycle:before { content: "\e607"; color:#0062CC; }
+
+/*-- 模具初始化 --*/
+.xs-icon-menu-md-init:before { content: "\e608"; color:#0062CC; }
+
+/*-- 变化点反馈 （父级菜单）--*/
+.xs-icon-menu-cbm-record:before { content: "\e609"; color:#0062CC; }
+/***************************************************************************/
+/*-- 采购入库 （父级菜单）--*/
+.xs-icon-menu-purchase-warehouse-module:before { content: "\e60c"; color:#1296db; }
+/*-- 采购退货（子菜单） --*/
+.xs-icon-menu-purchase-return:before { content: "\e617"; color:#FF2600}
+/*-- 材料入库（子菜单） --*/
+.xs-icon-menu-receipt-confirm:before { content: "\e618"; color:#3F51B5}
+/*-- 到货确认（子菜单） --*/
+.xs-icon-menu-arrival-confirm:before { content: "\e619"; color:#00897B}
+
+/***************************************************************************/
+/*-- 委外发料 （父级菜单）--*/
+.xs-icon-menu-outsourcing-module:before { content: "\e60e"; color:#0062CC; }
+/*-- 委外加工退料（子菜单） --*/
+.xs-icon-menu-outsource-storage:before { content: "\e615"; color:#FAA732}
+/*-- 委外加工发料（子菜单） --*/
+.xs-icon-menu-outsource-issue:before { content: "\e616"; color:#3F51B5}
+
+/***************************************************************************/
+/*-- 材料领用（父级菜单） --*/
+.xs-icon-menu-material-use-module:before { content: "\e60d"; color:#e16531; }
+/*-- 材料领用出库（子菜单） --*/
+.xs-icon-menu-material-out-stock:before { content: "\e614"; color:#16A085; font-size:1.3rem}
+/*-- 生产退料（子菜单） --*/
+.xs-icon-menu-production-return:before { content: "\e613"; color:#D4237A}
+
+/***************************************************************************/
+/*-- 成品发货（父级菜单） --*/
+.xs-icon-menu-finish-product-module:before { content: "\e60b"; color:#d4237a; }
+/*-- 成品发货（子菜单） --*/
+.xs-icon-menu-end-prod-ship:before { content: "\e611"; color:#FAA732}
+/*-- 成品退货（子菜单） --*/
+.xs-icon-menu-end-prod-return:before { content: "\e612"; color:#D4237A}
+/***************************************************************************/
+/*-- 成品入库（父级菜单） --*/
+.xs-icon-menu-product-storage-module:before { content: "\e60f"; color:#0ec944; }
+/*-- 成品退库（子菜单） --*/
+.xs-icon-menu-end-prod-return-libr:before { content: "\e610"; color:#E74C3C}
+/***************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+

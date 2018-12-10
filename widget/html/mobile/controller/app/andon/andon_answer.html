@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+</head>
+<body>
+	<div class="aui-bar aui-bar-nav" id="andon-content">
+		<header class="aui-bar aui-bar-nav" style="padding-top:10px;">
+		    <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title">异常管理</div>
+		    <a class="aui-pull-right aui-btn" tapmode onclick="feedback()">
+		        <span class="aui-iconfont aui-icon-plus"></span>
+		    </a>
+<!-- 		    <a class="aui-pull-right aui-btn">
+		        <span class="aui-iconfont aui-icon-search"></span>
+		    </a> -->
+		</header>
+		<div class="aui-tab" id="tab">
+		    <div class="aui-tab-item aui-active">待处理</div>
+		    <div class="aui-tab-item"><div></div>已处理</div>
+		</div>
+		<div id="tab-con">
+    	    <div id="tab-andon-1"></div>
+    	    <div id="tab-andon-2" class="aui-hide"></div>
+    	</div> 
+	</div>
+</body>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-tab.js" ></script>
+<script type="text/javascript">
+    apiready = function(){
+        api.parseTapmode();
+        var header = $api.byId('andon-content');
+        $api.fixStatusBar(header);
+        headerPos = $api.offset(header);
+        var body_h = $api.offset($api.dom('body')).h;
+		openTabFrame('andon_pending','andon_pending.html');
+    };
+
+    var tab = new auiTab({
+        element:document.getElementById("tab"),
+    },function(ret){
+        if(ret){
+            function siblings(elm) {
+                var a = [];
+                var p = elm.parentNode.children;
+                for(var i =0,pl= p.length;i<pl;i++) {
+                	if(p[i] !== elm) a.push(p[i]);
+                }
+                return a;
+            };
+            
+            var index = ret.index;
+            var activeC = document.getElementById("tab-andon-" + index);
+            activeC.className = "";    
+
+            for(var i=0;i<siblings(activeC).length;i++){
+                siblings(activeC)[i].className = "aui-hide";
+            }   
+            
+            if(1==index){
+            	fnHideMyinfoFrame('andon_processed');
+            	openTabFrame('andon_pending','andon_pending.html');
+            }else if(2==index){
+            	fnHideMyinfoFrame('andon_pending');
+            	openTabFrame('andon_processed','andon_processed.html');
+            }
+        }
+    });
+    
+    //打开TAB
+    function openTabFrame(varName,varUrl){
+	    api.openFrame({
+	        name: varName,
+	        url: varUrl,
+	        bounces: true,
+	        rect: {
+	            x: 0,
+	            y: headerPos.h,
+	            w: 'auto',
+	            h: 'auto'
+	        }
+	    }) 
+    }
+    
+    //隐藏TAB
+    function fnHideMyinfoFrame(varName){
+      api.setFrameAttr({
+          name: varName,
+          hidden: true
+      });
+    }
+    
+    function feedback(){
+    	var delay = 0;
+    	api.openWin({
+			name : 'andon_feedback',
+			url : 'andon_feedback.html',
+			delay : delay,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+    
+    //关闭当前窗体
+    function closeWin(){
+        api.closeWin();
+    }
+</script>
+</html>

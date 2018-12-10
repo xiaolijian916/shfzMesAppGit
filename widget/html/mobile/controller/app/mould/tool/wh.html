@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>仓库选择</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+
+    <script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+    <script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+    <style>
+    	body{
+
+    	}
+        td{
+            white-space: normal  ;/*td禁止换行*/
+        }
+    </style>
+</head>
+<body>
+    <!--头部信息-->
+    <header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+        <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">仓库选择</div>
+        <!--查询显示-->
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius" tapmode onclick="doSearch()">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="仓库编码/名称" id="search-input">
+                </form>
+            </div>
+        </div>
+    </header>
+    <!--主体信息-->
+    <section class="aui-refresh-content" style="margin-top:4.5rem;">
+        <div class="aui-content" id="content" style=" margin-bottom: 1.5rem">
+            <ul class="aui-list aui-form-list">
+            </ul>
+        </div>
+    </section>
+
+</body>
+
+<script type="text/javascript">
+    var page=1;//定义加载的页数
+    var rows=10;//定义每页显示的行数
+    var funcList;//数据库获取全部数据
+	apiready = function(){
+        initData("");
+	};
+	//初始化页面内容
+	function initData(str){
+        api.ajax({
+            url: $.ServerUrl('/app/mould/receive/mdTool/whList.do'),
+            method: 'post',
+            data : {
+                values : {
+                    str:str
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                funcList= $.toJson(obj.data);
+                //初始化列表
+                initItem();
+            }, null, false);
+        });
+    }
+    //初始化列表
+    function initItem(){
+        var wrap = document.getElementById("content");
+        for(var i=(page-1)*rows;i<page*rows&&i<funcList.length;i++){
+            var html= '' +
+                '<li class="aui-list-item aui-border-b" style="line-height: 2.5rem;" onclick="chooseRow('+funcList[i].whId+')">' +
+                '    <div style="float: left;display: none;"><input class="aui-radio" type="radio" name="radio" style="margin-left: 8px;float: right;clear: left;" id="'+funcList[i].whId+'" value='+funcList[i].whId+','+funcList[i].whCode+','+funcList[i].whName+'></div>'+
+                '    <div class="aui-list-item-inner aui-text-center" style="width: 100%" >'+funcList[i].whCode+'  /  '+funcList[i].whName+'</div>' +
+                '</li>';
+            wrap.insertAdjacentHTML('beforeEnd', html);
+        }
+    }
+    //选中目标
+    function  chooseRow(id) {
+	    // if (isChoose()){
+        //     setCookie("whData",isChoose());
+        //     window.history.back();
+        // }else{
+	    //     alert("请先选中一条信息!(oﾟ▽ﾟ)o  ");
+        // }
+        setCookie("whData",document.getElementById(id).value);
+        window.history.back();
+    }
+    //设置cookie
+    function setCookie(name,value) {
+        var Days = 30;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days*24*60*60*1000);
+        document.cookie=name + "="+ escape (value) + ";expires=" + exp.toGMTString()+"; path=/";
+    }
+    //判断是否有信息被选中
+    function isChoose(){
+        var str;
+        var radioBtn=document.getElementsByName("radio");
+        for(var i=0;i<radioBtn.length;i++){
+            if (radioBtn[i].checked){
+                str=radioBtn[i].value;
+            }
+        }
+        return str;
+    }
+    //点击搜索框事件
+    function doSearch() {
+
+    }
+    //开始搜索
+    function search(){
+        cleanLi();//清理li
+        var str=$("#search-input").val();
+        initData(str);
+    }
+    //清除li
+    function cleanLi(){
+        var li=document.getElementsByTagName("li");
+        for (var i=li.length;i>0;i--){
+            li[i-1].remove();
+        }
+    }
+</script>
+</html>

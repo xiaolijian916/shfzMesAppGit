@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>待检验记录</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+    <style type="text/css">
+        .aui-bar-tab {
+            position: static;
+        }
+    </style>
+</head>
+<body>
+	<section class="aui-refresh-content">
+	    <footer class="aui-bar aui-bar-tab aui-margin-t-10">
+	        <div class="aui-bar-tab-item aui-border-r" tapmode style="width: 3rem;">
+	            <input class="aui-radio" type="checkbox" id="checkAll">
+	            <div class="aui-bar-tab-label aui-text-info">全选</div>
+	        </div>
+	        <div class="aui-bar-tab-item" tapmode style="width: auto;text-align: right;"><div class="aui-btn aui-btn-info aui-margin-r-10" id="getIqcId">确认合格</div></div>
+	    </footer>
+	    <ul class="aui-list aui-select-list aui-margin-b-10" id="iqcInfo"></ul>
+ 	</section>
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-scroll.js" ></script>
+<script type="text/javascript">
+	//当前页数
+	var curPage = 1;
+	var totalPage;
+	var isLoadData = false;
+	var wrap = document.getElementById("iqcInfo");
+	var createTime;
+	var deliveryNo;
+	var drawingNumber;
+
+	apiready = function(){
+		api.parseTapmode();
+		loadIqcData();
+        search();
+        qrcode();
+        reflashListener();
+	};
+	
+	function search(){
+		api.addEventListener({
+		    name: 'search_iqc_untested'
+		}, function(ret, err) {
+			createTime = ret.value.createTime;
+			deliveryNo = ret.value.deliveryNo;
+			drawingNumber = ret.value.drawingNumber;
+		    reflash();
+		});
+	}
+	
+	function qrcode(){
+		api.addEventListener({
+		    name: 'qrcode'
+		}, function(ret, err) {
+			var deliveryCode = ret.value.qrcode;
+			if($.isNotNull(deliveryCode)){
+				addIqcInfo(deliveryCode);
+			}
+		});
+	}
+	
+	function reflashListener(){
+		api.addEventListener({
+		    name: 'reflash'
+		}, function(ret, err) {
+			reflash();
+		});
+	}
+	
+	function iqcCount(){
+    	api.sendEvent({
+		    name: 'iqcCount'
+		});
+    }
+	
+	function reflash(){
+    	curPage = 1;
+    	isLoadData = false;
+		wrap.innerHTML = "";
+		$('#checkAll').prop('checked',false);
+    	loadIqcData();
+    	iqcCount();
+    }
+	
+	var pullRefresh = new auiPullToRefresh({
+		container: document.querySelector('.aui-refresh-content'),
+		triggerDistance: 100
+	},function(ret){
+		if(ret.status=="success"){
+			setTimeout(function(){
+				reflash();
+				pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+			},1500)
+		}
+	});
+	
+	//到达底部继续加载
+	var scroll = new auiScroll({
+        listen:true,
+        distance:100
+    },function(ret){
+        if(ret.isToBottom){
+    		if(isLoadData){
+    			loadIqcData();
+    			$('#checkAll').prop('checked',false);
+	        }
+        }
+    });
+    
+    function loadIqcData(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadIqcList.do'),
+			method : "POST",
+			data : {
+				values : {
+					"page": curPage,
+					"rows": 10,
+					"isEligible" : '1',
+					"deliveryNo" : deliveryNo,
+					"createTime" : createTime,
+					"drawingNumber" : drawingNumber
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var iqcJsonData = $.toJson(obj.data);
+					var iqcInfo = iqcJsonData.result;
+					totalPage = iqcJsonData.totalPages;
+					if(curPage<=totalPage){
+						curPage = curPage+1;
+						if(curPage<=totalPage){
+							isLoadData = true;
+						}else{
+							isLoadData = false;
+						}
+						renderIqcData(iqcInfo);
+					}
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    function renderIqcData(iqcInfo){
+    	for(var i = 0; i < iqcInfo.length; i++){
+			var html = '<li class="aui-list-item">' +   
+							'<div class="aui-list-item-label">' +
+					 			'<input class="aui-radio" type="checkbox" name="iqcCheck" value="' + iqcInfo[i].iqcId + '" onclick="checkInfo(this)">' +
+					 		'</div>' +   
+					 		'<div class="aui-list-item-inner aui-ellipsis-1">' +
+					 			'<div class="aui-list-item-text">' +   
+					 				'<div class="aui-list-item-title aui-ellipsis-1">' + iqcInfo[i].supplierName + '</div>' +  
+					 				'<div class="aui-list-item-right">' +  
+					 					'<div class="aui-label">' + iqcInfo[i].deliveryNo + '</div>' +    
+									'</div>' +   
+					 			'</div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">产品图号：' + iqcInfo[i].drawingNumber + '</div></div>' +  
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">产品名称：' + iqcInfo[i].itemName + '</div></div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">送检数量：' + iqcInfo[i].applyQty + '</div></div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">产品批次：' + iqcInfo[i].iqcLot + '</div></div>' +
+					 			'<div class="aui-list-item-text"><div class="aui-ellipsis-1">送检人员：' + iqcInfo[i].createBy + '</div></div>' + 
+					 			'<div class="aui-list-item-text  aui-border-b aui-padded-b-10"><div class="aui-ellipsis-1">送检时间：' + iqcInfo[i].iqcCheckTime + '</div></div>' + 
+					 			'<div class="aui-list-item-text aui-margin-t-10">' +
+					 				'<div class="aui-list-item-title aui-ellipsis-1"></div>' +
+					 				'<div class="aui-list-item-right">' +   
+					 					'<div class="aui-btn aui-btn-danger" onclick="iqcUnqualified(\'' + iqcInfo[i].iqcId + '\')">不良品</div>' + 
+									'</div>' +  
+					 			'</div>' +
+					 		'</div>' + 
+					 	'</li>';
+			wrap.insertAdjacentHTML('beforeend', html);
+		}
+    }
+    
+    //扫描送货单生成待检记录
+    function addIqcInfo(deliveryCode){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/addIqcInfo.do'),
+			method : "POST",
+			data : {
+				values : {
+					"deliveryNo" : deliveryCode,
+					"accountId" : $api.getStorage('userInfo').accountId,
+					"workcenterId" : $api.getStorage('userInfo').workcenterId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					reflash();
+					return $.alert("提示", $.toStringify(obj.data));
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+	
+	//全选、反选
+	$('#checkAll').click(function(){
+        if(this.checked) {
+            $("input[name='iqcCheck']").prop('checked',true);
+        }else {
+            $("input[name='iqcCheck']").prop('checked',false);
+        }
+    });
+    
+    //单条记录选中、不选
+    function checkInfo(checkbox){
+        //判断是否全部选中
+        if($("input[name='iqcCheck']:checked").length==$("input[name='iqcCheck']").length) {
+        	$('#checkAll').prop('checked',true);
+        }else{
+        	$('#checkAll').prop('checked',false);
+        }
+    }
+    
+    //获取选中项的值
+    $("#getIqcId").click(function(){
+		var iqcArr = new Array;
+		$("input[name='iqcCheck']:checked").each(function(i){
+			iqcArr[i] = $(this).val();
+		});
+		var iqcIds = iqcArr.join(',');
+		if ($.isNull(iqcIds)) { 
+			return $.alert("错误", "请至少选择一条记录");
+		} else {
+			checkIqcQualified(iqcIds);
+		}
+	});
+	
+	//检验合格
+    function checkIqcQualified(iqcIds){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/iqcQualified.do'),
+			method : "POST",
+			data : {
+				values : {
+					"iqcIds" : iqcIds,
+					"accountId" : $api.getStorage('userInfo').accountId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					reflash();
+					return $.alert("提示", $.toStringify(obj.data));
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+	
+	//检验不合格-不良记录新增
+    function iqcUnqualified(iqcId){
+    	api.openWin({
+	        name: 'iqc_untested_create',
+	        url: 'iqc_untested_create.html',
+	        pageParam: {
+		        iqcId: iqcId
+		    },
+	        delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+        });
+    }
+</script>
+</html>

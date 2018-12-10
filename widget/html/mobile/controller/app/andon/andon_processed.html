@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../../css/aui-pull-refresh.css" />
+</head>
+<body>
+	<section class="aui-refresh-content">
+		<div class="aui-tips aui-margin-t-10" id="andonCount"></div>
+		<div class="aui-content aui-margin-b-15">
+			<ul class="aui-list aui-select-list" id="andonInfo"></ul>
+		</div>
+	</section>
+</body>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-scroll.js" ></script>
+<script type="text/javascript">
+	//当前页数
+	var curPage = 1;
+	var totalPage;
+	var isLoadData = false;
+	var wrap = document.getElementById("andonInfo");
+
+	apiready = function(){
+        api.parseTapmode();
+		loadAndonPendingData();
+		api.addEventListener({
+		    name: 'feedback'
+		}, function(ret, err) {
+		    reflash();
+		});
+    };
+    
+    function reflash(){
+    	curPage = 1;
+    	isLoadData = false;
+		wrap.innerHTML = "";
+    	loadAndonPendingData();
+    }
+
+	var pullRefresh = new auiPullToRefresh({
+		container: document.querySelector('.aui-refresh-content'),
+		triggerDistance: 100
+	},function(ret){
+		if(ret.status=="success"){
+			setTimeout(function(){
+				reflash();
+				pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+			},1500)
+		}
+	});
+	
+	//到达底部继续加载
+	var scroll = new auiScroll({
+        listen:true,
+        distance:100
+    },function(ret){
+        if(ret.isToBottom){
+    		if(isLoadData){
+    			loadAndonPendingData();
+	        }
+        }
+    });
+	
+	function renderAndonData(andonInfo){
+		for(var i = 0; i < andonInfo.length; i++){
+            var html = '<li class="aui-list-item" onclick="andonDetail(\'' + andonInfo[i].faultRecordId + '\')">' +
+							'<div class="aui-list-item-label">' +
+				                '<img src="../../../../../image/andon_' + andonInfo[i].status + '.png" width="80">'+
+					        '</div>' +
+							'<div class="aui-list-item-inner aui-ellipsis-1">' +
+				                '<div class="aui-list-item-text">' +
+				                    '<div class="aui-list-item-title aui-ellipsis-1">'+ andonInfo[i].workcenterName + ':' + andonInfo[i].workcenterStationName +'</div>' +
+				                    '<div class="aui-list-item-right">' +
+				                        '<div class="aui-label">' + andonInfo[i].remark + 'min</div>' +
+				                    '</div>' +
+				                '</div>' +
+				                '<div class="aui-list-item-text"><div class="aui-ellipsis-1">异常类型：'+ andonInfo[i].faultClassName + '</div></div>' +
+				                '<div class="aui-list-item-text"><div class="aui-ellipsis-1">故障名称：' + andonInfo[i].exceptionName + '</div></div>' +
+				                '<div class="aui-list-item-text"><div class="aui-ellipsis-1">故障描述：' + andonInfo[i].exceptionDescribe + '</div></div>' +
+				                '<div class="aui-info aui-margin-t-5" style="padding:0">' +
+			                        '<div class="aui-info-item">' +
+			                        	'<span class="aui-iconfont aui-icon-my"></span>' +
+			                            '<span>' + andonInfo[i].finderUserName + '</span>' +
+			                        '</div>' +
+			                        '<div class="aui-info-item">' +
+			                        	'<span class="aui-iconfont aui-icon-date"></span>' +
+			                            '<span>' + andonInfo[i].strFinderTime + '</span>' +
+			                        '</div>' +
+			                    '</div>' +
+				            '</div>' +
+						'</li>';
+			wrap.insertAdjacentHTML('beforeend', html);
+		}
+	}
+	
+	function loadAndonPendingData(){
+	    //数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务：获取到货待处理数据
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/loadReportList.do'),
+			method : "POST",
+			data : {
+				values : {
+					"page": curPage,
+					"rows": 10,
+					"accountId" : $api.getStorage('userInfo').accountId,
+					"workcenterId" : $api.getStorage('userInfo').workcenterId,
+					"status" : '1'
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					var andonJsonData = $.toJson(obj.data);
+					var andonInfo = andonJsonData.result;
+					totalPage = andonJsonData.totalPages;
+					document.getElementById("andonCount").innerHTML = ""; 
+					document.getElementById("andonCount").insertAdjacentHTML('afterbegin','<div class="aui-tips-title">共有' + andonJsonData.totalRows + '条已处理异常记录</div>');
+					if(curPage<=totalPage){
+						curPage = curPage+1;
+						if(curPage<=totalPage){
+							isLoadData = true;
+						}else{
+							isLoadData = false;
+						}
+						renderAndonData(andonInfo);
+					}
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    //查看异常事件明细
+    function andonDetail(faultRecordId){
+    	api.openWin({
+			name : 'andon_detail',
+			url : 'andon_detail.html',
+			pageParam: {
+		        faultRecordId: faultRecordId
+		    },
+		    delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+</script>
+</html>

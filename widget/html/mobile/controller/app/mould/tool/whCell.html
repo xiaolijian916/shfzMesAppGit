@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>货位</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+</head>
+<body>
+    <!--头部信息-->
+    <header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+        <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">货位选择</div>
+        <div class="aui-pull-right aui-btn">
+            <img src="../../../../../../image/find.png" class="img-btn" width="25px" height="25px" id="find" onclick="findRow()"/>
+        </div>
+        <!--查询显示-->
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius" tapmode onclick="doSearch()">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="仓库编码/名称" id="search-input">
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!--主体信息-->
+    <section class="aui-refresh-content" style="margin-top:4.5rem;">
+        <div class="aui-content" id="content" style=" margin-bottom: 1.5rem">
+            <ul class="aui-list aui-form-list">
+            </ul>
+        </div>
+    </section>
+
+    <!--返回顶部-->
+    <img class="go-back-top" src="../../../../../../image/goBackTop.png" onclick="goBack()" style="display: none" id="goBackTop">
+    <!--加载更多-->
+    <div class="spinner" id="loading" style="position: fixed;bottom: 0;margin: 0 auto;width: 100%">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+<script type="text/javascript">
+    var page=0;//定义加载的页数
+    var rows=50;//定义每页显示的行数initData("/app/mould/receive/mdTool/whCellList.do","",page,rows,initItem)
+    var sum=0;//定义是否加载全部
+
+	apiready = function(){
+        initData(initItem);
+        isShowGoBackBtn();
+	};
+	//初始化数据
+	function initData(callback) {
+        api.ajax({
+            url: $.ServerUrl("/app/mould/receive/mdTool/whCellList.do"),
+            method: 'post',
+            data:{
+                values:{
+                    "whId":getParam("whId"),
+                    "findParam":document.getElementById("search-input").value,
+                    "Pagination":page+" "+rows,
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                callback($.toJson(obj.data));
+            }, null, false);
+        });
+    }
+    //初始化列表
+	function  initItem(obj) {
+        var funcList=obj;
+        var wrap = document.getElementById("content");
+        var number=page*rows;
+        for(var i=0;i<((page+1)*rows)&&i<funcList.length;i++){
+            // console.log(i+"------"+(page*rows-i));
+            var html='' +
+                '<li class="aui-list-item aui-border-b" style="line-height: 2.5rem;" onclick="chooseRow('+funcList[i].whId+')">' +
+                '    <div style="float: left;display: none;"><input class="aui-radio" type="radio" name="radio" style="margin-left: 8px;float: right;clear: left;" id="'+funcList[i].whId+'" value='+funcList[i].whCellId+','+funcList[i].whCellCode+','+funcList[i].whCellName+'></div>'+
+                '    <div class="aui-list-item-inner aui-text-center" style="width: 100%" >'+funcList[i].whCellCode+'  /  '+funcList[i].whCellName+'</div>' +
+                '</li>';
+            wrap.insertAdjacentHTML('beforeEnd', html);
+        }
+    }
+    //点击搜索框事件
+    function doSearch() {
+        cleanLi();//清理li
+    }
+    //开始搜索
+    function search(){
+        cleanLi();//清理li
+        if ($("#search-input").val()==""){
+            alert("请输入搜索内容!");
+            return;
+        }
+        document.getElementById("top").style.display="block";
+        page=0;
+        initData(initItem);
+    }
+    //取消
+    function cancel() {
+        document.getElementById("search").style.display="none";
+        document.getElementById("top").style.display="block";
+        document.getElementById("top").style.marginTop="2.25rem";
+        cleanLi();
+        page=0;
+        initData(initItem);
+    }
+    //选中目标
+    function  chooseRow(id) {
+        setCookie("whCellData",document.getElementById(id).value);
+        window.history.back();
+    }
+    /**
+     * 滑动高度大于1000时显示回到顶部按钮
+     * 滑动到底部时加载更多
+     */
+    function isShowGoBackBtn(){
+        window.onscroll=function () {
+            var oTop=document.documentElement.scrollTop || document.body.scrollTop;
+            var scrollHeight =document.documentElement.scrollHeight||document.body.scrollHeight;
+            var windowHeight = document.body.offsetHeight;
+            if(oTop + windowHeight == scrollHeight){
+                // alert("已经到最底部了！");
+                $("#loading").css("display", "block");
+                setTimeout(function (){
+                    if(oTop + windowHeight == scrollHeight){
+                        $("#loading").css("display", "none");
+                        page+=1;
+                        initData("",initItem);
+                        return;
+                    }
+                },3000);
+            }
+            if(oTop > 1000){
+                $("#goBackTop").css("display","block");
+            }else{
+                $("#goBackTop").css("display","none");
+            }
+        }
+
+    }
+    //返回顶部
+    function goBack(){
+        var timer  = null;
+        cancelAnimationFrame(timer);
+        timer = requestAnimationFrame(function fn(){
+            var oTop = document.body.scrollTop || document.documentElement.scrollTop;
+            if(oTop > 0){
+                document.body.scrollTop = document.documentElement.scrollTop = oTop - 50;
+                timer = requestAnimationFrame(fn);
+            }else{
+                cancelAnimationFrame(timer);
+            }
+        });
+    }
+</script>
+</html>

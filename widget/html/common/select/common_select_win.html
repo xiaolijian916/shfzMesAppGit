@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../../css/api.css" />
+</head>
+<body>
+	<div class="aui-content">
+		<header class="aui-bar aui-bar-nav" style="padding-top:25px;">
+		    <a class="aui-pull-left aui-btn" onclick="closeHtml()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title" id="select-title"></div>
+		</header>
+	    <ul class="aui-list" id="select-list"></ul>
+	</div>
+</body>
+<script type="text/javascript" src="../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../script/api.js"></script>
+<script type="text/javascript" src="../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../script/aui-toast.js"></script>
+<script type="text/javascript">
+var ccfun = "";
+var parentWinName = "";
+var loadUrl = "";
+var loadParam = {};
+
+	apiready = function(){
+		var wrap = document.getElementById("select-title")
+        wrap.innerHTML = "";
+	    wrap.insertAdjacentHTML('afterbegin', api.pageParam.selectTitle);
+	    
+		ccfun =           api.pageParam.callbackFunc;
+		parentWinName =   api.pageParam.curruntWinName;
+		loadUrl = 		  api.pageParam.loadUrl;
+		var listInfo =    api.pageParam.listInfo;
+		
+		if($.isNotNull(api.pageParam.loadParam)){
+			loadParam = api.pageParam.loadParam;
+		}
+		//console.log("sd"+$.toStringify(loadParam));
+
+		if(listInfo!=null){
+			renderData(listInfo);
+		}else if(listInfo==null&&loadUrl!=null){
+			loadCommonSelectList(loadUrl);
+		}
+	}
+	
+	  function loadCommonSelectList(loadUrl){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : loadUrl,
+				method : "POST",
+				data : {
+					values : loadParam
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var listInfo = $.toJson(obj.data); 
+						renderData(listInfo);
+					} else {
+						
+						
+					}
+					
+				}, null, false);
+			});
+    }
+	
+	function renderData(listInfo){
+		var wrap = document.getElementById("select-list")
+        wrap.innerHTML = "";
+		for(var i = 0; i < listInfo.length; i++){
+			var html = 
+				'<li class="aui-list-item aui-list-item-center" onclick="selectedInfo(\'' + listInfo[i].label + '\',\'' + listInfo[i].value + '\')">'+
+	            	'<div class="aui-list-item-inner">'+
+	                	listInfo[i].label +
+	            	'</div>'+
+	        	'</li>';
+			wrap.insertAdjacentHTML('afterbegin', html);
+		}
+	}
+	
+	function selectedInfo(label,value){
+	    var andonSelect = ccfun+'("' + label + '",' + value + ')';
+	    //console.log(parentWinName);
+	    //console.log(andonSelect);
+	    
+    	api.execScript({
+		    frameName: parentWinName,
+		    script: andonSelect
+		});
+    	closeHtml();
+    }
+    
+    function closeHtml(){
+    	api.closeFrame({
+    		name : 'common_select_win'
+    	});
+    }
+</script>
+</html>

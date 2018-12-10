@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+    
+   <!-- <script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>-->
+	
+	<script type="text/javascript" src="../../../../../../script/api.js" ></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+    <style>
+    	body{
+    		
+    	}
+    </style>
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+	    <a class="aui-pull-left aui-btn" href="md-receive-main.html">
+	        <span class="aui-iconfont aui-icon-left"></span>返回
+	    </a>
+	    <div class="aui-title">查询-模具领用</div>
+	    <div class="aui-searchbar" id="search" style="float: left;">
+		    <div class="aui-searchbar-input aui-border-radius" tapmode onclick="doSearch()">
+		        <i class="aui-iconfont aui-icon-search"></i>
+		        <form action="javascript:search();">
+		            <input type="search" placeholder="产品名称/产品编号" id="search-input">
+		        </form>
+		    </div>
+		    <div class="aui-searchbar-cancel" tapmod onclick="cancel()" style="margin-right: 12px">取消</div>
+	    </div>
+	</header>
+	<section class="aui-refresh-content" style="margin-top:2.25rem; ">
+	    <div class="aui-content aui-margin-b-15">
+	        <div id="demo">
+	             <ul class="aui-list" id="content">
+		            
+		        </ul>
+	            
+
+	        </div>
+	    </div>
+	</section>
+	
+</body>
+
+<script type="text/javascript">
+	apiready = function(){
+		
+	};
+	function doSearch(){
+		
+	}
+	//查询
+	function search(){
+		var str=$("#search-input").val();
+		
+		//使用like or进行多字段模糊查询
+		api.ajax({
+        	url: $.ServerUrl('/app/mould/mdReceive/find.do'),
+         	method: 'post',
+         	dataType: 'json',
+         	data : {
+						values : {
+							str:str
+						}
+					}
+    	},function(obj, err) {
+
+    		//解析响应信息
+			$.responseCall(obj, function(){
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				var funcList= $.toJson(obj.data);
+				
+				var wrap = document.getElementById("demo")
+                var lis = wrap.querySelectorAll('.aui-card-list');
+				for(var i=0;i<funcList.length;i++){
+				var date=gettime(funcList[i].mdBillDate);
+//					$("#content").append($(
+					var html='<li class="aui-list-item aui-card-list" style="float:left;width:100%;margin-top:18px;padding-left:12px">	'+
+						'    <div class="aui-list-item-inner" style="float:left;" id="content_list+'+i+'">			'+
+						'       <table width="100%">								    '+
+						'            <tr>												'+
+						'                <td class="content_title" colspan="5" style="white-space:nowrap">			'+
+						'                    '+(i+1)+'&nbsp;						        '+
+						'                    '+funcList[i].itemCode+'/'+funcList[i].itemName+'									'+
+						'                </td>											'+
+						'            </tr>												'+
+						'            <tr>												'+
+						'                <td class="content_lable"><label>仓库名称:</label></td>					'+
+						'                <td class="content_edit"><label>'+funcList[i].whName+'</label></td>						'+
+						'                <td class="content_lable"><label>使用类别:</label></td>					'+
+						'                <td class="content_edit"><label>'+funcList[i].transTypeName+'</label></td>						'+
+						'            </tr>																		'+
+						'            <tr>																		'+
+						'                <td class="content_lable"><label>领用部门:</label></td>					'+
+						'                <td class="content_edit"><label>'+funcList[i].departmentName+'</label></td>						'+
+						'                <td class="content_lable"><label>领用人员:</label></td>					'+
+						'                <td class="content_edit"><label>'+funcList[i].agentName+'</label></td>						'+
+						'            </tr>																		'+
+						'            <tr>																		'+
+						'                <td class="content_lable"><label>制单人员:</label></td>					'+
+						'                <td class="content_edit"><label>'+funcList[i].billerName+'</label></td>						'+
+						'                <td class="content_lable"><label>制单时间:</label></td>					'+
+						'                <td class="content_edit"><label>'+date+'</label></td>				'+
+						'            </tr>																		'+
+						'        </table>																		'+
+						'    </div>																				'+
+						'</li>';
+					wrap.insertAdjacentHTML('afterbegin', html);
+
+ 				}
+			}, null, false);
+     	});
+     	
+	}
+		//时间转换
+	function gettime(t){
+	    var _time=new Date(t);
+	    var   year=_time.getFullYear();//2017
+	    var   month=_time.getMonth()+1;//7
+	    var   date=_time.getDate();//10
+	    var   hour=_time.getHours();//10
+	    var   minute=_time.getMinutes();//56
+	    var   second=_time.getSeconds();//15
+//	    return   year+"年"+month+"月"+date+"日   "+hour+":"+minute+":"+second;//这里自己按自己需要的格式拼接
+		return   year+"-"+month+"-"+date;
+	}
+
+	function cancel(){
+		document.getElementById("search-input").value="";
+	}
+</script>
+</html>

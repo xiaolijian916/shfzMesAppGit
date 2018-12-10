@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>模具台账</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/mould/md.css" />
+
+    <script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+    <script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+    <script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-toast.js" ></script>
+    <style>
+    	body{
+
+    	}
+    </style>
+</head>
+<body>
+    <!--头部信息-->
+    <header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+        <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">模具台账</div>
+        <!--查询显示-->
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius" tapmode onclick="doSearch()">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="模具名称/编码" id="search-input">
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!--返回顶部-->
+    <img class="go-back-top" src="../../../../../../image/goBackTop.png" onclick="goBack()" style="display: none" id="goBackTop">
+    <!--主体信息-->
+    <section class="aui-refresh-content" style="margin-top:4.5rem;">
+        <div class="aui-content" id="content" style=" margin-bottom: 1.5rem">
+            <ul class="aui-list aui-form-list">
+            </ul>
+        </div>
+    </section>
+    <!--加载更多-->
+    <div class="spinner" id="loading" style="position: fixed;bottom: 0;margin: 0 auto;width: 100%">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+    <div id="load_over" style="position: fixed;bottom: 0;margin: 0 auto;width: 100%;font-size: smaller;color: #4eccc4;text-align: center"></div>
+</body>
+<script type="text/javascript">
+    var page=0;//定义页数
+    var rows=50;//定义每页显示的行数
+    var sum=0;//定义是否加载全部
+	apiready = function(){
+        initData("",initItem);//加载完毕后请求数据
+        isShowGoBackBtn();
+	};
+
+    /**
+     * 请求数据
+     * @param findParam  查询参数
+     * @param callback   请求完毕后执行的回调
+     * @author lzj
+     * @date 20181025
+     */
+    function initData(findParam,callback) {
+        api.ajax({
+            url: $.ServerUrl("/app/mould/receive/mdTool/mdLedgerList.do"),
+            method: 'post',
+            data:{
+                values:{
+                    "findParam":findParam,
+                    "Pagination":page+" "+rows,
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                callback($.toJson(obj.data));
+                sum=$.toJson(obj.data).length;
+            }, null, false);
+        });
+    }
+
+    /**
+     * 初始化列表
+     * @param obj
+     * @author lzj
+     * 2018-10-25
+     */
+    function initItem(obj) {
+        var funcList=obj;
+        var wrap = document.getElementById("content");
+        for(var i=0;i<((page+1)*rows)&&i<funcList.length;i++){
+            var html='' +
+                '<li class="aui-list-item aui-border-b" style="line-height: 2rem">' +
+                '   <div class="aui-margin-l-15" onclick="chooseRow('+funcList[i].mdLedgerId+')">' +//chooseRow()
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media aui-text-primary">编码 || 名&nbsp;&nbsp;&nbsp;&nbsp;称:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-10">'+funcList[i].mdLedgerNo+'  ||  '+funcList[i].mdLedgerName+'</div>' +
+                '       </div>' +
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media aui-text-primary">代号 || 零件号:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-10">'+funcList[i].mdNo+'  ||  '+funcList[i].partNo+'</div>' +
+                '       </div>' +
+                '   </div>' +
+                '</li>';
+                // '<li class="aui-list-item" style="border-bottom: 1px solid #dbdbdb">	'+
+                // '    <div class="aui-list-item-inner" id="content_list+'+i+'" onclick="chooseRow('+funcList[i].mdLedgerId+')">	' +
+                // '       <table width="100%;" style="background-color: #fdfdfd">								    '+
+                // '            <tr>'+
+                // '                <td style="text-align:center;width: 30%">编码 || 名&nbsp;&nbsp;&nbsp;&nbsp;称:</td>'+
+                // '                <td class="content_edit aui-searchbar-input" style="width:70%;nowrap:nowrap;"><input value="'+funcList[i].mdLedgerNo+' || '+funcList[i].mdLedgerName+'" style="width: 130%"></td>'+
+                // '            </tr>'+
+                // '            <tr>'+
+                // '                <td style="text-align:center;width: 30%">代号 || 零件号:</td>'+
+                // '                <td class="" style="width:70%;"><input readonly="true"  value="'+funcList[i].mdNo+' || '+funcList[i].partNo+'" style="width: 130%"></td>'+
+                // '            </tr>'+
+                // '        </table>																		'+
+                // '    </div>																				'+
+                // '</li>';
+            wrap.insertAdjacentHTML('beforeEnd', html);
+        }
+    }
+
+    /**
+     * 下拉刷新
+     * @type {auiPullToRefresh}
+     */
+    var pullRefresh = new auiPullToRefresh({
+        container: document.querySelector('.aui-refresh-content'),
+        triggerDistance: 200
+    },function(ret){
+        if(ret.status=="success"){
+            setTimeout(function(){
+                //刷新当前页
+                page=0;
+                cleanLi();
+                initData(document.getElementById("search-input").value,initItem);
+                var toast = new auiToast({});
+                toast.success({
+                    title : "刷新成功",
+                    duration : 2000
+                });
+                pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+            },1500)
+        }
+    });
+    /**
+     * 滑动高度大于1000时显示回到顶部按钮
+     * 滑动到底部时加载更多
+     * @author lzj
+     * @date 20181026
+     *
+     * 这个加载更多特么前前后后做了2个礼拜、不过到现在总算做完美了  希望不要有完美第2版
+     */
+    function isShowGoBackBtn(){
+        // window.onscroll=function () {
+            // var oTop=document.body.scrollTop;
+            // var scrollHeight =document.documentElement.scrollHeight||document.body.scrollHeight;
+            // var windowHeight = document.body.offsetHeight;
+            //上面这玩意是错的   当加载第2页后可见区域的高度变了
+            // var oTop=document.body.scrollTop;//网页被卷去的高
+            // var scrollHeight =document.documentElement.scrollHeight||document.body.scrollHeight;//这个表示网页正文全文高
+            // var windowHeight = document.screen.Height;//表示可是区域的高度   此处应该用 clientHeight
+            //
+            // if(oTop > 2000){
+            //     $("#goBackTop").css("display","block");
+            // }else{
+            //     $("#goBackTop").css("display","none");
+            // }
+            // console.log("屏幕高度:"+windowHeight);
+            // console.log("滚动高度："+(oTop + windowHeight));
+            // console.log("实际高度："+scrollHeight);
+            // if (oTop + windowHeight== (scrollHeight-38)){//这里不知道为什差了38；
+            //     $("#loading").css("display", "block");
+            //     setTimeout(function () {isAgainLoad()},3000);
+            // }
+        // }
+        /*监听加载更多*/
+        $(window).scroll(function(){
+
+            if($(this).scrollTop()>2000) $("#goBackTop").css("display","block");
+            else $("#goBackTop").css("display","none");
+
+            // 当滚动到最底部以上100像素时， 加载新内容
+            // 核心代码
+            if ($(document).height() - $(this).scrollTop() - $(this).height()==0){
+                if (sum<rows){
+                    document.getElementById("load_over").style.display="block";
+                    document.getElementById("load_over").innerText="我也是有底线的 (・ω<) ﾃﾍﾍﾟﾛ";//没有更多啦!//做到这里忽然有个想法  写很多加载完成语句  产生一个随机数用switch去选择不同的语句
+                    return;
+                }
+                $("#loading").css("display", "block");
+                setTimeout(function () {isAgainLoad()},3000);
+            }else {
+                $("#loading").css("display", "none");
+                document.getElementById("load_over").style.display = "none";
+            }
+        });
+    }
+
+    /**
+     * 是否需要加载下一页
+     * 到底后3秒在判断一次，若还在底部，则加载下一页
+     *      若数据已经全部加载完毕，依然停留在底部；则依然会继续加载（待改进）
+     * @author lzj
+     * @date 20181026
+     */
+    function isAgainLoad() {
+        // var oTop=document.documentElement.scrollTop || document.body.scrollTop;
+        // var scrollHeight =document.documentElement.scrollHeight||document.body.scrollHeight;
+        // var windowHeight = document.screen.Height;
+
+        if($(document).height() - $(this).scrollTop() - $(this).height()==0){
+            $("#loading").css("display", "none");
+            page+=1;
+            initData(document.getElementById("search-input").value,initItem);
+            return;
+        }
+    }
+
+    /**
+     * 点击搜索框
+     * 这里做了一个清理已有内容的事件
+     * @author lzj
+     * @date 20181026
+     */
+    function doSearch() {
+        cleanLi();//清理li
+    }
+    /**
+     * 查找
+     * @author lzj
+     * @date 20181026
+     */
+    function search(){
+        cleanLi();//清理li
+        if ($("#search-input").val()==""){
+            alert("请输入搜索内容!");
+            return;
+        }
+        page=0;
+        initData(document.getElementById("search-input").value,initItem);
+    }
+    /**
+     * 选中列表
+     * @author lzj
+     * @date 20181026
+     */
+    function  chooseRow(id) {
+        setCookie("mdLedgerData",id);
+        window.history.back();
+    }
+</script>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+		
+		
+		<!-- <link rel="stylesheet" href="../../../../../../css/bootstrap.min.css"> -->
+		 <link rel="stylesheet" type="text/css" href="../../../../../../css/angma-dialog.css" /> 
+		 <link rel="stylesheet" href="../../../../../../css/hwLayer.css">  
+		
+		    <style type="text/css">
+        .aui-list-item-inner.aui-swipe-handle {
+            overflow-x: hidden;
+            position: relative;
+            z-index: 1;
+            background-color: #ffffff;
+        }
+        .aui-swipe-btn {
+            position: absolute;
+            right: 0;
+            z-index: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-flex: 1;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+        }
+        .aui-swipe-btn .aui-btn {
+            border-radius: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+
+        }
+        .donghua {
+            -webkit-transition-duration:300ms;
+            transition-duration:300ms;
+        }
+        
+         .side-by-side-left{ position:absolute; top:0; left:0; width:15%; height:100%; } 
+        		.side-by-side-right{ margin-left:10%; height:100%; }  
+		
+		.flex{
+		    /*flex 布局*/
+		    display: flex;
+		    /*实现垂直居中*/
+		    align-items: center;
+		    /*实现水平居中*/
+		    justify-content: center;
+        }
+        
+        /*单选、多选、开关*/
+	.aui-radio {
+	    width: 1.6rem;
+	    height: 1.6rem;
+	    background-color: #ffffff;
+	    border: solid 1px #dddddd;
+	    -webkit-border-radius: 0.6rem;
+	    border-radius: 0.8rem;
+
+	}
+	
+	.display-tabel-cell {
+    	display: table-cell;
+	}
+
+	
+.hr1{ height:1px;border:none;border-top:1px solid #E5E5E5;}  
+    </style>
+	</head>
+	<body>
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+		<section class="aui-refresh-content">
+
+    <div class="aui-tips" id="tips-1" style="display: none;">
+    <i class="aui-iconfont aui-icon-info"></i>
+    <div class="aui-tips-title" id="tips-cont">共0条</div>
+    <i class="aui-iconfont aui-icon-close"></i>
+</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+				<div id="demo" style="height: 800px;">
+			          
+			
+			
+			
+			          			         
+			        	
+			        
+			        
+			        
+		        </div>
+
+	    </section>
+	    
+	    
+	    
+	    
+	    
+	    				
+
+
+
+
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	</body>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+	<script src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-scroll.js" ></script>
+	
+	<script type="text/javascript">
+	var globalDeliveryDetailId = 0;
+	//当前页数
+	var curPage = 1;
+	//是否加载数据
+	var isLoadData = true;
+	var totalCount = 0;
+
+	
+	apiready = function(){
+        api.parseTapmode();
+
+		loadArrivalNotConfirmData();
+        };
+
+
+
+
+
+		var pullRefresh = new auiPullToRefresh({
+			container: document.querySelector('.aui-refresh-content'),
+			triggerDistance: 100
+		},function(ret){
+			if(ret.status=="success"){
+				setTimeout(function(){
+					pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+					curPage = 1;
+					totalCount = 0;
+					$("#demo").empty();
+					loadArrivalNotConfirmData();
+				},100)
+			}
+		})
+		
+    var swipe = new auiListSwipe(function(ret){
+        // console.log(ret)
+    });
+    
+    //到达底部继续加载
+	var scroll = new auiScroll({
+        listen:true,
+        distance:10 //判断到达底部的距离，isToBottom为true
+    },function(ret){
+        if(ret.isToBottom){
+        	if(isLoadData){
+        		isLoadData = false;
+        		
+	        	loadArrivalNotConfirmData();
+        	}
+        }
+    });
+    
+    function renderData(getInfo){
+    
+    						//var wrap = document.getElementById("demo")
+					        //wrap.innerHTML = "";
+					//var lis = wrap.querySelectorAll('.aui-card-list');
+					
+					
+					
+					for(var i = 0; i < getInfo.length; i++){
+						var html = '<div class="aui-card-list">'+
+								'<div class="side-by-side-left flex">'+
+						        	//'<input class="aui-radio" type="checkbox" name="checkbox" value="'+getInfo[i].deliveryDetailId+'">'+
+						        '<img src="../../../../../../image/common/accoStock.png" width="50px;" height="50px;"/>'+
+						        '</div>'+
+						        '<div class="side-by-side-right card-to-check">'+
+					            '<div class="aui-card-list-header">'+
+					                '['+(totalCount+i+1)+']  '+getInfo[i].billCode+'<div class="aui-label aui-label-primary">已出库|'+getInfo[i].detailCount+'条</div>'+
+					            '</div>'+
+					            '<div class="aui-card-list-content-padded">'+
+					                
+					                
+					             '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">部门:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].deptName+'||'+getInfo[i].billManagerName+'</span>'+
+				            		
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">出库仓库:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].whName+'</span>'+
+				            		
+				            	'</div>'+
+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">出库时间:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].timed+'||'+getInfo[i].billerName+'</span>'+
+
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">描述:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 45%">'+getInfo[i].remark+'</span>'+
+				            		
+				            	'</div>'+
+					                
+					            '</div>'+
+					            //'<hr class="hr1" /> '+
+					            //'<div class="aui-card-list-footer">'+
+					                //'<div class="aui-btn aui-btn-info">不符合</div>'+
+					                //'<div class="aui-btn aui-btn-info show-layer" data-show-layer="hw-layer" style="position: fixed;right:10px;" onclick="incompatible(this,'+getInfo[i].deliveryDetailId+')">不符合</div>'+
+					            //'</div>'+
+					            '</div>'+
+					        '</div>';
+					        $("#demo").append(html);
+						//wrap.insertAdjacentHTML('beforeEnd', html);
+										        
+					}
+					
+    }
+    
+    function loadArrivalNotConfirmData(){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/endProdReturnLibr/loadListAccoOutStock.do'),
+				method : "POST",
+				data : {
+					values : {
+						"page":curPage,
+						"rows":100
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+
+				
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var resultJsonData = $.toJson(obj.data);
+						var getInfo = resultJsonData.result;
+						$("#tips-cont").html("共"+resultJsonData.totalRows+"条");
+						
+						if(getInfo.length>0){
+							curPage = curPage+1;
+							console.log(totalCount+"3333"+curPage);
+						} 
+						renderData(getInfo);
+						totalCount = totalCount + getInfo.length;
+						
+					} else {
+						//api.closeWin({});
+						
+					}
+				}, null, false);
+				isLoadData = true;
+				
+				$("#tips-1").css("display","flex");
+				setTimeout(function(){
+					$("#tips-1").css("display","none");
+				},3000);
+			});
+    }
+	</script>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>系统首页</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link type="text/css" rel="stylesheet" href="../../css/aui.css"/>
+    <link type="text/css" rel="stylesheet" href="../../css/style.css"/>
+    <link type="text/css" rel="stylesheet" href="../../assets/iconfont/xs-func-iconfont.css"/>
+    
+    <style>
+    	html, body{ background-color: #fff }
+    	#header { background-color:#3288f0; }
+        #footer{  background-color: #f2f2f2; }
+        html {
+            height: 100%;
+            background-color: #fff;
+        }
+        body {
+            background-color: #fff;
+            padding: 0;
+            margin: 0;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            height: 100%;
+            -webkit-box-orient: vertical;
+            -webkit-flex-flow: column;
+            flex-flow: column;
+        }
+        .flex-con{ overflow: auto }
+        .aui-title { display: none }
+    </style>
+
+    <script type="text/javascript">
+    	//主页菜单布局[侧边菜单布局]
+		apiready = function () {
+
+			//alert("加载侧滑菜单风格");  //延时处理
+			setTimeout(openSlidLayout, 500);
+
+			/** 监听系统主界面注销点击事件 */
+			api.addEventListener({
+	            name:'logoutUser'
+            },function(ret,err){
+            	alert("退出程序...");
+            	window.close();
+                //api.closeWin({});
+            });
+	    }
+
+	    /** 加载首页及侧滑菜单 */
+	    function openSlidLayout(){
+		    api.openSlidLayout({
+	            type: 'left',
+	            leftEdge: 150,
+	            fixedPane: {
+	                name: 'fixedLayout',
+	                url: 'main_report_list.html'
+	            },
+	            slidPane: {
+	                name: 'slidLayout',
+	                url: 'main_list.html'
+	            }
+		        }, function (ret) {
+	        });
+	        api.lockSlidPane();
+	    }
+
+	</script>
+</head>
+<body>
+</body>
+</html>

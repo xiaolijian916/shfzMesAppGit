@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>不良品判定</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+</head>
+<body>
+	<div class="aui-content aui-margin-b-15">
+		<header class="aui-bar aui-bar-nav" style="padding-top:25px;">
+		    <a class="aui-pull-left aui-btn" tapmode onclick="closeHtml()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title">不良品判定</div>
+		    <a class="aui-pull-right aui-btn" tapmode onclick="saveDefResult()">
+		        <span class="aui-iconfont aui-icon-correct"></span>
+		    </a>
+		</header>
+        <ul class="aui-list aui-form-list">
+        	<li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		物料图号
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="drawingNumber" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		物料名称
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="itemName" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		物料批次
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="defectiveLot" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger">
+                    	处理结论
+                    </div>
+                    <div class="aui-list-item-input">
+                    	<input type="hidden" id="conclude">
+                        <input type="text" id="concludeName" placeholder="请选择" readonly="true" onclick="loadConcludeInfo()">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger">
+                    	处理数量
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="tel" id="handleQty" oninput="this.value=this.value.replace(/[^0-9.]+/,'');">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                    	备注
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea id="remark"></textarea>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript">
+	var defectiveId
+	
+	apiready = function(){
+		api.parseTapmode();
+		defectiveId = api.pageParam.defectiveId;
+		$("#drawingNumber").val(api.pageParam.drawingNumber);
+		$("#itemName").val(api.pageParam.itemName);
+		$("#defectiveLot").val(api.pageParam.defectiveLot);
+		quantitySelect();
+	};
+	
+	function quantitySelect(){
+		api.addEventListener({
+		    name: 'quantitySelect'
+		}, function(ret, err) {
+			var quantityType = ret.value.quantityType;
+			$("#conclude").val(ret.value.value);
+			$("#concludeName").val(ret.value.label);
+		});
+	}
+	
+	function loadConcludeInfo(){
+		//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadDealConclusion.do'),
+			method : "POST"
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					selectWin(obj.data,"处理结论",'conclude');
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+	}
+	
+	//弹出选择页面
+    function selectWin(quantityInfo,quantityTitle,quantityType){
+    	api.openWin({
+			name : 'quantity_select',
+			url : '../quantity_select.html',
+			pageParam: {
+		        quantityList: quantityInfo,
+		        quantityTitle: quantityTitle,
+		        quantityType: quantityType
+		    },
+		    delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+	
+	function saveDefResult(){
+		//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务：获取到货待处理数据
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/saveDefectiveResultInfo.do'),
+			method : "POST",
+			data : {
+				values : {
+					"defectiveId": defectiveId,
+					"conclude": $("#conclude").val(),
+					"handleQty": $("#handleQty").val(),
+					"remark": $("#remark").val()
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					api.sendEvent({
+					    name: 'reflash',
+					});
+					closeHtml();
+					return $.alert("提示", $.toStringify(obj.data));
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+	}
+	
+	function closeHtml(){
+    	api.closeWin({});
+    }
+</script>
+</html>

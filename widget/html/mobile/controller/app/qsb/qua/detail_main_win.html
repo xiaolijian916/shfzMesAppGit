@@ -1,0 +1,258 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+       <style>
+       .aui-row {
+           overflow: hidden;
+           margin: 0;
+             }
+      </style>
+	 </head>
+	 <body>
+	
+		<header class="aui-bar aui-bar-nav"  id="header">
+		    <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title">质量问题明细</div>
+		</header>
+		
+			<div class="aui-content" id="detailMain">
+				<ul class="aui-list aui-media-list" id="ulmain"></ul>
+			</div>
+		
+		
+
+			<div class="aui-bar" id="andon-content">	
+		<div class="aui-tab" id="tab">
+		    <div class="aui-tab-item aui-active">问题反馈</div>
+		    <div class="aui-tab-item"><div></div>问题跟踪</div>
+		</div>
+		<div id="tab-con">
+    	    <div id="tab-andon-1"></div>
+    	    <div id="tab-andon-2" class="aui-hide"></div>
+    	</div> 
+	</div>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-tab.js" ></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript">	
+	   apiready = function(){
+        api.parseTapmode();
+
+        			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/detailQuaSummaryList.do'),
+				method : 'post',
+				data: {             
+				      values:{
+                     "summaryId":$api.getStorage("summaryId"),
+                }}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					}
+					var funcList = $.toJson(obj.data);
+					//				-------------------------------------------------------------总数据条数显示---------------------------------
+					//				------------------------------------------------------------ 循环加载数据----------------------------------
+						var strHappenDate = gettime(funcList[0].happenTime);
+						var strTempCompTime = gettime(funcList[0].tempCompTime);
+						var strLongTermMeaCompTime = gettime(funcList[0].longTermMeaCompTime);
+						//日期时间转换
+						var strSrc =$.PicUrl(funcList[0].defectPicPath);					
+						if($.isNull(funcList[0].defectPicPath))
+						{strSrc="../../../../../../image/main/qsb/noPicture.png";}						
+						$("#ulmain").append('<li class="aui-list-item">' 
+						+ '<div class="aui-media-list-item-inner">' 
+			            + '<div class="aui-list-item-media">' 
+						+ '<img src="' + strSrc + '" onclick="getPic(\'' + strSrc + '\')">' 
+						+ '</div>' 
+						+ '<div class="aui-list-item-inner">' 
+						+ '<div class="aui-list-item-text">' 
+						+ '<div class="aui-list-item-title">' 
+						+ '问题描述:' + '</div>' 
+						+ '<div class="aui-list-item-right">' 
+						+ '<div class="aui-label aui-label-info">' 
+						+ funcList[0].currentStatus + '</div>' 
+						+ '</div>' 
+						+ '</div>' 
+						+ '<div class="aui-list-item-text">' 
+						+ funcList[0].problemDescription + '</div>' 
+						+ '<div class="aui-list-item-text">' 
+						+ '项目：' + funcList[0].models + '</div>' 
+					
+						+ '<div class="aui-list-item-text">' 
+						+ '责任人：' + funcList[0].respTeamLeader + '</div>' 
+						+ '<div class="aui-list-item-text">' 
+						+ '问题反馈：' + funcList[0].roblemFeedbac + '</div>' 
+			
+					
+						
+						+ '<div class="aui-list-item-text">' 
+						+ '发生日期：' + strHappenDate + '</div>' 
+						+ '</div>' + '</div>'  + '</li>')
+					
+				}, null, false);
+			});
+
+        var header = $api.byId('header');
+        $api.fixStatusBar(header);
+        headerPos = $api.offset(header);
+        
+        var body_h = $api.offset($api.dom('body')).h;
+//      var deatil = $api.offset($api.byId('detailMain')).h;
+//      var ulmain= $api.offset($api.byId('ulmain')).h;
+//      alert(headerPos.h+","+body_h+","+deatil+","+ulmain);
+         
+	openTabFrame('detail_one_frm','detail_one_frm.html',200);
+    };
+
+  	var index = 1;
+    var tab = new auiTab({
+        element:document.getElementById("tab"),
+    },function(ret){
+        if(ret){
+            function siblings(elm) {
+                var a = [];
+                var p = elm.parentNode.children;
+                for(var i =0,pl= p.length;i<pl;i++) {
+                	if(p[i] !== elm) a.push(p[i]);
+                }
+                return a;
+            };
+            
+            
+            index=ret.index;
+            var activeC = document.getElementById("tab-andon-" + index);
+            activeC.className = "";    
+
+            for(var i=0;i<siblings(activeC).length;i++){
+                siblings(activeC)[i].className = "aui-hide";
+            }   
+           var hh= document.getElementById('detailMain').offsetHeight;
+          var xx= document.getElementById('tab').offsetHeight;
+
+            if(1==index){
+            	fnHideMyinfoFrame('detail_two_frm');
+            	openTabFrame('detail_one_frm','detail_one_frm.html',hh+xx);
+            }else if(2==index){
+            	fnHideMyinfoFrame('detail_one_frm');
+            	openTabFrame('detail_two_frm','detail_two_frm.html',hh+xx);
+            }
+        }
+    });  
+    //打开TAB
+    function openTabFrame(varName,varUrl,hh){
+	    api.openFrame({
+	        name: varName,
+	        url: varUrl,
+	        bounces: true,
+	        rect: {
+	            x: 0,
+	            y: headerPos.h+hh,
+	            w: 'auto',
+	            h: 'auto'
+	        }
+	    }) 
+    }
+    
+        function getPic(picUrl){
+    	var photoBrowser = api.require('photoBrowser');
+		photoBrowser.open({
+		    images: [
+		    	picUrl
+		    ],
+		    placeholderImg: '../../../../../image/common/no_picture.png',
+		    bgColor: '#000'
+		}, function(ret, err) {
+		    if (ret) {
+		        if(ret.eventType=='click'){
+		        	photoBrowser.close();
+		        }
+		    } else {
+		        photoBrowser.close();
+		    }
+		});
+    }
+    
+    
+    				//时间转换
+		function gettime(t) {
+			var _time = new Date(t);
+			var year = _time.getFullYear();
+			//2017
+			var month = _time.getMonth() + 1;
+			//7
+			var date = _time.getDate();
+			//10
+			var hour = _time.getHours();
+			//10
+			var minute = _time.getMinutes();
+			//56
+			var second = _time.getSeconds();
+			//15
+			//	    return   year+"年"+month+"月"+date+"日   "+hour+":"+minute+":"+second;//这里自己按自己需要的格式拼接
+			return year + "-" + month + "-" + date;
+		}
+
+    
+    //隐藏TAB
+    function fnHideMyinfoFrame(varName){
+      api.setFrameAttr({
+          name: varName,
+          hidden: true
+      });
+    }
+    
+    function feedback(){
+    	var delay = 0;
+    	api.openWin({
+			name : 'andon_feedback',
+			url : 'andon_feedback.html',
+			bounces : false,
+			delay : delay,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+    
+    //关闭当前窗体
+    function closeWin(){
+        api.closeWin();
+    }
+
+	
+//
+//   function init(){
+//   	    $(document).ready(function(){
+//  		    var dd= document.getElementById('detailMain').offsetHeight;
+//      alert(dd)//200
+//  });
+//  
+//   	    var dd= document.getElementById('detailMain').offsetHeight;
+//      alert(dd)//200
+//   
+////		document.getElementById("actionButton").onclick=function(){
+////			var content=document.getElementById("content").value;
+////			alert(content);
+////		}
+//  	window.onload=function(){
+////	document.getElementById("tab").click();
+//	    var gg= document.getElementById('header').offsetHeight;
+//
+//    alert(gg);
+//	}
+//
+//	} 
+    
+    
+	</script>
+</html>

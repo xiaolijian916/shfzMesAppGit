@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>二级菜单加载通用界面</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link type="text/css" rel="stylesheet" href="../../css/api.css"/>
+	<link type="text/css" rel="stylesheet" href="../../css/aui.css"/>
+	<link type="text/css" rel="stylesheet" href="../../css/mui.min.css"/>
+	<link type="text/css" rel="stylesheet" href="../../css/mstyle.css"/>
+	<link type="text/css" rel="stylesheet" href="../../assets/iconfont/xs-func-iconfont.css"/>
+	<link type="text/css" rel="stylesheet" href="../../assets/iconfont/xs-menu-iconfont.css"/>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/aui-popup.js"></script>
+	<script type="text/javascript" src="../../script/aui-dialog.js"></script>
+	<script type="text/javascript" src="../../script/aui-toast.js"></script>
+	<script type="text/javascript" src="../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../assets/js/ama-custom.js"></script>
+	<style>
+		#header { background-color:#3288f0; }
+	</style>
+
+	<script type="text/javascript">
+		apiready = function(){
+			var menuTreeMap = $api.getStorage("menuTreeMap");
+			var menuList = menuTreeMap[api.pageParam.menuId];
+			$api.text($api.byId("supMenuTitle"), api.pageParam.menuName);
+			$.each(menuList, function(i, funcObj){
+				//$.print("功能列表", funcObj);
+				var reqUrl;
+				if($.isNotNull(funcObj.code)){
+					var htmlPath = funcObj.code.replace(/[A-Z].*/g, "").replace(/[.]/g, "/");
+					var pageName = $.ConvertToUnLine(funcObj.code, /[A-Z].*Controller/g);
+					reqUrl = $.FormatString("'../{0}{1}.html', '{2}'", [htmlPath, pageName, funcObj.name]);
+				}else{ //存在多级(二级以上)菜单
+					reqUrl = $.FormatString("'{0}','{1}','{2}'", ['main_menu_level_list.html', funcObj.name, funcObj.id]);
+				}
+
+				/* //添加到功能列表中（九宫格菜单）
+				$("#menuLevelList").append(
+					'<li class="aui-list-view-cell aui-img aui-col-xs-4">' +
+						'<img class="aui-img-object" onclick="openFuncWin('+ reqUrl +')" src="../../image/main/menu/'+ funcObj.menuName +'.png">' +
+					'</li>'
+				); */
+
+				//装载二级菜单（列表菜单）
+				$api.byId("menuLevelList").insertAdjacentHTML('beforeend',
+					'<li class="aui-list-item aui-list-item-middle">'+
+	                    '<div class="aui-media-list-item-inner" style="height:4rem" onclick="openFuncWin('+ reqUrl +')">'+
+                            '<div class="aui-img-round aui-list-img-sm">'+
+                                '<i class="xs-menu-iconfont xs-icon-menu-'+ pageName.replace(/_/g, "-") +'"></i>'+
+                            '</div>'+
+	                        '<div class="aui-list-item-inner aui-list-item-arrow">'+
+	                            '<div class="aui-list-item-text">'+
+	                                '<div class="aui-list-item-title aui-font-size-19" style="margin-left: 0.5rem;">'+ funcObj.name +'</div>'+
+	                            '</div>'+
+	                        '</div>'+
+	                    '</div>'+
+	                '</li>'
+				);
+			});
+		};
+
+	/** 返回主菜单点击事件 */
+	function clickBackEvent(){
+		api.closeWin({});
+	}
+
+	/** 打开功能窗口 ：理论支持无限层级菜单...（建议不超过二级菜单） */
+	function openFuncWin(reqUrl, menuName, menuId){
+		//$.print("", [reqUrl, menuName, menuId]);
+		$.openWin(menuName, reqUrl, {'menuId' : menuId});
+	}
+
+	</script>
+</head>
+
+<!--二级菜单公用界面：动态加载-->
+<body>
+	<div id="wrap" class="flex-wrap flex-vertical">
+		<header id="header" class="aui-bar aui-bar-nav">
+		    <a class="aui-pull-left aui-btn" onclick="clickBackEvent()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div id="supMenuTitle" class="aui-title">父菜单标题</div>
+		</header>
+	</div>
+	<!--
+	<div class="aui-card-list-content">
+            <ul class="aui-list aui-media-list">
+                <li class="aui-list-item aui-list-item-middle">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-media">
+                        	<i class="xs-menu-iconfont xs-icon-menu-purchase-in-storage"></i>
+                            <img src="../../image/demo5.png" class="xs-menu-iconfont xs-icon-menu-purchase-in-storage">
+                        </div>
+                        <div class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title aui-font-size-14">AUI</div>
+                                <div class="aui-list-item-right">08:00</div>
+                            </div>
+                            <div class="aui-list-item-text">
+                                www.auicss.com
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="aui-list-item aui-list-item-middle" >
+                    <div class="aui-media-list-item-inner" style="height: 5rem">
+                            <i class="xs-menu-iconfont xs-icon-menu-material-out-stock"></i>
+                        <div class="aui-list-item-inner aui-list-item-arrow" >
+                            流浪男
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        -->
+	<div class="aui-card-list">
+        <div class="aui-card-list-content">
+            <ul id="menuLevelList" class="aui-list aui-media-list"></ul>
+        </div>
+	</div>
+</body>
+</html>

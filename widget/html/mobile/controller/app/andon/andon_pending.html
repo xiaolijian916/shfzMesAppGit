@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../../css/aui-pull-refresh.css" />
+	<style>
+        .aui-list-item-inner.aui-swipe-handle {
+            overflow-x: hidden;
+            position: relative;
+            z-index: 1;
+            background-color: #ffffff;
+        }
+        .aui-swipe-btn {
+            position: absolute;
+            right: 0;
+            z-index: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-flex: 1;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+        }
+        .aui-swipe-btn .aui-btn {
+            border-radius: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+
+        }
+        .donghua {
+            -webkit-transition-duration:300ms;
+            transition-duration:300ms;
+        }
+	</style>
+</head>
+<body>
+	<section class="aui-refresh-content">
+		<div class="aui-tips aui-margin-t-10" id="andonCount"></div>
+		<div class="aui-content aui-margin-b-15">
+			<ul class="aui-list aui-select-list" id="andonInfo"></ul>
+		</div>
+	</section>
+</body>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-list-swipe.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-list-swipe-backup.js"></script>
+<script type="text/javascript" src="../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-scroll.js" ></script>
+<script type="text/javascript">
+	//当前页数
+	var curPage = 1;
+	var totalPage;
+	var isLoadData = false;
+	var wrap = document.getElementById("andonInfo");
+
+	apiready = function(){
+		api.parseTapmode();
+		loadAndonPendingData();
+		api.addEventListener({
+		    name: 'feedback'
+		}, function(ret, err) {
+		    reflash();
+		});
+    };
+    
+    function reflash(){
+    	curPage = 1;
+    	isLoadData = false;
+		wrap.innerHTML = "";
+    	loadAndonPendingData();
+    }
+	
+	var swipe = new auiListSwipe(function(ret){
+        // console.log(ret)
+    });
+    
+	var pullRefresh = new auiPullToRefresh({
+		container: document.querySelector('.aui-refresh-content'),
+		triggerDistance: 100
+	},function(ret){
+		if(ret.status=="success"){
+			setTimeout(function(){
+				reflash();
+				pullRefresh.cancelLoading(); //刷新成功后调用此方法隐藏
+			},1500)
+		}
+	});
+	
+	//到达底部继续加载
+	var scroll = new auiScroll({
+        listen:true,
+        distance:100
+    },function(ret){
+        if(ret.isToBottom){
+    		if(isLoadData){
+    			loadAndonPendingData();
+	        }
+        }
+    });
+	
+	function renderAndonData(andonInfo){
+		for(var i = 0; i < andonInfo.length; i++){
+			var html = '<li class="aui-list-item">' +
+							'<div class="aui-list-item-label" onclick="andonDetail(\'' + andonInfo[i].faultRecordId + '\')">' +
+				                '<img src="../../../../../image/andon_' + andonInfo[i].status + '.png" width="80">'+
+					        '</div>' +
+							'<div class="aui-list-item-inner aui-swipe-handle aui-border-b aui-border-t" style="display: inline-block" onclick="andonDetail(\'' + andonInfo[i].faultRecordId + '\')">' +
+				                '<div class="aui-list-item-text">' +
+				                    '<div class="aui-list-item-title aui-ellipsis-1">'+ andonInfo[i].workcenterName + ':' + andonInfo[i].workcenterStationName +'</div>' +
+				                    '<div class="aui-list-item-right">' +
+				                        '<div class="aui-label">' + andonInfo[i].remark + 'min</div>' +
+				                    '</div>' +
+				                '</div>' +
+				                '<div class="aui-list-item-text"><div class="aui-ellipsis-1">异常类型：'+ andonInfo[i].faultClassName + '</div></div>' +
+				                '<div class="aui-list-item-text"><div class="aui-ellipsis-1">故障名称：' + andonInfo[i].exceptionName + '</div></div>' +
+				                '<div class="aui-list-item-text"><div class="aui-ellipsis-1">故障描述：' + andonInfo[i].exceptionDescribe + '</div></div>' +
+				                '<div class="aui-info aui-margin-t-5" style="padding:0">' +
+			                        '<div class="aui-info-item">' +
+			                        	'<span class="aui-iconfont aui-icon-my"></span>' +
+			                            '<span>' + andonInfo[i].finderUserName + '</span>' +
+			                        '</div>' +
+			                        '<div class="aui-info-item">' +
+			                        	'<span class="aui-iconfont aui-icon-date"></span>' +
+			                            '<span>' + andonInfo[i].strFinderTime + '</span>' +
+			                        '</div>' +
+			                    '</div>' +
+				            '</div>' +
+				            '<div class="aui-swipe-btn">' +
+		                		'<div class="aui-btn aui-btn-info" onclick="andonRelieve(\'' + andonInfo[i].faultRecordId + '\')">解除</div>' +
+		                    	'<div class="aui-btn aui-btn-danger" onclick="andonDel(\'' + andonInfo[i].faultRecordId + '\')">删除</div>'+
+		                	'</div>' +
+						'</li>';
+			wrap.insertAdjacentHTML('beforeend', html);
+		}
+	}
+	
+	function loadAndonPendingData(){
+	    //数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务：获取到货待处理数据
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/loadReportList.do'),
+			method : "POST",
+			data : {
+				values : {
+					"page": curPage,
+					"rows": 10,
+					"accountId" : $api.getStorage('userInfo').accountId,
+					"workcenterId" : $api.getStorage('userInfo').workcenterId,
+					"status" : '0'
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var andonJsonData = $.toJson(obj.data);
+					var andonInfo = andonJsonData.result;
+					totalPage = andonJsonData.totalPages;
+					document.getElementById("andonCount").innerHTML = ""; 
+					document.getElementById("andonCount").insertAdjacentHTML('afterbegin','<div class="aui-tips-title">共有' + andonJsonData.totalRows + '条待处理异常记录</div>');
+					if(curPage<=totalPage){
+						curPage = curPage+1;
+						if(curPage<=totalPage){
+							isLoadData = true;
+						}else{
+							isLoadData = false;
+						}
+						renderAndonData(andonInfo);
+					}
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    //查看异常事件明细
+    function andonDetail(faultRecordId){
+    	api.openWin({
+			name : 'andon_detail',
+			url : 'andon_detail.html',
+			pageParam: {
+		        faultRecordId: faultRecordId
+		    },
+		    delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+    
+    //解除异常事件
+    function andonRelieve(faultRecordId){
+	    //数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/updateFaultDetail.do'),
+			method : "POST",
+			data : {
+				values : {
+					"accountId" : $api.getStorage('userInfo').accountId,
+					"faultRecordId" : faultRecordId,
+					"status" : '2'
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					reflash();
+				} else {
+					return $.alert("错误", obj.data);
+				}
+			}, null, false);
+		});
+    }
+    
+    //删除异常事件
+    function andonDel(faultRecordId){
+	    //数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/andon/andonAnswer/deleteFaultDetail.do'),
+			method : "POST",
+			data : {
+				values : {
+					"faultRecordId" : faultRecordId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					reflash();
+				} else {
+					api.closeWin({});
+				}
+			}, null, false);
+		});
+    }
+</script>
+</html>

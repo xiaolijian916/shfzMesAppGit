@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>来料检验</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../css/quality/style.css" />
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav" style="padding-top:25px;" id="header">
+	    <a class="aui-pull-left aui-btn" onclick="closeHtml()">
+	        <span class="aui-iconfont aui-icon-left"></span>
+	    </a>
+	    <div class="aui-title" id="iqc-title">来料待检</div>
+	    <a class="aui-pull-right aui-btn" id="iqc-search">
+	    	<span class="aui-iconfont aui-icon-search" onclick="openSearch('iqc_untested')"></span>
+	    </a>
+	    <a class="aui-pull-right aui-btn" id="iqc-qrcode">
+	    	<span class="icon-qrcode" onclick="openEquipmentQRCode()"></span>
+	    </a>
+	</header>
+	<div id="tab-con">
+	    <div id="iqc-1"></div>
+	    <div id="iqc-2" class="aui-hide"></div>
+	    <div id="iqc-3" class="aui-hide"></div>
+    </div>
+    <footer class="aui-bar aui-bar-tab aui-padded-b-15 aui-font-size-20" id="footer">
+        <div class="aui-bar-tab-item aui-active" tapmode>
+        	<div class="aui-badge" id="iqcCount"></div>
+            <i class="icon-untested"></i>
+            <div class="aui-bar-tab-label">来料待检</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <i class="icon-examine"></i>
+            <div class="aui-bar-tab-label">检验记录</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <div class="aui-badge" id="defCount"></div>
+            <i class="icon-unqualified"></i>
+            <div class="aui-bar-tab-label">不良品判定</div>
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../../../../../script/api.js" ></script>
+<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-toast.js"></script>
+<script type="text/javascript">
+	var pageArray = ["iqc_untested", "iqc_examine", "iqc_unqualified"];
+	
+    apiready = function(){
+        api.parseTapmode();
+        openFrame(pageArray[0]);
+        loadIqcCountData();
+        reflash();
+    }
+    
+    function reflash(){
+		api.addEventListener({
+		    name: 'iqcCount'
+		}, function(ret, err) {
+		    loadIqcCountData();
+		});
+	}
+    
+    var tab = new auiTab({
+        element:document.getElementById("footer")
+    },function(ret){
+        if(ret){
+        	function siblings(elm) {
+                var a = [];
+                var p = elm.parentNode.children;
+                for(var i =0,pl= p.length;i<pl;i++) {
+                	if(p[i] !== elm) a.push(p[i]);
+                }
+                return a;
+            };
+
+            var index = ret.index;
+            var activeC = document.getElementById("iqc-"+index);
+            activeC.className = "";
+			
+            for(var i=0;i<siblings(activeC).length;i++){
+                siblings(activeC)[i].className = "aui-hide";
+            }
+            
+            for (var i = 0; i < pageArray.length; i++) {
+            	if(i==index-1){
+            		openFrame(pageArray[i]);
+            	}else{
+            		hideFrame(pageArray[i]);
+            	}
+            }
+            
+            var pageTitle = ["来料检验", "检验记录", "不良品判定"];
+            var wrap = document.getElementById("iqc-title");
+            wrap.innerHTML = "";
+            wrap.insertAdjacentHTML('afterbegin', pageTitle[index-1]);
+            
+            var wrapSearch = document.getElementById("iqc-search");
+        	wrapSearch.innerHTML= "";
+        	var searchHtml = '<span class="aui-iconfont aui-icon-search" onclick="openSearch(\'' + pageArray[index-1] + '\')"></span>';
+            wrapSearch.insertAdjacentHTML('afterbegin', searchHtml);
+            
+            var qrcodeHide = ['block','none','none'];
+            $("#iqc-qrcode").css('display', qrcodeHide[index-1]);
+        }
+    });
+    
+    function openFrame(varName){
+	    api.openFrame({
+	        name: varName,
+	        url: 'iqc/' + varName + '.html',
+	        bounces: true,
+	        rect: {
+	            x: 0,
+	            y: $api.dom('#header').offsetHeight,
+	            w: 'auto',
+	            h: api.winHeight-$api.dom('#footer').offsetHeight-$api.dom('#header').offsetHeight
+	        }
+	    }) 
+    }
+    
+    function hideFrame(varName){
+      api.setFrameAttr({
+          name: varName,
+          hidden: true
+      });
+    }
+    
+    //获取记录数
+    function loadIqcCountData(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务：获取到货待处理数据
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadIqcCountInfo.do'),
+			method : "POST"
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) { 
+					var iqcCountInfo = $.toJson(obj.data);
+					var iqcWrap = document.getElementById("iqcCount");
+		            iqcWrap.innerHTML = "";
+		            iqcWrap.insertAdjacentHTML('afterbegin', iqcCountInfo.iqcQty);
+		            var defWrap = document.getElementById("defCount");
+		            defWrap.innerHTML = "";
+		            defWrap.insertAdjacentHTML('afterbegin', iqcCountInfo.defQty);
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    //扫描送货单
+    function openEquipmentQRCode() {
+    	var FNScanner = api.require('FNScanner');
+		FNScanner.open({
+		    autorotation: true
+		}, function(ret, err) {
+		    if (ret) {
+	    		api.sendEvent({
+				    name: 'qrcode',
+				    extra: {
+				        qrcode: ret.content
+				    }
+				});
+		    } else {
+		        return console.log("扫描送货单信息失败");
+		    }
+		});
+    }
+    
+    function openSearch(varName){
+	    api.openWin({
+	        name: 'iqc_search',
+	        url: 'iqc/iqc_search.html',
+	        pageParam: {
+		        searchName: varName
+		    },
+		    delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+	    }) 
+    }
+    
+    function closeHtml(){
+    	api.closeWin({});
+    }
+</script>
+</html>

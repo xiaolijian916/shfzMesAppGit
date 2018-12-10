@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../../../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../../css/icomoonstyle.css" />
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../css/api.css"/>
+
+<style>
+        .search-input {
+            height: 1.6rem;
+            line-height: 1.6rem;
+            background: #f5f5f5;
+            border-radius: 30px;
+            position: relative;
+            font-family:"aui_iconfont" !important;
+            text-align: left;
+            padding-left: 1.5rem;
+            color: #999999;
+        }
+        .search-input:after {
+            position: absolute;
+            left: 0;
+            padding-left: 0.5rem;
+            content: "\e615";
+        }
+
+</style>
+</head>
+<body>
+	<div id="outerMostLayer" class="aui-bar aui-bar-nav">
+    <header class="aui-bar aui-bar-nav" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">采购退货</div>
+        <a class="aui-pull-right">
+        	 <span class="aui-iconfont aui-icon-plus" style="margin-right: 10px;font-size: 20px;" onclick="addOutStock();"></span>
+        	 <span class="aui-iconfont aui-icon-search" style="margin-right: 10px;font-size: 20px;" onclick="searchClick();"></span> 
+            
+        </a>
+    </header>
+
+
+     <div class="aui-tab" id="tab1">
+        <div class="aui-tab-item aui-active">待退货</div>
+        <div class="aui-tab-item"><div></div>已退货</div>
+    </div>
+     	<div id="tab1-con">
+    	    <div id="tab1-con1">
+
+		        			        
+    	    </div>
+    	    <div id="tab1-con2" class="aui-hide">
+
+    	    
+    	    </div>
+    	</div> 
+    	
+    	
+	
+</div>
+
+			    
+
+</body>
+<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+<script type="text/javascript">
+var headerPos = 0;
+var openFrameName1 = "wait_out_stock";
+var openFrameName2 = "acco_out_stock";
+    apiready = function(){
+        api.parseTapmode();
+        
+        //清空查询页面数据
+        var storage=window.localStorage;
+    	storage.removeItem("searchParamLoca");
+        
+        var header = $api.byId('outerMostLayer');
+        $api.fixStatusBar(header);
+        headerPos = $api.offset(header);
+        var body_h = $api.offset($api.dom('body')).h;
+        setTimeout(function(){
+			openTabFrame(openFrameName1,'folder-purchaseReturn/'+openFrameName1+'.html',0);
+          
+        },0);
+    };
+    
+    function addOutStock(){
+    	$.openFrame("addOutStockFrame", 'folder-purchaseReturn/add_out_stock.html', {"openFrameName":"addOutStockFrame"});
+    	
+    }
+    
+    //确认按钮
+    function confirmDelivery(){
+        api.execScript({
+		    frameName: openFrameName1,
+		    script: 'childConfirmDelivery();'
+		});
+    }
+    
+    //退货
+    function returnedPurchase(){
+        api.execScript({
+		    frameName: openFrameName1,
+		    script: 'childReturnedPurchase();'
+		});
+    }
+    
+    //全选，全不选
+    function cardToCheck(target){
+    
+    	var checkStatus = 0;
+	    if($(target).prop('checked')) {
+	    	checkStatus = 1;
+	    }
+    
+	    var checkToAllOrNull = 'funcCheckToAllOrNull('+checkStatus+');';
+    	api.execScript({
+		    frameName: openFrameName1,
+		    script: checkToAllOrNull
+		});
+    }
+    
+    function mainFuncCheckToAllOrNull(varLength){
+    	$("#checkTotalText").html("已选："+varLength+"条");
+    }
+    
+    //打开
+    function openTabFrame(varName,varUrl,varMarginBottom){
+	    api.openFrame({
+	        name: varName,
+	        url: varUrl,
+	        bounces: false,
+	        rect: {
+	            x: 0,
+	            y: headerPos.h,
+	            w: 'auto',
+	            h: 'auto',
+	            marginBottom:varMarginBottom
+	        },
+	        progress:{
+	        	type :"page",
+	        	title:"1",
+	        	text:"2"
+	        }
+	    }) 
+    }
+    //隐藏
+     function fnHideMyinfoFrame(varName){
+      api.setFrameAttr({
+          name: varName,
+          hidden: true
+      });
+    }
+    //关闭当前窗体
+    function closeWin(){
+        api.closeWin({
+        });
+    }
+    
+    var tab = new auiTab({
+        element:document.getElementById("tab1"),
+    },function(ret){
+        console.log(ret)
+        if(ret){
+            //  定义获取对象的所有兄弟节点函数
+            function siblings(elm) {
+                var a = [];
+                var p = elm.parentNode.children;
+                for(var i =0,pl= p.length;i<pl;i++) {
+                if(p[i] !== elm) a.push(p[i]);
+                }
+                return a;
+            };
+            var index = ret.index;
+            var activeC = document.getElementById("tab1-con" + index);
+            console.log(ret.index);
+            activeC.className = "";    
+
+            for(var i=0;i<siblings(activeC).length;i++){
+                siblings(activeC)[i].className = "aui-hide";
+            }   
+            
+            if(1==index){
+            	fnHideMyinfoFrame(openFrameName2);
+            	openTabFrame(openFrameName1,'folder-purchaseReturn/'+openFrameName1+'.html',0);
+            }else if(2==index){
+            	fnHideMyinfoFrame(openFrameName1);
+            	openTabFrame(openFrameName2,'folder-purchaseReturn/'+openFrameName2+'.html',0);
+            }
+            
+    
+        }
+    });
+
+
+    function searchClick(){
+    	$.openFrame('searchPage','folder-purchaseReturn/search_page.html',0);
+    }
+
+</script>
+</html>

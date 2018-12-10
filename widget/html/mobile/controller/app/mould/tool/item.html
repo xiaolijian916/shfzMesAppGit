@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>产品选择</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+
+    <script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+    <script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+    <style>
+    	body{
+
+    	}
+        td{
+            white-space: normal  ;/*td禁止换行*/
+        }
+    </style>
+</head>
+<body>
+    <!--头部信息-->
+    <header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+        <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">产品选择</div>
+        <!--查询显示-->
+        <div class="aui-searchbar" id="search">
+            <div class="aui-searchbar-input aui-border-radius" tapmode onclick="doSearch()">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <form action="javascript:search();">
+                    <input type="search" placeholder="产品编码/名称" id="search-input">
+                </form>
+            </div>
+        </div>
+    </header>
+    <!--主体信息-->
+    <section class="aui-refresh-content" style="margin-top:4.5rem;">
+        <div class="aui-content" id="content" style=" margin-bottom: 1.5rem">
+            <ul class="aui-list aui-form-list">
+            </ul>
+        </div>
+    </section>
+    <!--加载更多-->
+    <div class="spinner" id="loading" style="position: fixed;bottom: 0;margin: 0 auto;width: 100%">
+        <div class="rect1"></div>
+        <div class="rect2"></div>
+        <div class="rect3"></div>
+        <div class="rect4"></div>
+        <div class="rect5"></div>
+    </div>
+    <div id="load_over" style="position: fixed;bottom: 0;margin: 0 auto;width: 100%;font-size: smaller;color: #4eccc4;text-align: center"></div>
+    <!--返回顶部-->
+    <img class="go-back-top" src="../../../../../../image/goBackTop.png" onclick="goBack()" style="display: none;background-color: bisque" id="goBackTop">
+
+</body>
+
+<script type="text/javascript">
+    var page=0;//定义页数
+    var rows=50;//定义每页显示的行数
+    var sum=0;//定义是否加载全部
+	apiready = function(){
+        initData(initItem);
+	};
+
+    /**
+     * 函数名:initDate
+     * 参  数:callback;ajax请求完毕后执行的操作
+     * 功  能:带参数请求数据后执行数据渲染操作；并通过sum进行判断数据是否已经全部加载完毕；（最多会空执行一次）
+     *
+     * @author lzj
+     * @date 2018/11/8 10:31
+     */
+	function initData(callback){
+        api.ajax({
+            url: $.ServerUrl('/app/mould/receive/mdTool/itemList.do'),
+            method: 'post',
+            data : {
+                values : {
+                    "findParam":document.getElementById("search-input").value,//搜索框传入的值
+                    "Pagination":page+" "+rows,//页
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)){
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                callback($.toJson(obj.data));
+                sum=$.toJson(obj.data).length;
+            }, null, false);
+        });
+    }
+
+    /**
+     * 函数名:initItem
+     * 参  数:后台请求的数据
+     * 功  能:将请求到的数据展示给用户看
+     *
+     * @author lzj
+     * @date 2018/11/8 11:04
+     */
+    function initItem(obj){
+        var funcList=obj;
+        var wrap = document.getElementById("content");
+        for(var i=0;i<((page+1)*rows)&&i<funcList.length;i++){
+            var html='' +
+                '<li class="aui-list-item aui-border-b" style="line-height: 2.5rem">' +
+                '   <div style="margin-left: 2rem" onclick="chooseRow(\''+funcList[i].itemId+'\',\''+funcList[i].itemCode+'\',\''+funcList[i].itemName+'\')">' +//chooseRow()
+                '       <div class="aui-media-list-item-inner">' +
+                '           <div class="aui-list-item-media aui-text-primary aui-hide">编码||名称:</div>' +
+                '           <div class="aui-list-item-inner aui-text-center" style="width: 100%">'+funcList[i].itemCode+'  ||  '+funcList[i].itemName+'</div>' +
+                '       </div>' +
+                '       <div class="aui-media-list-item-inner aui-hide">' +
+                '           <div class="aui-list-item-media aui-text-primary aui-hide">图号||车型:</div>' +
+                '           <div class="aui-list-item-inner aui-margin-l-5">'+funcList[i].drawingNumber+'  ||  '+funcList[i].drawingNumber+'</div>' +
+                '       </div>' +
+                '   </div>' +
+                '</li>';
+               /* '<li class="aui-list-item aui-card-list" style="float:left;width:100%;border-radius:20px">	'+
+                '    <div style="float: left;margin-top: 18px;display: none"><input class="aui-radio" type="radio" name="radio" style="margin-left: 8px;float: right;clear: left;" value='+funcList[i].itemId+','+funcList[i].itemCode+','+funcList[i].itemName+' id="'+funcList[i].itemId+'"></div>'+
+                '    <div class="aui-list-item-inner" style="float:right;width:90%;" id="content_list+'+i+'" onclick="chooseRow('+funcList[i].itemId+')">			'+
+                '       <table style="width:100%;/!*border-left: 1px solid #2ecc71;*!/background-image: linear-gradient(to right, rgba(99, 184, 255, 0), rgba(99, 184, 255, 0.4), rgba(99, 184, 255, 0));">								    '+
+                '            <tr>												'+
+                '                <td style="text-align:center;width:25%;">产品编码:</td>					'+
+                '                <td class="content_edit" style="width:75%;nowrap:nowrap;">'+funcList[i].itemCode+'</td>						'+
+                '            </tr>																		'+
+                '            <tr>																		'+
+                '                <td style="text-align:center">图&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号:</td>					'+
+                '                <td class="content_edit">'+funcList[i].drawingNumber+'</td>						'+
+                '           </tr> '+
+                '            <tr>																		'+
+                '                <td style="text-align:center">产品名称:</td>					'+
+                '                <td class="content_edit">'+funcList[i].itemName+'</td>						'+
+                '           </tr> '+
+                '        </table>																		'+
+                '    </div>																				'+
+                '</li>';*/
+            wrap.insertAdjacentHTML('beforeEnd', html);
+        }
+    }
+    //总条数
+    function sum(sum){
+        $("#sum").html("共有："+sum+"条");
+    }
+    //选中目标
+    function  chooseRow(itemId,itemCode,itemName) {
+	    // if (isChoose()){
+        //     setCookie("itemData",isChoose());
+        //     window.history.back();
+        // }else{
+	    //     alert("请先选中一条信息!(oﾟ▽ﾟ)o  ");
+        // }
+        setCookie("itemData",itemId+","+itemCode+","+itemName);
+        window.history.back();
+    }
+    //设置cookie
+    function setCookie(name,value) {
+        var Days = 30;
+        var exp = new Date();
+        exp.setTime(exp.getTime() + Days*24*60*60*1000);
+        document.cookie=name + "="+ escape (value) + ";expires=" + exp.toGMTString()+"; path=/";
+    }
+    //判断是否有信息被选中
+    function isChoose(){
+        var str;
+        var radioBtn=document.getElementsByName("radio");
+        for(var i=0;i<radioBtn.length;i++){
+            if (radioBtn[i].checked){
+                str=radioBtn[i].value;
+            }
+        }
+        return str;
+    }
+    //
+    function openDialog(str) {
+        var	html=	'    <div class="content_list">			'+
+            '       <table width="100%">								    '+
+            '            <tr>																		'+
+            '                <td class="content_lable"><label>仓库名称:</label></td>					'+
+            '                <td class="content_edit"><label>'+funcList[0].whName+'</label></td> 	'+
+            '            <tr>																		'+
+            '            </tr>																		'+
+            '                <td class="content_lable"><label>使用类别:</label></td>					'+
+            '                <td class="content_edit"><label>'+funcList[0].transTypeName+'</label></td>						'+
+            '            </tr>																		'+
+            '            <tr>																		'+
+            '                <td class="content_lable"><label>领用部门:</label></td>					'+
+            '                <td class="content_edit"><label>'+funcList[0].departmentName+'</label></td>						'+
+            '            </tr>																		'+
+            '            <tr>																		'+
+            '                <td class="content_lable"><label>领用人员:</label></td>					'+
+            '                <td class="content_edit"><label>'+funcList[0].agentName+'</label></td>						'+
+            '            </tr>																		'+
+            '            <tr>																		'+
+            '                <td class="content_lable"><label>制单人员:</label></td>					'+
+            '                <td class="content_edit"><label>'+funcList[0].billerName+'</label></td>						'+
+            '            </tr>																		'+
+            '            <tr>																		'+
+            '                <td class="content_lable"><label>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:</label></td>					'+
+            '                <td class="content_edit"><label>'+funcList[0].remark+'</label></td>				'+
+            '            </tr>																		'+
+            '        </table>																		'+
+            '    </div>		';
+
+        var dialog = new auiDialog({});
+        dialog.alert({
+            title:"详细信息",
+            msg:html,
+            buttons:['确定'],
+        },function(ret){
+            console.log(ret);
+        });
+    }
+    //查找按钮
+    function findRow() {
+        document.getElementById("top").style.marginTop=0;
+        document.getElementById("top").style.display="none";
+        document.getElementById("search").style.display="block";
+    }
+    //点击搜索框事件
+    function doSearch() {
+
+    }
+    //开始搜索
+    function search(){
+        getLi();//清理li
+        var str=$("#search-input").val();
+        initData(str);
+        document.getElementById("top").style.display="block";
+    }
+    //取消
+    function cancel() {
+        document.getElementById("search").style.display="none";
+        document.getElementById("top").style.display="block";
+        document.getElementById("top").style.marginTop="2.25rem";
+        getLi();
+        initItem();
+    }
+    //清除li
+    function getLi(){
+        var li=document.getElementsByTagName("li");
+        for (var i=li.length;i>0;i--){
+            li[i-1].remove();
+        }
+    }
+</script>
+</html>

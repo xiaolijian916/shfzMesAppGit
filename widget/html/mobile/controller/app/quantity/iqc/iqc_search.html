@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>来料检验-搜索</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav" style="padding-top:25px;" id="header">
+	    <a class="aui-pull-left aui-btn" onclick="closeHtml()">
+	        <span class="aui-iconfont aui-icon-left"></span>
+	    </a>
+	    <div class="aui-title" id="iqc-title">查询</div>
+	    <a class="aui-pull-right aui-btn" id="iqc-search">
+	    	<span class="aui-iconfont aui-icon-correct" onclick="search()"></span>
+	    </a>
+	</header>
+	<ul class="aui-list aui-form-list">
+    	<li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">
+            		日期
+                </div>
+                <div class="aui-list-item-input">
+                    <input type="text" id="createTime" readonly="true" onclick="selectDate()">
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item" id="txtDn">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">
+            		送货单号
+                </div>
+                <div class="aui-list-item-input">
+                    <input type="text" id="deliveryNo">
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">
+            		物料图号
+                </div>
+                <div class="aui-list-item-input">
+                    <input type="text" id="drawingNumber">
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item" id="txtCu">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">
+            		检验人员
+                </div>
+                <div class="aui-list-item-input">
+                    <input type="text" id="checkUser">
+                </div>
+            </div>
+        </li>
+    </ul>
+</body>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../../script/api.js" ></script>
+<script type="text/javascript">
+	var varName; 
+
+	apiready = function(){
+		api.parseTapmode();
+		varName = api.pageParam.searchName;
+		if(varName=="iqc_untested"){
+			$("#txtCu").css('display','none');
+		}
+		if(varName=="iqc_unqualified"){
+			$("#txtDn").css('display','none');
+		}
+	};
+	
+	function selectDate(){
+		api.openPicker({
+		    type: 'date',
+		    title: '选择日期'
+		}, function(ret, err) {
+		    if (ret) {
+		        var createTime = ret.year + "-" + ret.month + "-" + ret.day;
+		        $("#createTime").val(createTime);
+		    } else {
+		        return alert(JSON.stringify(err));
+		    }
+		});
+	}
+	
+	function search(){
+    	api.sendEvent({
+		    name: 'search_'+varName,
+		    extra: {
+		        createTime: $("#createTime").val(),
+		        deliveryNo: $("#deliveryNo").val(),
+		        drawingNumber: $("#drawingNumber").val(),
+		        checkUser: $("#checkUser").val()
+		    }
+		});
+		closeHtml();
+	}
+	
+	function closeHtml(){
+    	api.closeWin({});
+    }
+</script>
+</html>

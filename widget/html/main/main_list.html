@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+	<title>功能页面</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link type="text/css" rel="stylesheet" href="../../css/aui.css"/>
+    <link type="text/css" rel="stylesheet" href="../../css/style.css"/>
+    <link type="text/css" rel="stylesheet" href="../../assets/iconfont/xs-func-iconfont.css"/>
+		    <script type="text/javascript" src="../../script/api.js"></script>
+		    <script type="text/javascript" src="../../script/aui-popup.js"></script>
+		    <script type="text/javascript" src="../../script/aui-dialog.js"></script>
+		    <script type="text/javascript" src="../../script/jquery-3.3.1.min.js"></script>
+		    <script type="text/javascript" src="../../assets/js/ama-custom.js"></script>
+    <style>
+		html, body{ background-color: #fff }
+    	#header { background-color:#3288f0; }
+        #footer{  background-color: #f2f2f2; }
+        #footer ul li{  padding-top: 36px; padding-bottom: 4px; background: url() no-repeat center 2px; background-size: auto 30px; text-align: center; }
+        #footer ul li.active{ color: #6ab494; }
+        #footer ul li:nth-child(1){ background-image: url(../../image/main/main_menu_0.png); }
+        #footer ul li:nth-child(2){ background-image: url(../../image/main/report_menu_0.png); }
+        #footer ul li:nth-child(3){ background-image: url(../../image/main/bottombtn0301.png); }
+        #footer ul li:nth-child(4){ background-image: url(../../image/main/user_profile_menu_0.png); }
+        #footer ul li:nth-child(1).active{ background-image: url(../../image/main/main_menu_1.png); }
+        #footer ul li:nth-child(2).active{ background-image: url(../../image/main/report_menu_1.png); }
+        #footer ul li:nth-child(3).active{ background-image: url(../../image/main/bottombtn0302.png); }
+        #footer ul li:nth-child(4).active{ background-image: url(../../image/main/user_profile_menu_1.png); }
+        .flex-con{ overflow: auto }
+        .aui-title { display: none }
+    </style>
+
+    <script type="text/javascript">
+
+    	//加载各菜单模块-功能列表
+    	apiready = function() {
+    		//某移动设备虚造型刘海顶部挡住顶部标题【刘海遮挡】
+    		//$api.fixStatusBar($api.dom('header')); //设置边距防止与状态栏重叠
+
+    		//某移动设备虚拟键盘挡住下方标签栏目【虚拟键遮挡】
+			//$api.fixTabBar($api.byId('footer'));  //存在BUG貌似不能加载页面
+
+			//var mytouch = api.require('androidTouch');
+			//mytouch.touch(function (ret){
+			//  alert(JSON.stringify(ret));
+			//});
+
+	        api.setStatusBarStyle({
+	            style: 'dark',
+	            color: '#6ab494'
+	        });
+
+	        loadLayoutRender();
+
+			var header = $api.byId('aui-header');
+			//$api.fixStatusBar(header);
+			api.parseTapmode();
+
+			//加载用户
+			//loadingUser(null);
+			var body_h = $api.offset($api.dom('body')).h;
+			api.openFrame({
+				name : 'main_menu_list',
+				url : 'main_menu_list.html',
+				bounces : true,
+				rect : {
+					x : 0,
+					y : body_h,
+					w : 'auto',
+					h : 'auto'
+				}
+			});
+
+			/**
+			 * 菜单顶部左侧按钮点击事件[功能列表]
+			 */
+			$api.addEvt($api.byId("topLeftFunc"), 'click', function(){
+				api.openSlidPane({type: 'left'});
+			});
+
+			/**
+			 * 菜单顶部右侧按钮点击事件[注销账号]
+			 */
+			$api.addEvt($api.byId("topRightFunc"), 'click', function(){
+				var mnPopups = api.require('MNPopups');//云端添加MNPopups模块组件
+				mnPopups.open({
+				    rect: {
+				        w: 90, //（可选项）数字类型；弹出模块的宽度；默认值：100
+				        h: 110  //（可选项）数字类型；弹出模块的高度；默认值：180
+				    },
+				    position: {
+				        x: api.winWidth - 22, //（可选项）数字类型；弹出模块指针在弹框坐标系的 x 坐标，；默认值：主窗口宽度-10
+				        y: $api.offset($api.dom('header')).h+7  //（可选项）数字类型；弹出模块指针在弹框坐标系的 y 坐标；默认值：0
+				    },
+				    styles: {
+				        mask: 'rgba(0,0,0,0.2)',
+				        bg: '#eee',
+				        corner : 0, //气泡圆角
+				        cell: {
+				            bg: {
+				                normal: '',
+				                highlight: ''
+				            },
+				            h: 35,//列表项目的高度
+				            title: {
+				                marginL: 25, //每个列表项相对左边间距
+				                color: '#636363', //列表项字体颜色
+				                size: 15, //字体大小
+				            },
+				            icon: { //列表项目图标样式设置：上下居中
+				                marginL: 5,
+				                w: 17,
+				                h: 17,
+				                corner: 5
+				            },
+				            separateLine: {              //（可选项）JSON 类型；分割线的样式设置
+					            width: 1,                //（可选项）数字类型；分割线的粗细，默认为1
+					            marginLR: 0,              //（可选项）数字类型；分割线距离左右的间距，默认为0
+					            bg: '#DDDDDD',            //（可选项）字符类型；分割线的背景颜色，支持rgb、rgba、#；默认：#C0C0C0
+					            hideLastSeparateLine: true //(可选项)布尔类型；是否隐藏最后一条分割线，默认false
+					        }
+				        },
+				        pointer: { //尖角配置
+				            size: 10, //等边三角形
+				            xPercent: 85, //尖角底边中点X坐标占模块宽度百分比
+				            yPercent: 5, //尖角底边中点Y坐标占模块高度百分比
+				            orientation: 'downward' //（可选项）字符串类型；气泡菜单弹出方向，取值范围如下：downward：向下弹出；leftward：向左边弹出...
+				        }
+				    },
+				    datas: [{
+				        title: '切换用户',
+				        icon: 'widget://assets/image/switch-user.png'
+				    }, {
+				        title: '退出程序',
+				        icon: 'widget://assets/image/exit-system.png'
+				    }, {
+				        title: '关于系统',
+				        icon: 'widget://assets/image/about-us.png'
+				    }],
+				    animation: true
+				}, function(ret) {
+				    if (ret && "click".equals(ret.eventType)) {
+				        if(ret.index == 0){
+				        	api.sendEvent({ name:'logoutUser' });
+				        	api.closeWin({});
+				        }else if(ret.index == 1){
+							api.closeWidget({});
+				        }else if(ret.index == 2){
+				        	api.alert({
+                            },function(ret,err){
+                            	//coding...
+                            });
+				        }
+				    }
+				});
+			});
+		};
+
+	   	//初始化Tab页加载
+	    function loadLayoutRender(){
+	    	var pageArray = ["menu_list", "report_list", "setting_list", "profile_list"];
+	        var frames = [];
+	        for (var i = 0; i < pageArray.length; i++) {
+	            frames.push({
+	                name: 'main_'+i,
+	                url: $.FormatString('main_{0}.html', pageArray[i]),
+	                bgColor : 'rgba(0,0,0,.2)',
+	                bounces:true
+	            });
+	        }
+	        api.openFrameGroup({
+	            name: 'group',
+	            scrollEnabled: false,
+	            rect: {
+	                x: 0,
+	                y: $api.dom('header').offsetHeight,
+	                w: api.winWidth,
+	                h: $api.dom('#main').offsetHeight
+	            },
+	            index: 0,
+	            frames: frames
+	        }, function (ret, err) {
+
+	        });
+	    }
+
+		/**
+		 * 底部菜单Tab按钮点击切换事件
+		 */
+		//Android证书：com.angma.shfz.mes.app
+		function switchBtnEvent(index){
+			var eFootLis = $api.domAll('#footer li');
+			for (var i = 0; i < 3; i++) {
+	            if( i != index){
+	                $api.byId("titleName"+i).style.display = "none";
+	                $api.removeCls(eFootLis[i], 'active');
+	            }else{
+	            	$api.byId("titleName"+i).style.display = "block";
+	            	$api.addCls(eFootLis[index], 'active');
+	            }
+	        }
+	        //加载当前Tab页内容
+	        api.setFrameGroupIndex({
+	            name: 'group',
+	            index: index
+	        });
+		}
+
+    </script>
+</head>
+<body>
+	<div id="wrap" class="flex-wrap flex-vertical">
+
+		<!--顶部菜单说明以及附加功能扩展-->
+		<header id="header" class="aui-bar aui-bar-nav">
+		    <a id="topLeftFunc" class="aui-pull-left aui-btn">
+		        <span class="xs-func-iconfont xs-icon-func-detail1"></span>
+		    </a>
+		    <div id="titleName0" class="aui-title" style="display: block">系统功能</div>
+		    <div id="titleName1" class="aui-title">系统报表</div>
+		    <div id="titleName2" class="aui-title">系统设置</div>
+		    <!--
+		    <div id="titleName3" class="aui-title">我的信息</div>
+		    -->
+		    <a id="topRightFunc" class="aui-pull-right aui-btn">
+		        <span class="xs-func-iconfont xs-icon-func-switch"></span>
+		    </a>
+		</header>
+
+	    <!--背景内容加载-->
+	    <div id="main" class="flex-con">
+			背景内容
+	    </div>
+
+	    <!--底部菜单图标文字渲染-->
+	    <div id="footer" class="border-t">
+	        <ul class="flex-wrap">
+	            <li tapmode="hover" onclick="switchBtnEvent(0);" class="flex-con active">主菜单</li>
+	            <li tapmode="hover" onclick="switchBtnEvent(1);" class="flex-con">报表</li>
+	            <li tapmode="hover" onclick="switchBtnEvent(2);" class="flex-con">设置</li>
+	            <!--
+	            <li tapmode="hover" onclick="switchBtnEvent(3);" class="flex-con" >我的</li>
+	            -->
+	        </ul>
+	    </div>
+	</div>
+</body>
+</html>

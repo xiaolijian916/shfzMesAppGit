@@ -1,0 +1,414 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/mobiscroll.custom.min.css" >
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav" id="aui-header" style="position: fixed;top: 0;left: 0">
+			<a class="aui-btn aui-pull-left" tapmode onclick="closeWin()"> <span class="aui-iconfont aui-icon-left"></span> </a>
+			<div class="aui-title">
+				质量问题新增
+			</div>
+			<a class="aui-pull-right aui-btn" tapmode onclick="submitForm()"> <i class="aui-iconfont aui-icon-correct"></i></i></a>
+		</header>
+		<div class="aui-content aui-margin-b-15" style="margin-top: 2.25rem" >
+			<ul class="aui-list aui-form-list">
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							问题反馈
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('problem_sources_select')">
+							<input type="text" id="roblemFeedbac" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label" tapmode onclick="getProblemClass()">
+							问题分类
+						</div>
+						<div class="aui-list-item-input">
+							<select id="problemClass" tapmode onchange="select_change()">
+								<option style='display: none'></option>
+								<option value="A">顾客</option>
+								<option value="B">内部</option>
+								<option value="C">供应商</option>
+							</select>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							发生日期
+						</div>
+						<div class="aui-list-item-input" >
+							<input type="text" class="mbsc-comp"  id="happenTime" placeholder="请选择" readonly="">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							问题供应商
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('problem_sup_select')">
+							<input type="text" id="problemSup" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							项目
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('models_select')">
+							<input type="text" id="models" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							零件名称
+						</div>
+						<div class="aui-list-item-input">
+							<input type="text" id="partName">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷模式
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('defect_mode_select')">
+							<input type="text" id="defectMode" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷等级
+						</div>
+						<div class="aui-list-item-input">
+							<select id="defectGrade">
+								<option style='display: none'></option>
+								<option value="A">A</option>
+								<option value="B">B</option>
+								<option value="C">C</option>
+							</select>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷数量
+						</div>
+						<div class="aui-list-item-input">
+							<input type="number" id="defectNumberInt" placeholder="请输入整数" style="width: 40%;float: left;text-align: center;">
+							<select id="defectNumberNuit" style="width: 20%;float: left;">
+								<option value="件" selected="selected">件</option>
+								<option value="箱">箱</option>
+								<option value="架">架</option>
+								<option value="批量">批量</option>
+							</select>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							责任人
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('user_select')">
+							<input type="text" id="respTeamLeader" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label" style="width: 10rem">
+							是否重复发生
+						</div>
+						<div class="aui-list-item-input">
+							<label>
+								<input class="aui-radio" type="radio" name="isReoccur" value="是">
+								是</label>
+							<label>
+								<input class="aui-radio" type="radio" value="否" name="isReoccur">
+								否</label>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷图片
+						</div>
+						<div class="aui-list-item-input" style="margin-top: 10px; margin-bottom: 10px;">
+							<div class="head" onclick="showAction()">
+								<img id="img_src" src="../../../../../../image/main/qsb/camera.png" width="80"/>
+							</div>
+						</div>
+						<div class="aui-list-item-label-icon"></div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							问题描述
+						</div>
+						<div class="aui-list-item-input">
+							<textarea id="problemDescription"></textarea>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-scroll.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript" src="../../../../../../js/mobiscroll.custom.min.js"></script>
+	<script type="text/javascript">
+		var picPath;
+		var theme = "ios";
+		var mode = "scroller";
+		var display = "bottom";
+		var lang = "zh";
+		var dialog = new auiDialog({});
+		$('#happenTime').mobiscroll().date({
+			theme : theme,
+			mode : mode,
+			display : display,
+			dateFormat : "yyyy-mm-dd",
+			lang : lang,
+			showNow : true
+		});
+		apiready = function() {
+			api.parseTapmode();
+		}
+		//设置弹窗值
+		function setUpValue(upType) {
+			//问题反馈
+			var getUpValue = $api.getStorage(upType);
+			if ($.isNull(getUpValue)) {
+				getUpValue = '';
+			}
+			//赋值
+			document.getElementById(upType).value = getUpValue;
+			$api.rmStorage(upType);
+			//清除保存的值
+			$api.rmStorage("openPageType");
+			//清除页面参数
+		}
+
+		function submitForm() {
+			var strCheck = checkSub();//提交检查
+			if ($.isNotNull(strCheck)) {
+				return $.alert("提示", strCheck);
+			}
+			 dialog.alert({
+                title:"消息提示",
+                msg:'是否确认保存？',
+                buttons:['取消','确定']
+            },function(ret){
+                if(ret){
+                    if(2==ret.buttonIndex){
+                    	subOption();
+                    }
+                }
+            })
+
+		}
+		function subOption(){		
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/addMobileQsbQuaPromSummary.do'),
+				method : 'post',
+				dataType : 'json',
+				data : {
+					files : {
+						quaPic : picPath
+					},
+					values : {
+						roblemFeedbac : $("#roblemFeedbac").val(),
+						problemClass : $("#problemClass").val(),
+						happenTime : $("#happenTime").val(),
+						problemSup : $("#problemSup").val(),
+						models : $("#models").val(),
+						partName : $("#partName").val(),
+						defectMode : $("#defectMode").val(),
+						defectGrade : $("#defectGrade").val(),
+						defectNumberInt : $("#defectNumberInt").val(),
+						defectNumberNuit : $("#defectNumberNuit").val(),
+						
+						respTeamLeader : $("#respTeamLeader").val(),
+						isReoccur : $('[name="isReoccur"]:checked').val(),
+						problemDescription : $("#problemDescription").val()
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					} else {
+					clearSub();//提交完成清空
+						api.sendEvent({
+							name : 'feedbackCreate'
+						});
+						api.closeWin({
+						});
+					$.alert("提示", obj.data);
+					}
+				}, null, false);
+			});
+		}
+
+		// 点击头像
+		function showAction() {
+			api.actionSheet({
+				cancelTitle : '取消',
+				buttons : ['拍照', '从手机相册选择']
+			}, function(ret, err) {
+				if (ret) {
+					getPicture(ret.buttonIndex);
+				}
+			});
+		}
+
+		function getPicture(sourceType) {
+			if (sourceType == 1) {// 拍照
+				api.getPicture({
+					sourceType : 'camera',
+					encodingType : 'jpg',
+					mediaValue : 'pic',
+					allowEdit : false,
+					destinationType : 'base64',
+					saveToPhotoAlbum : true
+				}, function(ret, err) {
+					if (ret) {
+						$api.byId("img_src").src = ret.base64Data;
+						picPath = ret.data;
+					}
+				});
+			} else if (sourceType == 2) {// 从相机中选择
+				api.getPicture({
+					sourceType : 'library',
+					encodingType : 'jpg',
+					mediaValue : 'pic',
+					destinationType : 'base64',
+				}, function(ret, err) {
+					if (ret) {
+						$api.byId("img_src").src = ret.base64Data;
+						//					saveImg(ret.data);
+						picPath = ret.data;
+					}
+				});
+			} else {
+				return;
+			}
+		}
+
+		//选择更改事件
+		function select_change() {
+			var objS = document.getElementById("problemClass");
+			var get_map = objS.options[objS.selectedIndex].value;
+			var problemSupObj = document.getElementById("problemSup");
+			if ("A" == get_map || "B" == get_map) {
+				problemSupObj.value = "";
+				problemSupObj.style.display = "none";
+			} else {
+				problemSupObj.style.display = "";
+				problemSupObj.style.visibility = "visible";
+			}
+		}
+
+		//提交验证
+		function checkSub() {
+			if ($.isNull($("#roblemFeedbac").val())) {
+				return "问题反馈不能为空!";
+			}
+			if ($.isNull($("#problemClass").val())) {
+				return "问题分类不能为空!";
+			}
+			if ($.isNull($("#happenTime").val())) {
+				return "发生日期不能为空!";
+			}
+			if ("C" == $("#problemClass").val()) {
+				if ($.isNull($("#problemSup").val())) {
+					return "当问题分类为供应商时，问题供应商不能为空!";
+				}
+			}
+			if ($.isNull($("#models").val())) {
+				return "项目不能为空!";
+			}
+			if ($.isNull($("#partName").val())) {
+				return "零件名称不能为空!";
+			}
+			if ($.isNull($("#defectMode").val())) {
+				return "缺陷模式不能为空!";
+			}
+			if ($.isNull($("#defectGrade").val())) {
+				return "缺陷等级不能为空!";
+			}
+			if ($.isNull($("#defectNumberInt").val())) {
+				return "缺陷数量不能为空!";
+			}
+			if ($.isNull($("#respTeamLeader").val())) {
+				return "责任人不能为空!";
+			}
+			if ($.isNull($('[name="isReoccur"]:checked').val())) {
+				return "是否重复不能为空!";
+			}
+			if ($.isNull(picPath)) {
+				return "缺陷图片不能为空!";
+			}
+			if ($.isNull($("#problemDescription").val())) {
+				return "问题描述不能为空!";
+			}
+		}
+				//清空数据
+		function clearSub(){		
+		document.getElementById("roblemFeedbac").value="";
+		}
+	
+		//关闭窗口
+		function closeWin() {
+         api.closeWin({
+         });
+		}
+
+		//打开win
+		function openWin(name) {
+			$api.setStorage("openPageType", "create");
+			//页面参数
+			var delay = 0;
+			if (api.systemType != 'ios') {
+				delay = 300;
+			}
+			api.openWin({
+				name : name,
+				url : name + '.html',
+				bounces : false,
+				delay : delay,
+				slidBackEnabled : true,
+				vScrollBarEnabled : false
+			});
+		}
+	</script>
+</html>

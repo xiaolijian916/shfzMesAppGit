@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>完工汇报</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link type="text/css" rel="stylesheet" href="../../../../../css/aui.css"/>
+    <link type="text/css" rel="stylesheet" href="../../../../../css/style.css"/>
+	<script type="text/javascript" src="../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../script/aui-toast.js"></script>
+	<script type="text/javascript" src="../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../script/mui.min.js"></script>
+	<script type="text/javascript" src="../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../js/ama-custom.js"></script>
+    
+    <style>
+        .goods-title {
+            color: #757575 !important;
+        }
+        .goods-price {
+            color: #666666 !important;
+            font-weight: 700;
+        }
+    
+    </style>
+</head>
+
+<script type="text/javascript">
+	apiready = function(){
+		
+		//添加自定义事件：按了返回键事件监听
+		api.addEventListener({
+		    name: 'keyback'
+		}, function(ret, err) {
+		    api.confirm({
+				title: $('title').html(),
+			  	msg: '当前表单未提交，是否取消操作？',
+			  	buttons: [ '确定', '取消' ]
+			}, function ( ret, err ) {
+		  		var index = ret.buttonIndex;
+		  		if ( index == 1 ) {
+		    		api.closeWin();
+		  		}
+			});
+		});
+		
+		$api.byId("manucp-form");
+		
+		//提交表单：数据合法性验证
+		$("#submitForm").click(function(){
+			var jsonData = $.formJsonSerialize("manuCompleteId");
+			$.request({
+				title: '完工汇报',
+				url: '/app/manu/manuComplete/saveManuCompleteInfo',
+				data: jsonData,
+				success: function(obj, err){
+					alert(obj);
+					//执行成功回调函数
+				}
+			});
+		});
+		
+		//取消/关闭界面
+		$("#cancelOpert").click(function(){
+			api.closeWin();
+		});
+	}
+</script>
+
+<body>
+    <div class="aui-form" id="manucp-form">
+    	<div class="aui-input-row aui-warning">
+    		<label class="aui-input-addon">扫描条码</label>
+    		<input type="text" name="scancode" valid="" class="aui-input">
+    	</div>
+    	<div class="aui-input-row aui-info">
+    		<label class="aui-input-addon">产品编码</label>
+    		<input type="text" class="aui-input">
+    	</div>
+    	<div class="aui-input-row">
+    		<span class="aui-input-addon">产品名称</span>
+    		<input type="text" class="aui-input" placeholder="产品名称">
+    	</div>
+    	<div class="aui-input-row">
+    		<span class="aui-input-addon">工作中心</span>
+    		<input type="number" class="aui-input" placeholder="工作中心">
+    	</div>
+    	<div class="aui-input-row">
+    		<span class="aui-input-addon">生产班次</span>
+    		<input type="email" class="aui-input" placeholder="不能为空">
+    		
+    	</div>
+    	<div class="aui-input-row">
+    		<span class="aui-input-addon">计划数量</span>
+    		<input type="url" class="aui-input" placeholder="0">
+    	</div>
+    	<div class="aui-input-row">
+    		<span class="aui-input-addon">完成数量</span>
+    		<div class="aui-range">
+    			<input type="text" class="aui-input" placeholder="请输入数量..."/>
+    		</div>
+    	</div>
+    	<div class="aui-btn-row">
+    		<div class="aui-btn aui-btn-success" onclick="return false;">确认</div>
+    		<div class="aui-btn aui-btn-warning" onclick="return false;">取消</div>
+    	</div>
+    </div>
+</body>
+</html>

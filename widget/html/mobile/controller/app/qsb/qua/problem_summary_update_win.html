@@ -1,0 +1,517 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/mobiscroll.custom.min.css" >
+	</head>
+	<body>
+		<header class="aui-bar aui-bar-nav" id="aui-header" style="position: fixed;top: 0;left: 0">
+			<a class="aui-btn aui-pull-left" tapmode onclick="closeWin()"> <span class="aui-iconfont aui-icon-left"></span> </a>
+			<div class="aui-title">
+				质量问题更新
+			</div>
+			<a class="aui-pull-right aui-btn" tapmode onclick="submitForm()"> <i class="aui-iconfont aui-icon-correct"></i></i></a>
+		</header>
+		<div class="aui-content aui-margin-b-15" style="margin-top: 2.25rem" >
+			<ul class="aui-list aui-form-list">
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							问题反馈
+						</div>
+						<div class="aui-list-item-input" onclick="openWin('problem_sources_select')">
+							<input type="text" id="roblemFeedbac" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label" tapmode onclick="getProblemClass()">
+							问题分类
+						</div>
+						<div class="aui-list-item-input">
+							<select id="problemClass" onchange="select_change()">
+								<option value="A">顾客</option>
+								<option value="B" selected="selected">内部</option>
+								<option value="C">供应商</option>
+							</select>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							发生日期
+						</div>
+						<div class="aui-list-item-input">
+							<input type="text" id="happenTime" readonly="" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							问题供应商
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('problem_sup_select')">
+							<input type="text" id="problemSup" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							项目
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('models_select')">
+							<input type="text" id="models" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							零件名称
+						</div>
+						<div class="aui-list-item-input">
+							<input type="text" id="partName">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷模式
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('defect_mode_select')">
+							<input type="text" id="defectMode" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷等级
+						</div>
+						<div class="aui-list-item-input">
+							<select id="defectGrade">
+								<option value="A">A</option>
+								<option value="B" selected="selected">B</option>
+								<option value="C">C</option>
+							</select>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷数量
+						</div>
+						<div class="aui-list-item-input">
+					    <input type="number" id="defectNumberInt" placeholder="请输入整数" style="width: 40%;float: left;text-align: center;">
+					   <select id="defectNumberNuit" style="width: 20%;float: left;">
+								<option value="件" selected="selected">件</option>
+								<option value="箱">箱</option>
+								<option value="架">架</option>
+								<option value="批量">批量</option>
+					 </select>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							责任人
+						</div>
+						<div class="aui-list-item-input" tapmode onclick="openWin('user_select')">
+							<input type="text" id="respTeamLeader" placeholder="请选择">
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label" style="width: 10rem">
+							是否重复发生
+						</div>
+						<div class="aui-list-item-input">
+							<label>
+								<input class="aui-radio" type="radio" name="isReoccur" value="是" checked>
+								是</label>
+							<label>
+								<input class="aui-radio" type="radio" value="否" name="isReoccur">
+								否</label>
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							缺陷图片
+						</div>
+						<div class="aui-list-item-input" style="margin-top: 10px; margin-bottom: 10px;">
+							<div class="head" onclick="showAction()">
+								<img id="img_src" width="80"/>
+							</div>
+						</div>
+						<div class="aui-list-item-label-icon"></div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label">
+							问题描述
+						</div>
+						<div class="aui-list-item-input">
+							<textarea id="problemDescription"></textarea>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-scroll.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+	<script type="text/javascript" src="../../../../../../js/mobiscroll.custom.min.js"></script>
+	<script type="text/javascript">
+		var picPath = null;
+		
+		var theme = "ios";
+        var mode = "scroller";
+        var display = "bottom";
+        var lang="zh";
+		$('#happenTime').mobiscroll().date({
+            theme: theme,
+            mode: mode,
+            display: display,
+            dateFormat:"yyyy-mm-dd",
+            lang: lang,
+            showNow: true
+        });
+		apiready = function() {
+			api.parseTapmode();
+			//修改原信息
+			api.ajax({
+				url : $.ServerUrl("/app/qsb/qua/qsbQuaPromSummary/updateMobileQsbQuaPromSummary.do"),
+				method : 'post',
+				data : {
+					values : {
+						"summaryId" : $api.getStorage("summaryId"),
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					}
+					//select_change();//格式化问题分类和供应商
+					var funcList = $.toJson(obj.data);
+					//问题反馈
+					document.getElementById("roblemFeedbac").value = funcList.roblemFeedbac;
+					//问题分类
+					document.getElementById("problemClass").value = funcList.problemClass;
+					//发生日期
+					var happen = gettime(funcList.happenTime);
+					$("#happenTime").val(happen);
+					//问题供应商
+					document.getElementById("problemSup").value = funcList.problemSup;
+					//项目
+					document.getElementById("models").value = funcList.models;
+					//零件名称
+					document.getElementById("partName").value = funcList.partName;
+					//缺陷模式
+					document.getElementById("defectMode").value = funcList.defectMode;
+					//缺陷等级
+					document.getElementById("defectGrade").value = funcList.defectGrade;
+					//缺陷数量
+					document.getElementById("defectNumberInt").value = funcList.defectNumberInt;
+					//单位
+				   document.getElementById("defectNumberNuit").value = funcList.defectNumberNuit;
+					//责任人
+					document.getElementById("respTeamLeader").value = funcList.respTeamLeader;
+															
+					if ("是" == funcList.isReoccur) {
+						$("[name='isReoccur'][value='是']").attr("checked", true);
+					} else if ("否" == funcList.isReoccur) {
+						$("[name='isReoccur'][value='否']").attr("checked", true);
+					}
+					//问题描述
+					document.getElementById("problemDescription").value = funcList.problemDescription;
+					//图片加载
+					var strSrc="../../../../../../image/main/qsb/camera.png";
+					
+					if ($.isNotNull(funcList.defectPicPath)) {
+					strSrc = $.PicUrl(funcList.defectPicPath);
+					}					
+					document.getElementById("img_src").src=strSrc;
+				}, null, false);
+			});
+			//			$api.rmStorage("summaryId");//清除Id
+		}
+//		window.onload=function(){
+//		
+//		}
+		//设置弹窗值
+		function setUpValue(upType) {
+			//问题反馈
+			var getUpValue = $api.getStorage(upType);
+			if ($.isNull(getUpValue)) {
+				getUpValue = '';
+			}
+			//赋值
+			document.getElementById(upType).value = getUpValue;
+			$api.rmStorage(upType);
+			//清除保存的值
+			$api.rmStorage("openPageType");
+			//清除页面参数
+		}
+		
+	   //选择更改事件
+		function select_change() {
+			var objS = document.getElementById("problemClass");
+			var get_map = objS.options[objS.selectedIndex].value;
+			var problemSupObj = document.getElementById("problemSup");
+			if ("A" == get_map || "B" == get_map) {
+				problemSupObj.value = "";
+				problemSupObj.style.display = "none";
+			} else {
+				problemSupObj.style.display = "";
+				problemSupObj.style.visibility = "visible";
+			}
+		}
+		
+				//提交验证
+		function checkSub() {
+			if ($.isNull($("#roblemFeedbac").val())) {
+				return "问题反馈不能为空!";
+			}
+			if ($.isNull($("#problemClass").val())) {
+				return "问题分类不能为空!";
+			}
+			if ($.isNull($("#happenTime").val())) {
+				return "发生日期不能为空!";
+			}
+			if ("C" == $("#problemClass").val()) {
+				if ($.isNull($("#problemSup").val())) {
+					return "当问题分类为供应商时，问题供应商不能为空!";
+				}
+			}
+			if ($.isNull($("#models").val())) {
+				return "项目不能为空!";
+			}
+			if ($.isNull($("#partName").val())) {
+				return "零件名称不能为空!";
+			}
+			if ($.isNull($("#defectMode").val())) {
+				return "缺陷模式不能为空!";
+			}
+			if ($.isNull($("#defectGrade").val())) {
+				return "缺陷等级不能为空!";
+			}
+			if ($.isNull($("#defectNumberInt").val())) {
+				return "缺陷数量不能为空!";
+			}
+			if ($.isNull($("#respTeamLeader").val())) {
+				return "责任人不能为空!";
+			}
+			if ($.isNull($('[name="isReoccur"]:checked').val())) {
+				return "是否重复不能为空!";
+			}
+//			if ($.isNull(picPath)) {
+//				return "缺陷图片不能为空!";
+//			}
+			if ($.isNull($("#problemDescription").val())) {
+				return "问题描述不能为空!";
+			}
+		}
+
+		
+
+		//时间转换
+		function gettime(t) {
+			var _time = new Date(t);
+			var year = _time.getFullYear();
+			//2017
+			var month = _time.getMonth() + 1;
+			//7
+			var date = _time.getDate();
+			//10
+			var hour = _time.getHours();
+			//10
+			var minute = _time.getMinutes();
+			//56
+			var second = _time.getSeconds();
+			//15
+			//	    return   year+"年"+month+"月"+date+"日   "+hour+":"+minute+":"+second;//这里自己按自己需要的格式拼接
+			return year + "-" + month + "-" + date;
+		}
+
+		//修改提交
+		function submitForm() {
+		var strCheck = checkSub();
+			//提交检查
+			if ($.isNotNull(strCheck)) {
+				return $.alert("提示", strCheck);
+			}
+			api.execScript({
+				name : 'qsb_qua_prom_summary99',
+				frameName : 'qsb_qua_prom_summary_frm666',
+				script : 'refresh44();'
+			});
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/updateMobileQsbQuaPromSummarySave.do'),
+				method : 'post',
+				dataType : 'json',
+				data : {
+					values : {
+						summaryId : $api.getStorage("summaryId"),
+						roblemFeedbac : $("#roblemFeedbac").val(),
+						roblemFeedbac : $("#roblemFeedbac").val(),
+						problemClass : $("#problemClass").val(),
+						happenTime : $("#happenTime").val(),
+						problemSup : $("#problemSup").val(),
+						models : $("#models").val(),
+						partName : $("#partName").val(),
+						defectMode : $("#defectMode").val(),
+						defectGrade : $("#defectGrade").val(),
+						defectNumberInt : $("#defectNumberInt").val(),						
+						defectNumberNuit : $("#defectNumberNuit").val(),
+						respTeamLeader : $("#respTeamLeader").val(),
+						isReoccur : $('[name="isReoccur"]:checked').val(),
+						problemDescription : $("#problemDescription").val()
+					},
+					files : {
+						myFile : picPath
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					} else {
+						api.sendEvent({
+							name : 'feedbackCreate'
+						});
+						api.closeWin({
+						});
+						$.alert("提示", obj.data);
+					}
+				}, null, false);
+			});
+		}
+
+		// 点击头像
+		function showAction() {
+			api.actionSheet({
+				cancelTitle : '取消',
+				buttons : ['拍照', '从手机相册选择']
+			}, function(ret, err) {
+				if (ret) {
+					getPicture(ret.buttonIndex);
+				}
+			});
+		}
+
+		function getPicture(sourceType) {
+			if (sourceType == 1) {// 拍照
+				api.getPicture({
+					sourceType : 'camera',
+					encodingType : 'jpg',
+					mediaValue : 'pic',
+					allowEdit : false,
+					destinationType : 'base64',
+					quality : 100,
+					targetWidth : 200,
+					targetHeight : 200,
+					saveToPhotoAlbum : true
+				}, function(ret, err) {
+					if (ret) {
+						$api.byId("img_src").src = ret.base64Data;
+						picPath = ret.data;
+					}
+				});
+			} else if (sourceType == 2) {// 从相机中选择
+				api.getPicture({
+					sourceType : 'library',
+					encodingType : 'jpg',
+					mediaValue : 'pic',
+					destinationType : 'base64',
+					quality : 100,
+					targetWidth : 300,
+					targetHeight : 300
+				}, function(ret, err) {
+					if (ret) {
+						$api.byId("img_src").src = ret.base64Data;
+						picPath = ret.data;
+					}
+				});
+			} else {
+				return;
+			}
+		}
+
+		function saveImg(path) {
+			api.ajax({
+				// report : false,
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/uploadAndonPic.do'),
+				//这里是我们约定好的后台上传图片的位置 ，你可以根据你的需求来改
+				method : 'post',
+				cache : 'false',
+				timeout : 30,
+				data : {
+					files : {
+						myFile : path
+					}
+				}
+			}, function(ret, err) {
+				api.alert({
+					msg : JSON.stringify(err)
+				});
+				if (ret) {
+					$api.byId("img_src").src = ret.path;
+				} else {
+					api.toast({
+						msg : '上传错误',
+						duration : 3000,
+						location : 'bottom'
+					});
+				}
+			});
+		}
+
+		//关闭窗口
+		function closeWin() {
+			api.closeWin({
+			});
+			location.reload();
+		}
+
+		//打开win
+		function openWin(name) {
+			$api.setStorage("openPageType", "update");
+			//页面参数
+			var delay = 0;
+			if (api.systemType != 'ios') {
+				delay = 300;
+			}
+			api.openWin({
+				name : name,
+				url : name + '.html',
+				bounces : false,
+				delay : delay,
+				slidBackEnabled : true,
+				vScrollBarEnabled : false
+			});
+		}
+	</script>
+</html>

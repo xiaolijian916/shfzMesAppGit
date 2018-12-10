@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>变化点反馈</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+</head>
+<body>
+<header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;right: 0">
+    <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+        <span class="aui-iconfont aui-icon-left"></span>返回
+    </a>
+    <div class="aui-title">变化点反馈</div>
+    <div class="aui-pull-right aui-btn aui-col-xs-3">
+        <i class="aui-iconfont aui-icon-correct aui-margin-r-15" onclick="save()"></i>
+        <i class="aui-iconfont aui-icon-close aui-margin-l-15 aui-margin-r-15" onclick="cancel()"></i>
+    </div>
+</header>
+<div class="aui-content" style="margin-top:2.25rem;">
+    <ul class="aui-list aui-form-list">
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">反&nbsp;馈&nbsp;&nbsp;日&nbsp;期:</div>
+                <div class="aui-list-item-input">
+                    <input type="date" id="feedbackDate" class="cancel aui-padded-t-10">
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">反&nbsp;馈&nbsp;&nbsp;部&nbsp;门:</div>
+                <div class="aui-list-item-input">
+                    <input id="feedbackDept" placeholder="选择部门" readonly="true" class="cancel">
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">变化点类型:</div>
+                <div class="aui-list-item-input">
+                    <select name="cbmClass" id="cbmClass">
+
+                    </select>
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">变化点等级:</div>
+                <div class="aui-list-item-input">
+                    <input type="radio" class="aui-radio aui-margin-l-15" name="cbmGrade" value="A"/><laber for="A">A</laber>
+                    <input type="radio" class="aui-radio aui-margin-l-15" name="cbmGrade" value="B"/><laber for="B">B</laber>
+                    <input type="radio" class="aui-radio aui-margin-l-15" name="cbmGrade" value="C"/><laber for="C">C</laber>
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">&nbsp;&nbsp;&nbsp;&nbsp;车&nbsp;&nbsp;&nbsp;&nbsp;间&nbsp;&nbsp;&nbsp;&nbsp;:</div>
+                <div class="aui-list-item-input">
+                    <input id="workshop" placeholder="点击选择" readonly="true" class="cancel" onclick="javascript:window.location.href = '../workshop.html'">
+                    <input id="workshopId" placeholder="点击选择" readonly="true" class="cancel aui-hide">
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">生&nbsp;&nbsp;&nbsp;&nbsp;产&nbsp;&nbsp;&nbsp;&nbsp;线:</div>
+                <div class="aui-list-item-input">
+                    <input id="productLine" placeholder="请手动输入" style="width: 115%" class="cancel"><!--为什么这里width设为120%才接近父格大小？他的父亲不是上层div么-->
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">变化点分类:</div>
+                <div class="aui-list-item-input aui-margin-r-15 aui-margin-t-5" style="line-height: 1.5rem" id="cbmType">
+                </div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">变化点项目:</div>
+                <div class="aui-list-item-input aui-margin-r-15">
+                    <input id="cbmItem" placeholder="点击选择" readonly="true"  onclick="onCbmItem()">
+                    <input id="cbmItemId" class="aui-hide" placeholder="点击选择" readonly="true"  onclick="onCbmItem()">
+                </div>
+                <div class="aui-list-item-right"></div>
+            </div>
+        </li>
+        <li class="aui-list-item">
+            <div class="aui-list-item-inner">
+                <div class="aui-list-item-label">内&nbsp;容&nbsp;&nbsp;描&nbsp;述:</div>
+                <div class="aui-list-item-input">
+                    <textarea id="cbmRecordDesc" value=" "></textarea>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js" ></script>
+<script type="text/javascript">
+    apiready = function(){
+        initDateParam("/app/cbm/record/cbmRecord/getfeedbackDept.do",setInitDept,{ "accountId":10000000 });//反馈部门
+        initDateNoParam("/app/cbm/record/cbmRecord/getCbmClass.do",setCbmClassOption);//变化点类型
+        initDateNoParam("/app/cbm/record/cbmRecord/getCbmType.do",setCbmTypeRadio);//变化点分类
+        // initDateParam("/app/cbm/record/cbmRecord/getCbmItem.do",setInitDept,{ "cbmTypeId":document.getElementById("cbmType") });//变化点项目
+        setWorkShop();//车间
+        setCbmItem();//变化点项目
+        // loadCbmTypeLater();
+
+    };
+    /**
+     * 描述:初始化部门信息
+     *
+     * @author lzj
+     * @date 2018/11/30 9:42
+     */
+    function setInitDept(obj) {
+        var funcList=obj;
+        document.getElementById("feedbackDept").value=funcList[0].deptCode+"  /  "+funcList[0].deptName;
+    }
+    /**
+     * 描述:设置变化点类型的下拉列表值
+     *
+     * @author lzj
+     * @date 2018/11/30 10:38
+     */
+    function setCbmClassOption(obj) {
+        var cbmClassSelect=document.getElementById("cbmClass");
+        var html='';
+        for (var i=1;i<=obj.length;i++){
+            html='<option value='+obj[0].label+'>'+obj[0].label+'</option>';
+            cbmClassSelect.insertAdjacentHTML('beforeEnd', html);
+        };
+    }
+
+    /**
+     * 描述:设置变化点分类
+     *
+     * @author lzj
+     * @date 2018/11/30 13:24
+     */
+    function setCbmTypeRadio(obj){
+        var cbmType=document.getElementById("cbmType");
+        var html='';
+        var src=getCookie("loadCbmType");
+        for (var i=1;i<=obj.length;i++){
+            if (obj[(i-1)].value==src)
+            html='<input type="radio" class="aui-radio aui-margin-l-15" name="cbmType" checked="checked" onclick="loadCbmType('+obj[(i-1)].value+')" id="a'+obj[(i-1)].value+'" value='+obj[(i-1)].value+'><laber for="cbmTypeId-A">'+obj[(i-1)].label+'</laber>';
+            else
+                html='<input type="radio" class="aui-radio aui-margin-l-15" name="cbmType" onclick="loadCbmType('+obj[(i-1)].value+')" id="a'+obj[(i-1)].value+'" value='+obj[(i-1)].value+'><laber for="cbmTypeId-A">'+obj[(i-1)].label+'</laber>';
+            if (i%3==0){
+                html+='<br/>';
+            }
+            cbmType.insertAdjacentHTML('beforeEnd', html);
+        }
+    }
+
+    /**
+     * 描述:点击后记录选择值页面跳转后还原
+     *
+     * @author lzj
+     * @date 2018/12/2 14:21
+     */
+    function loadCbmType(str) {
+        setCookie("loadCbmType",str)
+    }
+
+    /**
+     * 描述:设置车间
+     *
+     * @author lzj
+     * @date 2018/11/30 15:03
+     */
+    function setWorkShop(){
+        var src=getCookie("workShopDate");
+        if (src === "undefined" || src === null) {
+        } else {
+            var strs = src.split(",");
+            document.getElementById("workshop").value = strs[1];
+            document.getElementById("workshopId").value = strs[0];
+            delCookie("workShopDate");
+        }
+    }
+
+    /**
+     * 描述:控制变化点项目是否可以跳转
+     *
+     * @author lzj
+     * @date 2018/11/30 15:30
+     */
+    function onCbmItem() {
+        var radio=document.getElementsByName("cbmType");
+        var selectvalue=null;
+        for (var i=0;i<radio.length;i++){
+            if(radio[i].checked==true) {
+                selectvalue=radio[i].value;
+            }
+        }
+        if (selectvalue==null) return alert("请先选择变化点分类");
+        window.location.href = '../cbm_item.html?cbmTypeId='+selectvalue;
+    }
+
+    /**
+     * 描述:变化点项目
+     *
+     * @author lzj
+     * @date 2018/12/2 14:11
+     */
+    function setCbmItem() {
+        var src=getCookie("cbmItemData");
+        if (src === "undefined" || src === null) {
+        } else {
+            var strs = src.split(",");
+            document.getElementById("cbmItem").value = strs[1];
+            document.getElementById("cbmItemId").value = strs[0];
+            delCookie("cbmItemData");
+        }
+    }
+
+    /**
+     * 描述:保存数据
+     *
+     * @author lzj
+     * @date 2018/11/30 16:19
+     */
+    function save() {
+        //表单中显示的信息
+        var feedbackDate = document.getElementById("feedbackDate").value;//反馈日期
+
+        var cbmClass = document.getElementById("cbmClass");//变化点类型
+        var index = cbmClass.selectedIndex; // 选中索引
+        var cbmClassValue = cbmClass[index].value; // 选中值
+
+        var cbmGrade = document.getElementsByName("cbmGrade");//变化点等级
+        var cbmGradeValue=null;   //  selectvalue为radio中选中的值
+        for(var i=0;i<cbmGrade.length;i++){
+            if(cbmGrade[i].checked==true) {
+                cbmGradeValue=cbmGrade[i].value;
+                break;
+            }
+        }
+
+        var workshopId = document.getElementById("workshopId").value;//车间
+        var productLine = document.getElementById("productLine").value;//生产线
+
+        var cbmType = document.getElementsByName("cbmType");//变化点分类
+        var cbmTypeValue=null;   //  selectvalue为radio中选中的值
+        for(var i=0;i<cbmType.length;i++){
+            if(cbmType[i].checked==true) {
+                cbmTypeValue=cbmType[i].value;
+                break;
+            }
+        }
+
+        var cbmItemId = document.getElementById("cbmItemId").value;//变化点项目
+        var cbmRecordDesc = document.getElementById("cbmRecordDesc").value;//内容描述
+
+        var userInfo = $api.getStorage('userInfo');
+        if (feedbackDate==""||cbmClassValue==""||cbmGradeValue==""||cbmTypeValue==""||cbmItem==""){
+            alert("请添加内容");
+            return;
+        }
+        //备注
+        add(feedbackDate + " " + cbmClassValue + " " + cbmGradeValue + " " + workshopId + " "+ productLine + " " + cbmTypeValue + " "+cbmItemId+" "+cbmRecordDesc+" "+userInfo.accountId);
+    }
+
+    /**
+     * 描述:新增
+     *
+     * @author lzj
+     * @date 2018/12/2 13:34
+     */
+    function add(str) {
+        delCookie("loadCbmType");
+        initDateParam("/app/cbm/record/cbmRecord/saveQsbCbmRecord.do",self.location=document.referrer,{value:str});//变化点类型
+    }
+
+</script>
+</html>

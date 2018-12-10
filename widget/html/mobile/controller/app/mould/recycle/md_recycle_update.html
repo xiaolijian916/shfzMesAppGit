@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <!-- css样式导入 -->
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../../../../../../script/api.js" ></script>
+    <script type="text/javascript" src="../../../../../../script/aui-list-swipe.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+    <script type="text/javascript" src="../../../../../../conf/application.js"></script>
+    <script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-dialog.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-scroll.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-tab.js"></script>
+    <script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+    <script type="text/javascript" src="../../../../../../script/aui-toast.js" ></script>
+    <style>
+    	body{
+
+    	}、、、
+    </style>
+</head>
+<body>
+    <header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;right: 0">
+        <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+            <span class="aui-iconfont aui-icon-left"></span>返回
+        </a>
+        <div class="aui-title">详情</div>
+        <div class="aui-pull-right aui-btn" onclick="save()">
+            <img src="../../../../../../image/save.png" class="img-btn" width="25px" height="25px"/>
+        </div>
+    </header>
+    <div class="aui-content" style="margin-top:2.25rem;">
+        <ul class="aui-list aui-form-list" id="detail_content">
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">单据编号:</div>
+                    <div class="aui-list-item-input"><input id="mdBillNo" readonly="true"></div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">接收仓库:</div>
+                    <div class="aui-list-item-input aui-list-item-arrow">
+                        <input placeholder="选择仓库" onclick="javascript:window.location.href = '../tool/wh.html'" id="whName" readonly="true">
+                        <input id="whId" readonly="true" class="aui-hide">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">收发类别:</div>
+                    <div class="aui-list-item-input aui-list-item-arrow">
+                        <input placeholder="选择类别" readonly="true" id="transTypeName" onclick="javascript:window.location.href = '../tool/trans_type.html'">
+                        <input id="transTypeId" readonly="true" class="aui-hide">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">产品名称:</div>
+                    <div class="aui-list-item-input aui-list-item-arrow">
+                        <input placeholder="选择产品" readonly="true" id="itemName" onclick="javascript:location.href='../tool/item.html'">
+                        <input id="itemId" readonly="true" class="aui-hide">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">产品编码:</div>
+                    <div class="aui-list-item-input">
+                        <input placeholder="产品编码" readonly="true" id="itemCode">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">经&nbsp;&nbsp;办&nbsp;&nbsp;人:</div>
+                    <div class="aui-list-item-input aui-list-item-arrow">
+                        <input placeholder="选择人员" readonly="true" id="agentName" onclick="javascript:window.location.href = '../tool/user.html'">
+                        <input placeholder="选择人员" readonly="true" id="agent" class="aui-hide">
+                        <input placeholder="部门" readonly="true" id="deptId" class="aui-hide">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">制&nbsp;&nbsp;单&nbsp;&nbsp;人:</div>
+                    <div class="aui-list-item-input">
+                        <input placeholder="选择人员" readonly="true" id="billerName">
+                        <input placeholder="选择人员" readonly="true" id="biller" class="aui-hide">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">审&nbsp;&nbsp;核&nbsp;&nbsp;人:</div>
+                    <div class="aui-list-item-input">
+                        <input placeholder="选择人员" readonly="true" id="auditorName">
+                        <input placeholder="选择人员" readonly="true" id="auditor" class="aui-hide">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">
+                        描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述:
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea id="remark" value=" "></textarea>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <div  style="margin: 0 auto;height: 35px;width: 120px" onclick="foldRow()">
+            <img src="../../../../../../image/fold_down.png" width="25px" height="25px" style="margin: 5px auto"  id="fold">
+        </div>
+    </div>
+    <div class="aui-content aui-margin-b-15" id="son" style="display: none;">
+        <ul class="aui-list aui-form-list">
+            <li class="aui-list-header" style="background-color: #03a9f4;color: #ffffff">
+                子表信息
+            </li>
+            <li class="aui-list-item aui-hide" style="text-align: center">
+                <img src="../../../../../../image/qrcode.png" width="40" height="40" onclick="scanSingle()" style="margin-left: 20%"/>
+                <img src="../../../../../../image/add(1).png" width="40" height="40" onclick="manualAdd()" id="manual" style="margin-right: 20%"/>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">接收货位</div>
+                    <div class="aui-list-item-input ">
+                        <input placeholder="选择货位" onclick="javascript:window.location.href = '../tool/whCell.html?whId=10000070'" id="whCellName" readonly="true">
+                        <input id="whCellId" readonly="true" style="display: none">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+  <!--若已经存在子表时分开显示-->
+  <!--  <div class="aui-content aui-margin-b-15" id="son" style="display: none;">
+        <ul class="aui-list aui-form-list">
+            <li class="aui-list-header" style="background-color: #03a9f4;color: #ffffff">
+                子表信息      已有内容
+            </li>
+            <li class="aui-list-item" style="text-align: center">
+                <img src="../../../../../../image/qrcode.png" width="40" height="40" onclick="scanSingle()" style="margin-left: 20%"/>
+                <img src="../../../../../../image/add(1).png" width="40" height="40" onclick="manualAdd()" id="manual" style="margin-right: 20%"/>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">接收货位</div>
+                    <div class="aui-list-item-input ">
+                        <input placeholder="选择货位" onclick="javascript:window.location.href = '../tool/whCell.html?whId=10000070'" id="whCellName" readonly="true">
+                        <input id="whCellId" readonly="true" style="display: none">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>-->
+</body>
+<script type="text/javascript">
+	apiready = function(){
+
+        setWhCell();
+
+        //初始化信息  zhubiao
+        api.ajax({
+            url: $.ServerUrl("/app/mould/recycle/mdRecycle/initUpdate.do"),
+            method: 'post',
+            data:{
+                values:{
+                    "mdBillId":getParam("mdBillId"),
+                }
+            }
+        },function(obj, err) {
+            //解析响应信息
+            $.responseCall(obj, function(){
+                if($.isNull(obj)) {
+                    return $.alert("异常", $.toStringify(err.body));
+                }
+                var funcList=$.toJson(obj.data);
+                document.getElementById("mdBillNo").value=funcList[0].mdBillNo;//单据编号
+                document.getElementById("whName").value=funcList[0].whCode+"/"+funcList[0].whName;//仓库
+                document.getElementById("whId").value=funcList[0].whId;
+                // document.getElementById("whCellName").value=funcList[0].whCellCode+"/"+funcList[0].whCellName;//货位
+                // document.getElementById("whCellId").value=funcList[0].whCellId;
+                document.getElementById("transTypeName").value=funcList[0].transTypeName;//收发类别
+                document.getElementById("transTypeId").value=funcList[0].transTypeId;
+                document.getElementById("itemName").value=funcList[0].itemName;//产品
+                document.getElementById("itemCode").value=funcList[0].itemCode;//产品
+                document.getElementById("itemId").value=funcList[0].itemId;
+                document.getElementById("agentName").value=funcList[0].agentName;//经办人
+                document.getElementById("agent").value=funcList[0].agent;
+                document.getElementById("deptId").value=funcList[0].deptId;//部门id
+                document.getElementById("billerName").value=funcList[0].billerName==null?"开发管理员":funcList[0].billerName+"/"+getTimeFormat(funcList[0].mdBillDate);//制单人、制单时间
+                document.getElementById("auditorName").value=funcList[0].auditorName==null?"未审核":funcList[0].auditorName+"/"+getTimeFormat(funcList[0].auditDate);//审核人、审核时间
+                document.getElementById("remark").value=funcList[0].remark;//描述
+            }, null, false);
+        });
+
+        //初始化信息   子表
+        initDetailData();
+	};
+	function initDetailData() {
+            //初始化信息  zhubiao
+            api.ajax({
+                url: $.ServerUrl("/app/mould/recycle/mdRecycle/getMdLedgerId.do"),
+                method: 'post',
+                data: {
+                    values: {
+                        "mdBillId": getParam("mdBillId"),
+                    }
+                }
+            }, function (obj, err) {
+                //解析响应信息
+                $.responseCall(obj, function () {
+                    if ($.isNull(obj)) {
+                        return $.alert("异常", $.toStringify(err.body));
+                    }
+                    var funcList = $.toJson(obj.data);
+                    for(var i=0;i<funcList.length;i++){
+                        getData(funcList[i].mdLedgerId);
+                    }
+                }, null, false);
+            });
+    }
+
+        //折叠
+    function foldRow() {
+            if (status == 0) {
+                status = 1;
+                document.getElementById("fold").src = "../../../../../../image/fold_up.png";
+                document.getElementById("son").style.display = "block";
+                //显示内容
+
+            } else {
+                status = 0;
+                document.getElementById("fold").src = "../../../../../../image/fold_down.png";
+                document.getElementById("son").style.display = "none";
+            }
+        }
+
+        //二维码扫描添加
+    function scanSingle() {
+            var FNScanner = api.require('FNScanner');
+            FNScanner.openScanner({
+                autorotation: true,
+            }, function (ret, err) {
+                if (ret) {
+                    if (ret.eventType == 'success') {
+                        //						alert(ret.content)
+                        //将扫描到的id在数据库中查出对应信息
+                        getData(ret.content);
+                        var oderid = $api.dom("#waybill_num");
+                        $api.val(oderid, ret.content);
+                    } else if (ret.eventType == 'fail') {
+                        api.toast({
+                            msg: '扫描失败，请稍后重试'
+                        });
+                    }
+                } else {
+                    api.toast({
+                        msg: err.msg
+                    });
+                }
+            });
+        }
+
+        //获取子表数据
+    function getData(mdLedgerId) {
+            api.ajax({
+                url: $.ServerUrl('/app/mould/recycle/mdRecycle/getData.do'),
+                method: 'post',
+                data: {
+                    values: {
+                        mdLedgerId: mdLedgerId
+                    }
+                }
+            }, function (obj, err) {
+                //解析响应信息
+                $.responseCall(obj, function () {
+                    if ($.isNull(obj)) {
+                        return $.alert("异常", $.toStringify(err.body));
+                    }
+                    var funcList = $.toJson(obj.data);
+                    //				alert("-----------------"+funcList[0].mdLedgerId);
+                    var wrap = document.getElementById("son");
+                    var pic = funcList[0].picPath == null || funcList[0].picPath == "" ? "../../../../../../image/no_picture.png" : funcList[0].picPath;
+                    var html = '' +
+                        '<li class="aui-list-item" style="border-bottom: 1px solid #dddddd;background-color: #fffffe">' +//;
+                        '   <div style="display: none"><input class="aui-checkbox" type="checkbox" name="checkbox" value="' + funcList[0].mdLedgerId + '" checked="true"></div>' +
+                        '   <div class="aui-media-list-item-inner">' +
+                        '       <div class="aui-list-item-media" style="height: 80px;width: 120px">' +
+                        '			<img src="' + pic + '" width="120px" height="80px" style="margin: 3px auto">' +
+                        '		</div>' +
+                        '      <div>'+
+                        '          <div class="aui-media-list-item-inner aui-list-item">' +
+                        '               <div class="aui-list-item-inner aui-text-primary" style="text-align: right;width: 80px">模&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;具:</div>' +
+                        '               <div class="aui-list-item-inner aui-margin-l-10">' +
+                        '                   <input readonly="true" value="' + funcList[0].mdLedgerNo + '/' + funcList[0].mdLedgerName + '">' +
+                        '               </div>' +
+                        '           </div>' +
+                        '           <div class="aui-media-list-item-inner aui-list-item" style="clear: left">' +
+                        '               <div class="aui-list-item-inner aui-text-primary" style="text-align: right;width: 80px">货&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位:</div>' +
+                        '               <div class="aui-list-item-inner aui-margin-l-10">' +
+                        '                   <input readonly="true" value="' + funcList[0].mdCellCode + '/' + funcList[0].mdCellName + '">' +
+                        '               </div>' +
+                        '           </div>' +
+                        '           <div class="aui-media-list-item-inner aui-list-item">' +
+                        '               <div class="aui-list-item-inner aui-text-primary" style="text-align: right;width: 80px">存放状态:</div>' +
+                        '               <div class="aui-list-item-inner aui-margin-l-10">' +
+                        '                   <input readonly="true" value='+position(funcList[0].position)+'>' +
+                        '               </div>' +
+                        '           </div>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</li>';
+                    wrap.insertAdjacentHTML('beforeEnd', html);
+                }, null, false);
+            });
+        }
+        function position(position) {
+	    var html="";
+            switch (Number(position)) {
+                case 1:
+                    html="在库";break;
+                case 2:
+                    html="生产";break;
+                case 3:
+                    html="维修";break;
+                case 4:
+                    html="保养";break;
+                default:
+                    html="错误数据";
+            }
+            return html;
+        }
+    /**
+     * 修改
+     *
+     * @author lzj
+     * @date 20181105
+     */
+    function  manualAdd() {
+        var itemId=document.getElementById("itemId").value;
+        var itemName=document.getElementById("itemName").value;
+        var whCellId=document.getElementById("whCellId").value;
+        if (itemId==="undefined"||itemId===null||itemId===undefined||itemId===""){
+            alert("请先选择产品");
+        }else if (whCellId==="undefined"||whCellId===null||whCellId===undefined||whCellId===""){
+            alert("请先选择货位");
+        } else{
+            setCookie("itemId",itemId);
+            setCookie("itemName",itemName);
+            // document.getElementById("manual").setAttribute("href","../receive/md_receive_create_detail.html?typeId=10000000");
+            window.location.href = "../receive/md_receive_create_detail.html?typeId=10000000";
+        }
+    }
+    /**
+     * 设置货位
+     * 若有whcell cookie则显示子信息 若无则隐藏
+     * @author lzj
+     * @date 20181105
+     */
+    function setWhCell(){
+        var whCell=getCookie("whCellData");
+        if(whCell==="undefined"||whCell===null){
+        }else{
+            document.getElementById("son").style.display="block";
+            var str=whCell.split(",");
+            document.getElementById("whCellName").value=str[1]+"  /  "+str[2];
+            document.getElementById("whCellId").value=str[0];
+            delCookie("whCellData");
+        }
+        if (document.getElementById("whCellId").value=="")document.getElementById("son").style.display="none";
+        else document.getElementById("son").style.display="block";
+    }
+</script>
+</html>

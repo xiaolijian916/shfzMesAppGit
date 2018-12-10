@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+
+    <script type="text/javascript" src="../../../../../../script/api.js"></script>
+    <script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../js/md-tool.js"></script>
+    <style>
+    	body{
+
+    	}
+		.text-overflow{
+			display:block;                     /*内联对象需加*/
+			width:31em;
+			word-break:keep-all;           /* 不换行 */
+			white-space:nowrap;          /* 不换行 */
+			overflow:hidden;               /* 内容超出宽度时隐藏超出部分的内容 */
+			text-overflow:ellipsis;         /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+		}
+    </style>
+</head>
+<body>
+	<header class="aui-bar aui-bar-nav" style="position: fixed;top: 0;left: 0;">
+	    <a class="aui-pull-left aui-btn" href="javascript:history.back()">
+	        <span class="aui-iconfont aui-icon-left"></span>返回
+	    </a>
+	    <div class="aui-title" id="title"></div>
+	</header>
+
+	<!--查询显示-->
+	<div class="aui-searchbar" id="search" style="display: none;margin-top:2.25rem;">
+		<div class="aui-searchbar-input aui-border-radius" tapmode onclick="doSearch()" style="float: left;margin-top: 8px;">
+			<i class="aui-iconfont aui-icon-search"></i>
+			<form action="javascript:search();">
+				<input type="search" placeholder="产品编码/产品名称" style="width: 300px" id="search-input">
+			</form>
+		</div>
+		<div class="aui-searchbar-cancel" style="float: left;margin-top: 12px;" onclick="cancel()">取消</div>
+	</div>
+	<!--主体信息-->
+	<section class="aui-refresh-content" style="margin-top:2.25rem;margin-bottom: 2.25rem" id="top">
+		<div class="aui-content aui-margin-b-15">
+			<div id="content">
+				<ul class="aui-list">
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!--//底部操作栏-->
+	<footer class="aui-bar aui-bar-tab" id="footer">
+		<div class="aui-bar-tab-item aui-active" tapmode >
+			<input class="aui-checkbox" type="checkbox" id="allCheck" onclick="checkAll()" style="display: inline-block;">
+			<div class="aui-bar-tab-label">全选</div>
+		</div>
+		<div class="aui-bar-tab-item" tapmode style="text-align: center" >
+			<div class="aui-bar-tab-label" id="sum" style="color: #8B8B00"></div>
+			<div class="aui-bar-tab-label" id="selected" style="color:#7CCD7C"></div>
+		</div>
+		<div class="aui-bar-tab-item" tapmode >
+			<div class="aui-bar-tab-label" style="background-color: #03a9f4;width: 100%;height: 100%;text-align: center;font-size: 30px;color: #FFFFFF;padding-top: 8px" id="choose" onclick="chooseRow()">选择</div>
+		</div>
+	</footer>
+</body>
+
+<script type="text/javascript">
+    var page=0;//定义加载的页数
+    var rows=200;//定义每页显示的行数
+	apiready = function(){
+        //初始化列表数据
+        url = location.search;
+        initData('/app/mould/receive/mdReceive/listDetail.do',getCookie("itemId"),page,rows,initItem);//+" "+getParam("typeId")
+        delCookie("itemId");
+        document.getElementById("title").innerText=getCookie("itemName");
+        delCookie("itemName");
+	};
+    //初始化列表
+    function initItem(obj){
+        var funcList=obj;
+        var wrap = document.getElementById("content");
+        for(var i=0;i<((page+1)*rows)&&i<funcList.length;i++){
+            console.log(i+"------"+(page*rows-i));
+            var html='<li class="aui-list-item aui-card-list" style="float:left;width:100%;border-radius:20px">	'+
+                '    <div style="float: left;margin-top: 30px;"><input class="aui-checkbox" type="checkbox" name="checkbox" style="margin-left: 8px;float: right;clear: left;" value="'+funcList[i].mdLedgerId+'"></div>'+
+                '    <div class="aui-list-item-inner" style="float:right;width:90%;" id="content_list+'+i+'"">			'+
+                '       <table style="width:100%;border-left: 1px solid #2ecc71;background-image: linear-gradient(to right, rgba(99, 184, 255, 0), rgba(99, 184, 255, 0.4), rgba(99, 184, 255, 0));">								    '+
+                '            <tr>																		'+
+                '                <td style="width: 35%;">编码/名称:</td>					'+
+                '                <td style="width: 80%;">'+funcList[i].mdLedgerNo+'/'+funcList[i].mdLedgerName+'</td>						'+
+                '           </tr> '+
+                '            <tr>																		'+
+                '                <td style="width: 35%;">代号/车型:</td>					'+
+                '                <td style="width: 80%;">'+funcList[i].mdNo+'/'+funcList[i].vehicleType+'</td>						'+
+                '           </tr> '+
+                '            <tr>																		'+
+                '                <td style="width: 35%;">工&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;序:</td>					'+
+                '                <td style="width: 80%;" class="text-overflow">'+funcList[i].processNo+'</td>						'+
+                '           </tr> '+
+                '        </table>																		'+
+                '    </div>																				'+
+                '</li>';
+            wrap.insertAdjacentHTML('beforeEnd', html);
+        }
+        sum(funcList.length);
+    }
+    //总条数
+    function sum(sum){
+        $("#sum").html("共有："+sum+"条");
+    }
+	//全选
+	function checkAll(){
+		var all = document.getElementById("allCheck");
+        var checkbox = document.getElementsByName("checkbox");
+            if(all.checked==true){
+                if(checkbox.length){
+                    for(var i=0;i<checkbox.length;i++){
+                        checkbox[i].checked = true;
+                    }
+                }
+                checkbox.chcked=true;
+            }else{
+                if(checkbox.length){
+                    for(var i=0;i<checkbox.length;i++){
+                        checkbox[i].checked = false;
+                    }
+                }
+            }
+	}
+    //选中目标
+    function  chooseRow() {
+        if (isChoose("checkbox")){
+            obj = document.getElementsByName("checkbox");
+            check_val = [,];
+            for(k in obj){
+                if(obj[k].checked)
+                    check_val.push(obj[k].value);
+            }
+            setCookie("mdLedgerId",check_val);
+            window.history.back();
+        }else{
+            alert("请先选中一条信息!(oﾟ▽ﾟ)o  ");
+        }
+    }
+</script>
+</html>

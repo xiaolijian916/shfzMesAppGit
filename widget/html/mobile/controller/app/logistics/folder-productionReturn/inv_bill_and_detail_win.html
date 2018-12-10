@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../../../css/icomoonstyle.css" />
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/mobiscroll.custom.min.css" >
+
+<style>
+        .aui-list-item-inner.aui-swipe-handle {
+            overflow-x: hidden;
+            position: relative;
+            z-index: 1;
+            background-color: #ffffff;
+        }
+        .aui-swipe-btn {
+            position: absolute;
+            right: 0;
+            z-index: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-flex: 1;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+        }
+        .aui-swipe-btn .aui-btn {
+            border-radius: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+
+        }
+        .donghua {
+            -webkit-transition-duration:300ms;
+            transition-duration:300ms;
+        }
+/* 
+.place-holder {
+                -webkit-box-flex: 1;
+                -webkit-flex: 1;
+                flex: 1;
+            }
+            
+            footer {
+                position: relative;
+                box-sizing: border-box;
+                height: 55px;
+                padding-left: 16px;
+                line-height: 71px;
+                background-color: #fcfcfc;
+            }
+            
+            footer .unit {
+                font-size: 14px;
+                color: #ff5922;
+            }
+            
+            footer .price {
+                font-size: 36px;
+                color: #ff5922;
+            }
+            
+            footer .sub-price {
+                font-size: 12px;
+                color: #888;
+            }
+            
+            footer .buy-button {
+                position: absolute;
+                box-sizing: border-box;
+                width: 146px;
+                height: 40px;
+                top: 8px;
+                right: 16px;
+                border-radius: 3px;
+                border: 1px solid #ff6633;
+                background-color: #ff6633;
+                line-height: 38px;
+                color: #fff;
+                font-size: 14px;
+                font-weight: 600;
+                text-align: center;
+            }
+            
+            footer .buy-button.active {
+                background-color: #fff;
+                color: #ff6633;
+            } */
+            
+            
+            
+            
+            
+            
+            
+            
+            
+       /*              .aui-bar-tab {
+                                position: static;
+                            } */
+        .search-input {
+            height: 1.6rem;
+            line-height: 1.6rem;
+            background: #f5f5f5;
+            border-radius: 30px;
+            position: relative;
+            font-family:"aui_iconfont" !important;
+            text-align: left;
+            padding-left: 1.5rem;
+            color: #999999;
+        }
+        .search-input:after {
+            position: absolute;
+            left: 0;
+            padding-left: 0.5rem;
+            content: "\e615";
+        }
+        
+        
+/*         .11footer {
+        			line-height: 1.25rem;
+        			height: 20px;
+        			
+        			width: 20%;
+        			
+        			background-color: #ddd;
+        			
+        			position: fixed;
+        			
+        			bottom: 0;
+        			
+        			} */
+        			
+        			
+        			
+        			
+        			
+        			
+        			
+        			
+
+
+
+
+.block {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: reverse;
+    -ms-flex-flow: column-reverse nowrap;
+    flex-flow: column-reverse nowrap;
+    /* width: 360px; */
+    margin: 0 auto;
+    font-size: 14px;
+    color: #4C4C4C;
+    /* line-height: 28px; */
+    /* border: 1px solid #999; */
+    padding: 0px 0px 10px 0px;
+}
+
+.block > .detail {
+    max-height: 0px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.block > .case-block {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 120px;
+    height: 24px;
+    margin: 0 auto 0;
+    color: #0e0e0e;
+    background: #fff;
+    border: 1px solid #03a9f4;
+    border-radius: 5px;
+}
+
+.block > .case-block div:nth-of-type(1) {
+    display: block;
+}
+
+.block > .case-block div:nth-of-type(2) {
+    display: none;
+}
+
+.block > [type="checkbox"] {
+    position: relative;
+    display: block;
+    width: 120px;
+    height: 24px;
+    margin: -24px auto 0;
+    z-index: 1000;
+    opacity: 0;
+}
+
+.block > [type="checkbox"]:hover + .case-block {
+    background-color: #f5f5f5;
+}
+
+.block > [type="checkbox"]:checked + .case-block div:nth-of-type(1) {
+    display: none;
+}
+
+.block > [type="checkbox"]:checked + .case-block div:nth-of-type(2) {
+    display: block;
+}
+
+.block > [type="checkbox"]:checked + .case-block + .detail {
+    max-height: inherit;
+}
+
+.icon-scan:before {
+  content: "\e900";
+  color: #212121;
+}
+.hr1{ height:2px;border:none;border-top:2px solid #E5E5E5;}  
+	.display-tabel-cell {
+    	display: table-cell;
+	}
+	
+	.section {
+	position: relative;
+	height: 32px;
+	/* padding-left: 80px; */
+	padding-right: 15px;
+	margin-bottom: 10px;
+	box-sizing: border-box;
+}
+	
+	.section>select,  .section>input {
+	width: 100%;
+	height: 100%;
+	display: block;
+	padding: 0 10px;
+	box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+	<div id="outerMostLayer" class="aui-bar aui-bar-nav">
+    <header class="aui-bar aui-bar-nav" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">入库明细</div>
+        
+    </header>
+</div>
+     	
+
+    	
+	
+<section class="block">
+    <input type="checkbox" onclick="extensor()" id="extensor-id" checked="checked">
+    <div class="case-block">
+      <div style="font-size: 25px;padding-top: 10px;color: #03a9f4">︾</div>
+      <div style="font-size: 25px;padding-bottom: 10px;color: #03a9f4">︽</div>
+    </div>
+    <div class="detail">
+              <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list">
+                        <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        入库日期
+                    </div>
+                    <div class="aui-list-item-input">
+                        
+							<div class="section">
+								<input type="text" id="billDate" class="mbsc-comp" readonly="">
+							</div>	
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        入库仓库
+                    </div>
+                    <div class="aui-list-item-input">
+                        <!-- <select id="whSelect">
+                            
+                        </select> -->
+                        <input type="text" id="whName" readonly="true">
+                        <input type="hidden" id="whId" onchange="dd()">
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        仓库货位
+                    </div>
+                    <div class="aui-list-item-input">
+                        <!-- <select id="whSelect">
+                            
+                        </select> -->
+                        <input type="text" id="whCellName" readonly="true">
+                        <input type="hidden" id="whCellId">
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        收发类别
+                    </div>
+                    <div class="aui-list-item-input">
+                        <!-- <select id="whTransBillTypeSelect">
+                            
+                        </select> -->
+                        <input type="text" id="transTypeName" readonly="true">
+                        <input type="hidden" id="transTypeId">
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        备注
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea placeholder="备注" id="remark" readonly="true"></textarea>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>	
+    </div>
+  </section>
+
+  
+	  <div style="height: 140px;overflow-y: auto" id="mainContent">
+	  	
+	  	    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list" id="cardContent">
+            
+           
+                    
+                
+            
+            </ul>
+            </div>
+	
+	</div>
+    
+
+</body>
+<!-- <script type="text/javascript" src="../../../../../../js/ama-head.js"></script>   -->
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-list-swipe-backup.js"></script>
+<script type="text/javascript" src="../../../../../../js/mobiscroll.custom.min.js"></script>
+<script type="text/javascript">
+var headerPos = 0;
+//var fnscanner;  // 二维码模块对象
+var FNScanner;  // 二维码模块对象
+var body_h;
+var chMap = new Map();
+var billId;
+        
+        //$('#billDate').val($.getNowFormatDate());
+        
+
+        
+        ////////////////////////////
+    apiready = function(){
+    
+        api.parseTapmode();
+
+        var header = $api.byId('outerMostLayer');
+        $api.fixStatusBar(header);
+        headerPos = $api.offset(header);
+        body_h = $api.offset($api.dom('body')).h;
+        
+        extensor();
+        
+        //removeApplyInvStorage();
+		//openTabFrame(openFrameName1,'folder-receiptConfirm/'+openFrameName1+'.html',0);
+		
+		billId = api.pageParam.billId;
+		if($.isNull(billId)){
+			
+		}else{
+			//修改
+			setTimeout(function(){
+				loadWhBillAndLine(billId);
+	        },0);
+		}
+	
+    };
+    
+    
+           function loadWhBillAndLine(billId){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/productionReturn/loadWhBillAndLine.do'),
+				method : "POST",
+				data : {
+					values : {
+						"billId":billId
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var getInfo = $.toJson(obj.data); 
+						
+						var listVoPoInvApply = getInfo.listVoWhBillDetail;
+						
+
+						rederData(listVoPoInvApply);
+						
+						$("#whId").val(getInfo.whId);
+						$("#whName").val(getInfo.whName);
+						$("#whCellId").val(getInfo.whCellId);
+						$("#whCellName").val(getInfo.whCellName);
+						$("#transTypeId").val(getInfo.transTypeId);
+						$("#transTypeName").val(getInfo.transTypeName);
+						
+						$("#remark").val(getInfo.remark);
+						$('#billDate').val(getInfo.billDate);
+						
+					} else {
+						
+						
+					}
+				}, null, false);
+			});
+    }
+
+    
+    function rederSelect(getInfo,mainId){
+    	var area = document.getElementById(mainId);      
+		var optionstring = "";           
+		//公共变量加载一次清空            
+		if (getInfo.length > 0) {                
+		for (var i = 0; i < getInfo.length; i++) {                                       
+		optionstring += "<option value=" + getInfo[i].value + ">" + getInfo[i].label + "</option>"; 
+		//公共变量赋值                
+		}            
+		}             
+		//if (area.options.length==0) {                 
+		//如果下拉框没有数据才进行加载                
+		$("#"+mainId).html(optionstring);   
+		//下拉框加载数据                
+		//$('#errorTypeSelect').selectpicker('refresh');            
+		//}
+    }
+    
+
+    
+        var swipe = new auiListSwipe(function(ret){
+        // console.log(ret)
+    });
+    
+    
+    function rederData(getInfo){
+    	//if($.isNotNull(chMap)){
+    	
+
+			var wrap = document.getElementById("cardContent")
+	        wrap.innerHTML = "";
+	        var i = 0;
+    	    //chMap.forEach(function (value, key, map) {
+    	    for(var i = 0; i < getInfo.length; i++){
+
+					    var value = getInfo[i];
+						
+						var html = //'<li class="aui-list-item">'+
+                //'<div class="aui-list-item-inner aui-swipe-handle">'+
+						
+							'<div class="aui-card-list">'+
+								//'<div class="side-by-side-left flex">'+
+						        	//'<input class="aui-radio" type="checkbox" name="checkbox" value="'+value.poInvApplyId+'">'+
+						        
+						        //'</div>'+
+						        '<div class="side-by-side-right card-to-check">'+
+					            '<div class="aui-card-list-header">'+
+					                '['+(++i)+']  '+value.workcenterName+
+					            '</div>'+
+					            '<div class="aui-card-list-content-padded">'+
+					                
+					             
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">物料图号:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 50%">'+value.drawingNumber+'</span>'+
+				            		'<label class="display-tabel-cell" style="width: 12%">单位:</label>'+
+				            		'<span class="display-tabel-cell">'+value.uomName+'</span>'+
+				            	'</div>'+
+					                
+					                '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">物料名称:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 50%">'+value.itemName+'</span>'+
+				            		
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">入库仓库:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 50%">'+value.whName+'</span>'+
+				            		
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">货位:</label>'+
+				            		'<span class="display-tabel-cell">'+value.whCellName+'</span>'+
+				            		'<label class="display-tabel-cell" style="width: 20%">数量:</label>'+
+				            		'<span class="display-tabel-cell">'+value.invQty+'</span>'+
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">供应商:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 50%">'+value.supplierName+'</span>'+
+				            		
+				            	'</div>'+
+					                
+					            '</div>'+
+					            
+					            '</div>'+
+					        '</div>'+
+					        
+					        //'</div>'+
+                //'<div class="aui-swipe-btn">'+
+                    //'<div class="aui-btn aui-btn-danger" onclick="delMapPoInvApply('+value.poInvApplyId+')">删除</div>'+
+               // '</div>'+
+            //'</li>'+
+            '<hr class="hr1" /> ';
+						wrap.insertAdjacentHTML('afterbegin', html);
+										        
+					//}
+					
+    
+
+}
+			//});
+    	//}
+    }
+
+    
+    function extensor(){
+	    if($('#extensor-id').is(':checked')) {
+	    	$("#mainContent").height(body_h);
+
+		}else{
+    		$("#mainContent").height(body_h+300);
+    	}
+    	//$("#mainContent").attr("height",500);
+    }
+  
+
+    //关闭当前窗体
+    function closeWin(){
+    	//removeApplyInvStorage();
+        api.closeFrame({
+        	name:'invBillAndDetailWin'
+        });
+    }
+
+    
+
+
+</script>
+</html>

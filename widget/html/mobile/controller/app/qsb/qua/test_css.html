@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>缺陷模式</title>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css"/>
+		<script type="text/javascript" src="../../../../../../script/api.js"></script>
+		<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+		<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+		<style type="text/css">
+			.a1 {
+			height: 100px;
+			width: 200px;
+			border-top-width: 1px;
+			border-left-color: #000099;
+			}
+			.table {
+			width: 198px;
+			height:398px;
+			border: 1px solid rgb(0,0,0);
+			}
+			.r1, .r2, .r3{
+			float: left;
+			width: 98px;
+			height: 98px;
+			border: 1px solid #000000;
+			}
+/*						section{
+			border: 1px solid red;}
+			div{
+			border: 1px solid #EDFB3F;}*/
+			.top-info{
+			display: block;
+			width: 100%;
+			}
+			.top-div{
+			margin-left:0.75rem;
+			width:30%;
+			 display:inline
+			
+			}
+			.li-div1{
+			width:64%;
+			 float: left;
+			}
+		    .li-div2{
+		    width:36%;
+			float: left;
+		    }
+		    .li-div21{
+		    width:100%;
+			
+		    }
+		    
+		    .section1{
+		    width:auto;
+		    height: auto;
+		    }
+		    
+		    .top-title{		    		
+			display: block;
+			width: 100%;
+			border-left: 1px solid #666666;
+			border-top: 1px solid #666666;
+			border-right: 1px solid #666666;
+			}
+		    .top-title1{
+			margin-left:0.75rem;
+			width:64%;			
+			display:inline
+			}						
+			.top-title2{
+			margin-left:6rem;
+			width:36%;			
+			display:inline
+			}
+		</style>
+	</head>
+	<body>
+		
+		<header class="aui-bar aui-bar-nav"  id="header">
+		    <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title">分层审核清单</div>
+		</header>
+
+		<div class="top-info"><div class="top-div"><label>审核项：3</label></div>
+		<div class="top-div"><label>已审核：0&nbsp;&nbsp;</label></div>
+		<div class="top-div"><label class="aui-label-danger">不符合：0&nbsp;&nbsp;</label></div></div>
+		
+		<div class="top-title"><div class="top-title1">审核标题和内容</div><div class="top-title2">审核结果</div></div>
+	<ul class="aui-list aui-media-list" style="border: 1px solid #666666;">
+	
+	 <li class="aui-list-item">
+		<div class="aui-media-list-item-inner">				
+			<div class="li-div1">
+		
+		                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-text">
+                            <div class="aui-list-item-title">5S及安全       </div>
+                            
+                        </div>
+                        <div class="aui-list-item-text">
+                            员工安全自检表是否记录完整、真实
+                        </div>
+                       <div class="aui-list-item-text">
+                           
+2018-10-10 10:10:00  
+                        </div>
+                    </div>					
+
+					
+				</div>
+				<div class="li-div2"><div class="li-div21"><label>符合</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>不符合</label></div><div class="li-div21">
+
+				
+			
+						<div class="aui-list-item-input">
+							
+								<input class="aui-radio" type="radio" name="isReoccur" value="是">
+								
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input class="aui-radio" type="radio" value="否" name="isReoccur">
+							
+						</div>
+					
+
+
+</div><div class="li-div21"><label>不适用</label>&nbsp;<label>立即纠正</label></div><div class="li-div21">
+								<input class="aui-radio" type="radio" name="isReoccur" value="是">
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							
+								<input class="aui-radio" type="radio" value="否" name="isReoccur"></div></div>
+				</div></li>
+				
+			 <li class="aui-list-item">
+		<div class="aui-media-list-item-inner">				
+			<div class="li-div1">
+		
+		                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-text">
+                            <div class="aui-list-item-title">6S及安全       </div>
+                            
+                        </div>
+                        <div class="aui-list-item-text">
+                            员工安全自检表是否记录完整、真实
+                        </div>
+                       <div class="aui-list-item-text">
+                           
+2018-10-10 10:10:00  
+                        </div>
+                    </div>					
+
+					
+				</div>
+				<div class="li-div2"><div class="li-div21"><label>符合</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>不符合</label></div><div class="li-div21">
+
+				
+			
+						<div class="aui-list-item-input">
+							
+								<input class="aui-radio" type="radio" name="isReoccur" value="是">
+								
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input class="aui-radio" type="radio" value="否" name="isReoccur">
+							
+						</div>
+					
+
+
+</div><div class="li-div21"><label>不适用</label>&nbsp;<label>立即纠正</label></div><div class="li-div21">
+								<input class="aui-radio" type="radio" name="isReoccur" value="是">
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							
+								<input class="aui-radio" type="radio" value="否" name="isReoccur"></div></div>
+				</div></li>		
+				
+				
+					 <li class="aui-list-item">
+		<div class="aui-media-list-item-inner">				
+			<div class="li-div1">
+		
+		                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-text">
+                            <div class="aui-list-item-title">7S及安全       </div>
+                            
+                        </div>
+                        <div class="aui-list-item-text">
+                            员工安全自检表是否记录完整、真实
+                        </div>
+                       <div class="aui-list-item-text">
+                           
+2018-10-10 10:10:00  
+                        </div>
+                    </div>					
+
+					
+				</div>
+				<div class="li-div2"><div class="li-div21"><label>符合</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>不符合</label></div><div class="li-div21">
+
+				
+			
+						<div class="aui-list-item-input">
+							
+								<input class="aui-radio" type="radio" name="isReoccur" value="是">
+								
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input class="aui-radio" type="radio" value="否" name="isReoccur">
+							
+						</div>
+					
+
+
+</div><div class="li-div21"><label>不适用</label>&nbsp;<label>立即纠正</label></div><div class="li-div21">
+								<input class="aui-radio" type="radio" name="isReoccur" value="是">
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							
+								<input class="aui-radio" type="radio" value="否" name="isReoccur"></div></div>
+				</div></li>	
+	
+
+	</ul>
+
+	</body>
+	<script type="text/javascript"></script>
+</html>

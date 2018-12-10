@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../../../../../../css/icomoonstyle.css" />
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/mobiscroll.custom.min.css" >
+
+<style>
+        .aui-list-item-inner.aui-swipe-handle {
+            overflow-x: hidden;
+            position: relative;
+            z-index: 1;
+            background-color: #ffffff;
+        }
+        .aui-swipe-btn {
+            position: absolute;
+            right: 0;
+            z-index: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-flex: 1;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+                    justify-content: space-between;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+        }
+        .aui-swipe-btn .aui-btn {
+            border-radius: 0;
+            height: 100%;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+                    align-items: center;
+
+        }
+        .donghua {
+            -webkit-transition-duration:300ms;
+            transition-duration:300ms;
+        }
+
+        .search-input {
+            height: 1.6rem;
+            line-height: 1.6rem;
+            background: #f5f5f5;
+            border-radius: 30px;
+            position: relative;
+            font-family:"aui_iconfont" !important;
+            text-align: left;
+            padding-left: 1.5rem;
+            color: #999999;
+        }
+        .search-input:after {
+            position: absolute;
+            left: 0;
+            padding-left: 0.5rem;
+            content: "\e615";
+        }
+
+.block {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: reverse;
+    -ms-flex-flow: column-reverse nowrap;
+    flex-flow: column-reverse nowrap;
+    /* width: 360px; */
+    margin: 0 auto;
+    font-size: 14px;
+    color: #4C4C4C;
+    /* line-height: 28px; */
+    /* border: 1px solid #999; */
+    padding: 0px 0px 10px 0px;
+}
+
+.block > .detail {
+    max-height: 0px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.block > .case-block {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 120px;
+    height: 24px;
+    margin: 0 auto 0;
+    color: #0e0e0e;
+    background: #fff;
+    border: 1px solid #03a9f4;
+    border-radius: 5px;
+}
+
+.block > .case-block div:nth-of-type(1) {
+    display: block;
+}
+
+.block > .case-block div:nth-of-type(2) {
+    display: none;
+}
+
+.block > [type="checkbox"] {
+    position: relative;
+    display: block;
+    width: 120px;
+    height: 24px;
+    margin: -24px auto 0;
+    z-index: 1000;
+    opacity: 0;
+}
+
+.block > [type="checkbox"]:hover + .case-block {
+    background-color: #f5f5f5;
+}
+
+.block > [type="checkbox"]:checked + .case-block div:nth-of-type(1) {
+    display: none;
+}
+
+.block > [type="checkbox"]:checked + .case-block div:nth-of-type(2) {
+    display: block;
+}
+
+.block > [type="checkbox"]:checked + .case-block + .detail {
+    max-height: inherit;
+}
+
+.icon-scan:before {
+  content: "\e900";
+  color: #03a9f4;
+}
+
+.my-class{
+	color:#03a9f4;
+	}
+
+.hr1{ height:2px;border:none;border-top:2px solid #E5E5E5;}  
+	.display-tabel-cell {
+    	display: table-cell;
+	}
+	
+	.section {
+	position: relative;
+	height: 32px;
+	/* padding-left: 80px; */
+	padding-right: 15px;
+	/* margin-bottom: 10px; */
+	box-sizing: border-box;
+}
+	
+	.section>select,  .section>input {
+	width: 100%;
+	height: 100%;
+	display: block;
+	padding: 0 10px;
+	box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+	<div id="outerMostLayer" class="aui-bar aui-bar-nav">
+    <header class="aui-bar aui-bar-nav" id="aui-header">
+        <a class="aui-btn aui-pull-left" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">成品发货</div>
+        <a class="aui-btn aui-pull-right">
+        	
+        	<div class="aui-btn aui-btn-info aui-margin-r-5" onclick="saveBillAndLineData();">保存</div>
+        </a>
+    </header>
+</div>
+     	
+
+    	
+	
+<section class="block">
+    <input type="checkbox" onclick="extensor()" id="extensor-id" checked="checked">
+    <div class="case-block">
+      <div style="font-size: 25px;padding-top: 10px;color: #03a9f4">︾</div>
+      <div style="font-size: 25px;padding-bottom: 10px;color: #03a9f4">︽</div>
+    </div>
+    <div class="detail">
+              <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list">
+            <!-- <li class="aui-list-header">主表信息</li> -->
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        业务日期
+                    </div>
+                    <div class="aui-list-item-input">
+                        
+							<div class="section">
+								<input type="text" id="billDate" class="mbsc-comp" readonly="">
+							</div>	
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        客户
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="customerName" placeholder="----请选择----" readonly="true" onclick="openCustomerWin();">
+                        <input type="hidden" id="customerId">
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        发货类型
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="transTypeName" placeholder="----请选择----" readonly="true" onclick="openTransTypeSelectWin();">
+                        <input type="hidden" id="transTypeId">
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        发货仓库
+                    </div>
+                    <div class="aui-list-item-input">
+                    	<input type="text" id="deliveryWhName" readonly="true" placeholder="----请选择----"  onclick="openDeliveryWhSelectWin();">
+                        <input type="hidden" id="deliveryWhId">
+                        <!-- <select id="whSelect">
+                            
+                        </select> -->
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        接收仓库
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="receiveWhName" placeholder="----请选择----" readonly="true" onclick="openReceiveWhSelectWin();">
+                        <input type="hidden" id="receiveWhId">
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                       订单号
+                    </div>
+                    <div class="aui-list-item-input">
+                    	<input type="text" id="orderCode" placeholder="订单号"/>
+                        
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        发货地址
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea placeholder="发货地址" id="deliveryAddress"></textarea>
+                    </div>
+                </div>
+            </li>
+            
+                        <!-- <li class="aui-list-item">
+                                        <div class="aui-list-item-inner">
+                                            <div class="aui-list-item-label">
+                        使用部门
+                                            </div>
+                                            <div class="aui-list-item-input">
+                        								<input type="text" id="workcenterId" class="mbsc-comp" readonly="" style="display: none;">
+                        								<input type="text" id="workcenterName" class="mbsc-comp" readonly="">
+                        
+                                            </div>
+                                        </div>
+                                    </li> -->
+            
+                        <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        经办人
+                    </div>
+                    <div class="aui-list-item-input">
+                        
+						<input type="text" id="userId" class="mbsc-comp" readonly="" style="display: none;">
+								<input type="text" id="userName" class="mbsc-comp" readonly="">
+							
+                    </div>
+                </div>
+            </li>
+            
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        备注
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea placeholder="备注" id="remark"></textarea>
+                    </div>
+                </div>
+            </li>
+            <!-- <li class="aui-list-item">
+                <div class="aui-list-item-inner aui-list-item-center aui-list-item-btn">
+                    <div class="aui-btn aui-btn-info aui-margin-r-5" onclick="saveBillAndLineData();">保存</div>
+                    <div class="aui-btn aui-btn-danger aui-margin-l-5">取消</div>
+                </div>
+            </li> -->
+        </ul>
+    </div>	
+    </div>
+  </section>
+  <div class="aui-card-list">
+  
+  	<div class="aui-card-list-footer" style="padding: 0rem 5rem;">
+  		<img src="../../../../../../image/common/scan.png" width="32px;" onclick="fnOpenCustomQRCode()"/>
+  		<img src="../../../../../../image/common/plus.png" width="32px;" onclick="openWinAddNotInv()"/>
+	    <!-- <span class="icon-scan" style="margin-right: 20px;" ></span>
+	    <span class="aui-iconfont aui-icon-plus my-class" ></span> -->
+	</div>
+	
+  </div>
+  
+	  <div style="height: 140px;overflow-y: auto" id="mainContent">
+	  	    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list" id="cardContent">
+            </ul>
+            </div>
+	
+	</div>
+    
+
+</body>
+<!-- <script type="text/javascript" src="../../../../../../js/ama-head.js"></script>   -->
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-tab.js" ></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-list-swipe-backup.js"></script>
+<script type="text/javascript" src="../../../../../../js/mobiscroll.custom.min.js"></script>
+<script type="text/javascript" src="../../../../../../script/aui-dialog.js" ></script>
+
+
+<script type="text/javascript">
+var headerPos = 0;
+//var fnscanner;  // 二维码模块对象
+var FNScanner;  // 二维码模块对象
+var body_h;
+var chMap = new Map();
+var deliveryId;
+var dialog = new auiDialog({});
+var openFrameName = "";
+var userInfo = {};
+//库房下拉框列表数据
+var selectWhListInfo = "";
+//接收库房
+var selectReceiveWhListInfo = null;
+//收发类别下拉框列表数据
+var selectTransTypeListInfo = null;
+//客户
+var selectcustomerListInfo = null;
+
+////////////////
+		var theme = "ios";
+        var mode = "scroller";
+        var display = "bottom";
+        var lang="zh";
+		$('#billDate').mobiscroll().date({
+            theme: theme,
+            mode: mode,
+            display: display,
+            dateFormat:"yyyy-mm-dd",
+            lang: lang,
+            showNow: true
+        });
+        
+        
+        
+
+        
+        ////////////////////////////
+    apiready = function(){
+    
+        api.parseTapmode();
+        openFrameName = api.pageParam.openFrameName;
+        
+        //登陆信息获取
+        if($.isNotNull($api.getStorage('userInfo'))){
+	        userInfo = $api.getStorage('userInfo');	
+        }
+        
+		
+		FNScanner = api.require('FNScanner');
+        api.addEventListener({ // 通知当前本模块app进入后台。此时模块会进行一些资源的暂停存储操作，防止照相机回来之后黑屏
+            name:'pause'
+        }, function(ret, err){
+            FNScanner.onPause();
+        });
+
+        api.addEventListener({ //通知当前本模块app进入回到前台。此时模块会进行一些资源的恢复操作，防止照相机回来之后黑屏
+            name:'resume'
+        }, function(ret, err){
+            FNScanner.onResume();
+        });
+
+		
+		
+
+        var header = $api.byId('outerMostLayer');
+        $api.fixStatusBar(header);
+        headerPos = $api.offset(header);
+        body_h = $api.offset($api.dom('body')).h;
+        extensor();
+        
+        removeApplyInvStorage();
+		//openTabFrame(openFrameName1,'folder-receiptConfirm/'+openFrameName1+'.html',0);
+		
+		deliveryId = api.pageParam.deliveryId;
+		
+		//修改
+		setTimeout(function(){
+			loadWhBillAndLine(deliveryId);
+        },0);
+    };
+    
+    
+           function loadWhBillAndLine(deliveryId){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/endProdShip/loadWhBillAndLine.do'),
+				method : "POST",
+				data : {
+					values : {
+						"deliveryId":deliveryId
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var getInfo = $.toJson(obj.data); 
+						
+						if($.isNull(deliveryId)){
+							$('#billDate').val($.getNowFormatDate());
+							$('#userId').val(userInfo.accountId);
+							$('#userName').val(userInfo.userName);
+							$('#workcenterId').val(userInfo.workcenterId);
+							$('#workcenterName').val(userInfo.workcenterName);
+						}else{
+							var listVoWhBillDetail = getInfo.deliveryLineVoList;
+							for(var i = 0; i < listVoWhBillDetail.length; i++){
+						    	//存入map
+						    	chMap.set(listVoWhBillDetail[i].deliveryLineId+"",listVoWhBillDetail[i]);
+						    	
+							}
+							var storage=window.localStorage;
+							storage.setItem("onhandLoca",$.mapToArrayJson(chMap));
+	
+							rederData(chMap);
+							
+							$("#deliveryWhId").val(getInfo.deliveryWhId);
+							$("#deliveryWhName").val(getInfo.deliveryWhName);
+							
+							$("#receiveWhId").val(getInfo.receiveWhId);
+							$("#receiveWhName").val(getInfo.receiveWhName);
+							
+							$("#orderCode").val(getInfo.orderCode);
+							$("#deliveryAddress").val(getInfo.deliveryAddress);
+							
+							$("#transTypeId").val(getInfo.transTypeId);
+							$("#transTypeName").val(getInfo.transTypeName);
+							
+							$('#customerName').val(getInfo.customerName);
+							$('#customerId').val(getInfo.customerId);
+							
+							$("#remark").val(getInfo.remark);
+							$('#billDate').val(getInfo.billDate);
+						    
+						    $('#userId').val(getInfo.billManager);
+							$('#userName').val(getInfo.billManagerName);
+							$('#workcenterId').val(getInfo.deptId);
+							$('#workcenterName').val(getInfo.deptName);
+						}
+						
+						selectWhListInfo = getInfo.listWh;
+						selectTransTypeListInfo = getInfo.listTransType;
+						
+					} else {
+						
+						
+					}
+					
+				}, null, false);
+			});
+    }
+    
+           function loadListWh(){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/endProdShip/loadListWh.do'),
+				method : "POST",
+				data : {
+					values : {
+						
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						selectWhListInfo = $.toJson(obj.data); 
+						//rederWhData(getInfo);
+						//rederSelect(getInfo,"whSelect");
+						
+						
+					} else {
+						
+						
+					}
+					
+				}, null, false);
+			});
+    }
+
+    
+       function loadWhTransBillType(){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/endProdShip/loadWhTransBillType.do'),
+				method : "POST",
+				data : {
+					values : {
+						
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						selectTransTypeListInfo = $.toJson(obj.data); 
+						
+						//rederSelect(getInfo,"whTransBillTypeSelect");
+					} else {
+						
+						
+					}
+					
+				}, null, false);
+			});
+    }
+    
+    //根据选择的客户加载入库仓库
+       function loadWhBycustomer(customerId){
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/endProdShip/loadCustomerById.do'),
+				method : "POST",
+				data : {
+					values : {
+						"customerId":customerId
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						var customerInfo = $.toJson(obj.data); 
+						$("#transTypeId").val(customerInfo.transTypeId);
+						$("#transTypeName").val(customerInfo.transTypeName);
+						$("#receiveWhName").val(customerInfo.receiveWhName);
+						$("#receiveWhId").val(customerInfo.receiveWhId);
+					} else {
+						
+						
+					}
+					
+				}, null, false);
+			});
+    }
+    
+    function rederSelect(getInfo,mainId){
+    	var area = document.getElementById(mainId);      
+		var optionstring = "";           
+		//公共变量加载一次清空            
+		if (getInfo.length > 0) {                
+		for (var i = 0; i < getInfo.length; i++) {                                       
+		optionstring += "<option value=" + getInfo[i].value + ">" + getInfo[i].label + "</option>"; 
+		//公共变量赋值                
+		}            
+		}             
+		//if (area.options.length==0) {                 
+		//如果下拉框没有数据才进行加载                
+		$("#"+mainId).html(optionstring);   
+		//下拉框加载数据                
+		//$('#errorTypeSelect').selectpicker('refresh');            
+		//}
+    }
+    
+    
+    function saveBillAndLineData(){
+    		var whSelect = $("#deliveryWhId").val();
+      		var whTransBillTypeSelect = $("#transTypeId").val();
+      		if(whSelect==""){
+      			return $.alert("提示信息", "请选择出库库房");
+      		}
+      		if(whTransBillTypeSelect==""){
+      			return $.alert("提示信息", "请选择发货类型");
+      		}
+    	    	dialog.alert({
+                title:"消息提示",
+                msg:'是否确认保存？',
+                buttons:['取消','确定']
+            },function(ret){
+                if(ret){
+                    if(2==ret.buttonIndex){
+                    	saveBillAndLineDataContinue();
+                    }
+                }
+            })
+    }
+      function saveBillAndLineDataContinue(){
+
+      
+      
+      
+      		var whSelect = $("#whId").val();
+      		var whTransBillTypeSelect = $("#transTypeId").val();
+      		//if(whSelect==""){
+      			//return $.alert("提示信息", "请选择入库库房");
+      		//}
+      		//if(whTransBillTypeSelect==""){
+      			//return $.alert("提示信息", "请选择收发类别");
+      		//}
+    	    //数据请求等待效果...
+			var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+			});
+			
+			
+			
+			var myArray=new Array()
+			//遍历明细成json
+			chMap.forEach(function (value, key, map) {
+				myArray.push(value);
+			})
+			//var userInfo = $api.getStorage('userInfo');
+			
+    	    //请求服务：获取到货待处理数据
+			api.ajax({
+				url : $.ServerUrl('/app/logistics/endProdShip/saveBillAndLine.do'),
+				method : "POST",
+				data : {
+					values : {
+						"billDate":$("#billDate").val(),
+					    "transTypeId":whTransBillTypeSelect,
+					    "deliveryWhId":$("#deliveryWhId").val(),
+					    "receiveWhId":$("#receiveWhId").val(),
+					    "orderCode":$("#orderCode").val(),
+					    "deliveryAddress":$("#deliveryAddress").val(),
+					
+					    "deliveryId":deliveryId,
+					    "customerId":$("#customerId").val(),
+					    "remark":$("#remark").val(),
+					    "accountId":userInfo.accountId,
+					    "workcenterId":userInfo.workcenterId,
+					    "gridData":$.toStringify(myArray)
+					}
+				}
+			}, 
+			function(obj, err) { //服务器响应结果
+				toast.hide();
+
+				if($.isNull(obj)){
+					return $.alert("异常", $.toStringify(err.body));
+				}
+				//解析响应信息
+				$.responseCall(obj, function(){
+				
+					var status = api.pageParam.status; //服务器响应状态码
+					if ($.isNull(status) ||  status == 2) { 
+						$.alert("提示信息", obj.data);
+						//api.closeWin({});
+						
+
+					} else {
+						$.alert("异常", obj.data);
+					}
+					
+				}, null, false);
+			});
+    }
+    
+        var swipe = new auiListSwipe(function(ret){
+        // console.log(ret)
+    });
+    
+    //显示
+    function getApplyInvToShow(){
+		//console.log("OOOOO");
+    	var storage=window.localStorage;
+    	var c=storage.getItem("onhandLoca");
+		
+		chMap = $.jsonToMap(c);
+		//console.log("KKK"+$.mapToArrayJson(chMap));
+		rederData(chMap);
+
+    }
+    
+    function rederData(chMap){
+    	if($.isNotNull(chMap)){
+
+			var wrap = document.getElementById("cardContent")
+	        wrap.innerHTML = "";
+	        var i = 0;
+    	    chMap.forEach(function (value, key, map) {
+
+					    
+						
+						var html = '<li class="aui-list-item">'+
+                '<div class="aui-list-item-inner aui-swipe-handle">'+
+						
+							'<div class="aui-card-list">'+
+								//'<div class="side-by-side-left flex">'+
+						        	//'<input class="aui-radio" type="checkbox" name="checkbox" value="'+value.deliveryLineId+'">'+
+						        
+						        //'</div>'+
+						        '<div class="side-by-side-right card-to-check" onclick="cardToUpdate('+value.deliveryLineId+')">'+
+					            //'<div class="aui-card-list-header">'+
+					                //'['+(++i)+']  '+value.customerName+
+					            //'</div>'+
+					            '<div class="aui-card-list-content-padded">'+
+					                
+					            '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 40%">客户物料编码:</label>'+
+				            		'<span class="display-tabel-cell">'+value.itemCustomerCode+'</span>'+
+				            	'</div>'+
+				            	
+				            	'<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">物料图号:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 50%">'+value.drawingNumber+'</span>'+
+				            		
+				            	'</div>'+
+					                
+					                '<div>'+
+				                	'<label class="display-tabel-cell" style="width: 20%">物料名称:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 50%">'+value.itemName+'</span>'+
+				            		
+				            	'</div>'+
+				            	
+				            	 '<div>'+
+				            		'<label class="display-tabel-cell" style="width: 20%">数量:</label>'+
+				            		'<span class="display-tabel-cell" style="width: 40%">'+value.invQty+'</span>'+
+				            		'<label class="display-tabel-cell" style="width: 20%">单位:</label>'+
+				            		'<span class="display-tabel-cell">'+value.uomName+'</span>'+
+				            	'</div>'+
+				            	
+				            	//'<div>'+
+				            		//'<label class="display-tabel-cell" style="width: 20%">库房:</label>'+
+				            		//'<span class="display-tabel-cell" style="width: 50%">'+value.whName+'</span>'+
+				                	//'<label class="display-tabel-cell" style="width: 20%">货位:</label>'+
+				            		//'<span class="display-tabel-cell">'+value.whCellName+'</span>'+
+				            		
+				            	//'</div>'+
+				            	
+				            	
+					                
+					            '</div>'+
+					            
+					            '</div>'+
+					        '</div>'+
+					        
+					        '</div>'+
+                '<div class="aui-swipe-btn">'+
+                    '<div class="aui-btn aui-btn-danger" onclick="delMapPoInvApply('+value.deliveryLineId+')">删除</div>'+
+                '</div>'+
+            '</li>'+
+            '<hr class="hr1" /> ';
+						wrap.insertAdjacentHTML('afterbegin', html);
+										        
+					//}
+					
+    
+
+
+			});
+    	}
+    }
+    
+    function removeApplyInvStorage(){
+    	$api.rmStorage('poInvApply');
+    }
+    
+    function extensor(){
+	    if($('#extensor-id').is(':checked')) {
+	    	$("#mainContent").height(body_h-130);
+
+		}else{
+    		$("#mainContent").height(body_h+190);
+    	}
+    	//$("#mainContent").attr("height",500);
+    }
+    
+    function delMapPoInvApply(deliveryLineId){
+    	chMap.delete(deliveryLineId+"");
+    	rederData(chMap);
+    }
+    
+    function openWinAddNotInv(){
+    	if($.isNull($("#customerId").val())){
+    		$.alert("消息提示", "请先选择客户");
+    		return;
+    	}
+    	
+    	if($.isNull($("#deliveryWhId").val())){
+    		$.alert("消息提示", "请先选择发货仓库");
+    		return;
+    	}
+    	if($.isNull($("#orderCode").val())){
+    		$.alert("消息提示", "请填写订单号");
+    		return;
+    	}
+    	var storage=window.localStorage;
+		storage.setItem("onhandLoca",$.mapToArrayJson(chMap));
+		
+    	//openTabFrame("addInv", 'add_inv.html',0,{});
+    	//$.openFrame("onhandSelectFrame", 'onhand_select.html', {"openFrameName":"onhandSelectFrame"});
+    	$.openFrame("handAddOutStockFrame", 'hand_add_out_stock_frm.html', {"openFrameName":"handAddOutStockFrame","whId":$("#deliveryWhId").val(),"customerId":$("#customerId").val()});
+    }
+    
+    //确认按钮
+    function confirmDelivery(){
+        api.execScript({
+		    frameName: openFrameName1,
+		    script: 'childConfirmDelivery();'
+		});
+    }
+    
+    //发货
+    function returnedPurchase(){
+        api.execScript({
+		    frameName: openFrameName1,
+		    script: 'childReturnedPurchase();'
+		});
+    }
+    
+    //全选，全不选
+    function cardToUpdate(deliveryLineId){
+    	openTabFrame("updateInvTemp", 'update_inv_temp.html',0,{"deliveryLineId":deliveryLineId});
+    }
+    
+    function mainFuncCheckToAllOrNull(varLength){
+    	$("#checkTotalText").html("已选："+varLength+"条");
+    }
+    
+    //打开
+    function openTabFrame(varName,varUrl,varMarginBottom,varpageParam){
+	    api.openFrame({
+	        name: varName,
+	        url: varUrl,
+	        bounces: false,
+	        pageParam:varpageParam,
+	        rect: {
+	            x: 0,
+	            y: 0,
+	            w: 'auto',
+	            h: 'auto',
+	            marginBottom:varMarginBottom
+	        },
+	        progress:{
+	        	type :"page",
+	        	title:"1",
+	        	text:"2"
+	        }
+	    }) 
+    }
+    //隐藏
+     function fnHideMyinfoFrame(varName){
+      api.setFrameAttr({
+          name: varName,
+          hidden: true
+      });
+    }
+    //关闭当前窗体
+    function closeWin(){
+    	removeApplyInvStorage();
+        api.closeFrame({
+        	name:openFrameName
+        });
+    }
+
+
+
+
+            function fnOpenCustomQRCode() {  // 打开自定义样式的二维码功能模块
+
+        FNScanner.openScanner({  // 打开二维码页面
+            
+            rectOfInterest: { // （可选项）在扫码区域上的扫码识别区域，仅在iOS平台有效
+                x: (api.winWidth-250)/2,
+                y: (api.winHeight-250)/2,
+                w: 250,
+                h: 250
+            }
+        }, function(ret, err) {
+            if (ret) {
+                if ('show' == ret.eventType) { //模块加载展现事件
+
+                }
+                else if(ret.eventType == "success") { // 模块扫描成功事件
+                    fnCloseCustomQRCode();
+alert(ret.content);
+                    
+
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            }
+        })
+
+        //打开自定义的frame页面
+        //setTimeout(function(){
+          //fnOpenSubFrame();
+        //},500);
+    }
+    
+    	//选择客户
+	function openCustomerWin(){
+    	openSelectWin(selectcustomerListInfo,'callbackAssignment_customer','客户',$.ServerUrl('/app/logistics/endProdShip/loadListCustomer.do'));
+    }
+    
+    function callbackAssignment_customer(label,value){
+    		$("#customerId").val(value);
+			$("#customerName").val(label);
+			
+			loadWhBycustomer(value);
+    }
+    //发出仓库
+    function openDeliveryWhSelectWin(){
+    	openSelectWin(selectWhListInfo,'callbackAssignment_wh','出库库房',$.ServerUrl('/app/logistics/endProdShip/loadListWh.do'));
+    }
+    
+    function callbackAssignment_wh(label,value){
+    		$("#deliveryWhId").val(value);
+			$("#deliveryWhName").val(label);
+    }
+        //接收仓库
+    function openReceiveWhSelectWin(){
+    	openSelectWin(selectReceiveWhListInfo,'callbackAssignment_receivewh','接收库房',$.ServerUrl('/app/logistics/endProdShip/loadListWh.do'));
+    }
+    
+    function callbackAssignment_receivewh(label,value){
+    		$("#receiveWhId").val(value);
+			$("#receiveWhName").val(label);
+    }
+    //收发类别
+    function openTransTypeSelectWin(){
+    	openSelectWin(selectTransTypeListInfo,'callbackAssignment_transType','收发类别',$.ServerUrl('/app/logistics/endProdShip/loadWhTransBillType.do'));
+    }
+    
+    function callbackAssignment_transType(label,value){
+    		$("#transTypeId").val(value);
+		    $("#transTypeName").val(label);
+    }
+    
+    //弹出选择页面
+    function openSelectWin(listInfo,callbackFunc,selectTitle,loadUrl,loadParam){
+    	console.log("d"+openFrameName);
+    	api.openFrame({
+			name : 'common_select_win',
+			url : '../../../../../common/select/common_select_win.html',
+			pageParam: {
+		        listInfo: listInfo,
+		        selectTitle:selectTitle,
+		        callbackFunc:callbackFunc,
+		        curruntWinName:openFrameName,
+		        loadUrl:loadUrl,
+		        loadParam:loadParam
+		    },
+		    delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+
+</script>
+</html>

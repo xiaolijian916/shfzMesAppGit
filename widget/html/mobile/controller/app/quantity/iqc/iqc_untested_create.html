@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>不合格品</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+</head>
+<body>
+	<div class="aui-content aui-margin-b-15">
+		<header class="aui-bar aui-bar-nav" style="padding-top:25px;">
+		    <a class="aui-pull-left aui-btn" tapmode onclick="closeHtml()">
+		        <span class="aui-iconfont aui-icon-left"></span>
+		    </a>
+		    <div class="aui-title">不良品</div>
+		    <a class="aui-pull-right aui-btn" tapmode onclick="saveUnqualifiedInfo()">
+		        <span class="aui-iconfont aui-icon-correct"></span>
+		    </a>
+		</header>
+        <ul class="aui-list aui-form-list">
+        	<li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		物料图号
+                    </div>
+                    <div class="aui-list-item-input">
+                    	<input type="hidden" id="itemId">
+                        <input type="text" id="drawingNumber" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		物料名称
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="itemName" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                		物料批次
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="defectiveLot" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                    	生产班组
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="workteam" value="供应商" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label" style="width: 8rem">
+                		问题发现工序
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="discoveryLoc" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger" style="width: 8rem">
+                    	问题产生工序
+                    </div>
+                    <div class="aui-list-item-input">
+                    	<input type="hidden" id="produceLocId">
+                        <input type="text" id="produceLoc" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger" style="width: 8rem">
+                    	质量处理类型
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="qualityJudgeType" placeholder="请选择" readonly="true" onclick="loadQualityJudgeTypeInfo()">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger">
+                		缺陷原因
+                    </div>
+                    <div class="aui-list-item-input">
+                    	<input type="hidden" id="faultId">
+                        <input type="text" id="faultName" placeholder="请选择" readonly="true" onclick="loadFaultInfo()">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger">
+                		操作人员
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="text" id="worker" readonly="true">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger">
+                		缺陷数量
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="tel" id="defectiveQty" oninput="this.value=this.value.replace(/[^0-9.]+/,'');">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                    	抽检数量
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input type="tel" id="samplingQty" oninput="this.value=this.value.replace(/[^0-9.]+/,'');">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger">
+                    	处理意见
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea id="dealOption"></textarea>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-danger">
+                    	缺陷描述
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea id="faultDesc"></textarea>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../../../../../../script/api.js"></script>
+<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js" ></script>
+<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+<script type="text/javascript">
+	var iqcId;
+	var supplierId;
+	
+	apiready = function(){
+		iqcId = api.pageParam.iqcId;
+		loadIqcInfo(iqcId);
+		loadProduceLocInfo();
+		quantitySelect();
+	};
+	
+	function quantitySelect(){
+		api.addEventListener({
+		    name: 'quantitySelect'
+		}, function(ret, err) {
+			var quantityType = ret.value.quantityType;
+			if(quantityType == 'fault'){
+				$("#faultId").val(ret.value.value);
+				$("#faultName").val(ret.value.label);
+			}else{
+				$("#qualityJudgeType").val(ret.value.label);
+			}
+		});
+	}
+
+	//获取来料检验信息
+    function loadIqcInfo(iqcId){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/getIqcInfoByIqcId.do'),
+			method : "POST",
+			data : {
+				values : {
+					"iqcId" : iqcId,
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					var iqcInfo = $.toJson(obj.data);
+					$("#itemId").val(iqcInfo.itemId);
+					$("#drawingNumber").val(iqcInfo.drawingNumber);
+					$("#itemName").val(iqcInfo.itemName);
+					$("#defectiveLot").val(iqcInfo.iqcLot);
+					$("#discoveryLoc").val($api.getStorage('userInfo').workcenterName);
+					$("#worker").val(iqcInfo.supplierName);
+					$("#defectiveQty").val(iqcInfo.applyQty);
+					supplierId = iqcInfo.supplierId;
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    //获取问题产生工序信息
+    function loadProduceLocInfo(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadDiscoveryList.do'),
+			method : "POST"
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					var produceLocInfo = $.toJson(obj.data);
+					$("#produceLocId").val(produceLocInfo[0].value);
+					$("#produceLoc").val(produceLocInfo[0].label);
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    //获取缺陷原因信息
+    function loadFaultInfo(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadFaultList.do'),
+			method : "POST",
+			data : {
+				values : {
+					"discoveryId" : $("#produceLocId").val()
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					selectWin(obj.data,"缺陷原因",'fault');
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    //获取质量处理类型信息
+    function loadQualityJudgeTypeInfo(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/loadQualityJudeTypeList.do'),
+			method : "POST"
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					selectWin(obj.data,"质量处理类型",'qualityJudgeType');
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+    
+    //弹出选择页面
+    function selectWin(quantityInfo,quantityTitle,quantityType){
+    	api.openWin({
+			name : 'quantity_select',
+			url : '../quantity_select.html',
+			pageParam: {
+		        quantityList: quantityInfo,
+		        quantityTitle: quantityTitle,
+		        quantityType: quantityType
+		    },
+		    delay : 0,
+			bounces : false,
+			slidBackEnabled : true,
+			vScrollBarEnabled : false
+		});
+    }
+    
+    //保存不良记录信息
+    function saveUnqualifiedInfo(){
+    	//数据请求等待效果...
+		var toast = new auiToast();
+			toast.loading({
+				title : "正在加载",
+				duration : 2000
+		});
+	    //请求服务
+		api.ajax({
+			url : $.ServerUrl('/app/quantity/incomingQualityControl/saveDefectiveInfo.do'),
+			method : "POST",
+			data : {
+				values : {
+					"iqcId" : iqcId,
+					"itemId" : $("#itemId").val(),
+					"defectiveLot" : $("#defectiveLot").val(),
+					"discoveryLoc" : $("#discoveryLoc").val(),
+					"worker" : $("#worker").val(),
+					"defectiveQty" : $("#defectiveQty").val(),
+					"produceLoc" : $("#produceLoc").val(),
+					"workcenterId" : $api.getStorage('userInfo').workcenterId,
+					"workteam": $("#workteam").val(),
+					"qualityJudgeType" : $("#qualityJudgeType").val(),
+					"faultId" : $("#faultId").val(),
+					"samplingQty" : $("#samplingQty").val(),
+					"dealOption" : $("#dealOption").val(),
+					"faultDesc" : $("#faultDesc").val(),
+					"accountId" : $api.getStorage('userInfo').accountId,
+					"supplierId" : supplierId
+				}
+			}
+		}, 
+		function(obj, err) { //服务器响应结果
+			toast.hide();
+			if($.isNull(obj)){
+				return $.alert("异常", $.toStringify(err.body));
+			}
+			//解析响应信息
+			$.responseCall(obj, function(){
+				var status = api.pageParam.status; //服务器响应状态码
+				if ($.isNull(status) ||  status == 2) {
+					api.sendEvent({
+					    name: 'reflash'
+					});
+					closeHtml();
+					return $.alert("提示", $.toStringify(obj.data));
+				} else {
+					return $.alert("错误", $.toStringify(obj.data));
+				}
+			}, null, false);
+		});
+    }
+	
+	function closeHtml(){
+    	api.closeWin({});
+    }
+</script>
+</html>

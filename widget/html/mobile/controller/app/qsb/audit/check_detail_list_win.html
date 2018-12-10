@@ -1,0 +1,409 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>AUI快速完成布局</title>
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../../../../../../css/aui-pull-refresh.css" />
+		<style type="text/css">
+			.goods-title {
+				color: #757575 !important;
+			}
+			.goods-price {
+				color: #666666 !important;
+				font-weight: 700;
+			}
+			.flex {
+				/*flex 布局*/
+				display: flex;
+				/*实现垂直居中*/
+				align-items: center;
+				/*实现水平居中*/
+				justify-content: center;
+			}
+			.side-by-side-left {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 15%;
+				height: 100%;
+			}
+				.top-info {
+				display: block;
+				width: 100%;
+			}
+			.top-div {
+				margin-left: 0.75 rem;
+				width: 30%;
+				display: inline
+			}
+			.li-div1 {
+				width: 64%;
+				float: left;
+			}
+			.li-div2 {
+				width: 36%;
+				float: left;
+			}
+			.li-div21 {
+				width: 100%;
+			}
+			.section1 {
+				width: auto;
+				height: auto;
+			}
+			.top-title{		    		
+			display: block;
+			width: 100%;
+			border-left: 1px solid #666666;
+			border-top: 1px solid #666666;
+			border-right: 1px solid #666666;
+			}
+		    .top-title1{
+			margin-left:0.75rem;
+			width:64%;			
+			display:inline
+			}	
+					
+			.top-title2{
+			margin-left:4rem;
+			width:36%;			
+			display:inline
+			}
+			.qua-lable-title{
+           font-size:0.85rem;
+           }
+           .qua-lable{
+           font-size:0.75rem;
+           }
+		</style>
+	</head>
+	<body>
+		<header class="aui-bar"  id="header" style="position: fixed;top: 0;left: 0;">
+			<a class="aui-pull-left aui-btn  aui-bar-nav " tapmode onclick="closeWin()"> <span class="aui-iconfont aui-icon-left"></span> </a>
+			<div class="aui-title  aui-bar-nav">
+				分层审核清单
+			</div>
+			
+			<div class="aui-tips" id="andonCount" style="background-color:#666666;"></div>
+			<div class="top-title" style="background-color:#FFFFFF;">
+			<div class="top-title1 qua-lable-title">
+				审核标题和内容
+			</div>
+			<div class="top-title2 qua-lable-title">
+				审核结果
+			</div>
+		</div>
+		</header>
+		<section style="margin-top: 5.8rem" >
+
+			<div class="aui-content" >
+				<ul class="aui-list aui-media-list" id="testww" style="border: 1px solid #666666"></ul>
+			</div>
+		</section>
+	</body>
+	<script type="text/javascript" src="../../../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../../../script/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-pull-refresh.js"></script>
+	<script type="text/javascript" src="../../../../../../conf/application.js"></script>
+	<script type="text/javascript" src="../../../../../../js/ama-custom.js"></script>
+	<script type="text/javascript" src="../../../../../../script/aui-toast.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/audit/qsbAuditRecord/loadListQsbAuditRecordLine.do'),
+				method : 'post',
+				data:{
+				values:{
+				auditRecordId: $api.getStorage("auditRecordId")
+				}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("提示", $.toStringify(err.body));
+					}
+					var funcList = $.toJson(obj.data);
+					//										document.getElementById("andonCount").innerHTML = "";
+					document.getElementById("andonCount").insertAdjacentHTML('afterbegin', '<div class="aui-tips-title"><label>审核项：'+ funcList.length +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </label>' +'<label>已审核：0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>'+ '<label class="aui-label-danger">不符合：0&nbsp;&nbsp;</label>'+ '</div>');
+					//				-------------------------------------------------------------总数据条数显示---------------------------------
+//					if (funcList.length < 1) {
+//						$("#sum").append('<span>暂无数据</span>')
+//					} else {
+//						$("#sum").append('<span>共' + funcList.length + '条数据</span>')
+//					}
+					//				------------------------------------------------------------ 循环加载数据----------------------------------
+					for (var i = 0; i < funcList.length; i++) {
+						var date = gettime(funcList[i].happenTime);
+						
+						//处理结果
+						//document.getElementById("problemClass").value = funcList[i].checkResult;
+      
+						//日期时间转换
+						var strSrc = funcList[i].mobilePath;
+						if (null == strSrc || strSrc == '') {
+							strSrc = "../../../../../../image/main/qsb/audit.png";
+						}
+						$("#testww").append('<li class="aui-list-item">'+
+				'<div class="aui-media-list-item-inner">'+
+					'<div class="li-div1">'+
+						'<div class="aui-list-item-inner">'+
+							'<div class="aui-list-item-text">'+
+								'<div class="aui-list-item-title">'+
+									funcList[i].checkProjectType+
+								'</div>'+
+							'</div>'+
+							'<div class="aui-list-item-text">'+
+								funcList[i].checkProjectDesc+
+							'</div>'+
+							'<div class="aui-list-item-text">'+
+								'2018-10-10 10:10:00'+
+							'</div>'+
+						'</div>'+
+					'</div>'+
+					'<div class="li-div2">'+
+						'<div class="li-div21">'+
+							'<label class="qua-lable">符合</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label class="qua-lable">不符合</label>'+
+						'</div>'+
+						'<div class="li-div21">'+
+							'<div class="aui-list-item-input">'+
+								'<input class="aui-radio" type="radio" name="'+funcList[i].auditRecordLnId+'" value="1">'+
+								'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+
+								'<input class="aui-radio" type="radio" value="2" name="'+funcList[i].auditRecordLnId+'">'+
+							'</div>'+
+						'</div>'+
+						'<div class="li-div21">'+
+							'<label class="qua-lable">不适用</label>&nbsp;<label class="qua-lable">立即纠正</label>'+
+						'</div>'+
+						'<div class="li-div21">'+
+							'<input class="aui-radio" type="radio" name="'+funcList[i].auditRecordLnId+'" value="4">'+
+							'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+
+							'<input class="aui-radio" type="radio" value="3" name="'+funcList[i].auditRecordLnId+'">'+
+						'</div>'+
+					'</div>'+
+				'</div>'+
+			'</li>')
+			
+			
+			  var raidoName=funcList[i].auditRecordLnId;
+//			     alert(funcList[i].checkResult);
+			        if($.isNotNull(funcList[i].checkResult)){
+			            if("1"==funcList[i].checkResult){
+                        $(':radio[name="'+raidoName+'"]').eq(0).attr("checked",true); 
+                        }else if("2"==funcList[i].checkResult){
+                        $(':radio[name="'+raidoName+'"]').eq(1).attr("checked",true); 
+                        }else if("3"==funcList[i].checkResult){
+                        $(':radio[name="'+raidoName+'"]').eq(3).attr("checked",true); 
+                        }else if("4"==funcList[i].checkResult){
+                        $(':radio[name="'+raidoName+'"]').eq(2).attr("checked",true); 
+                        }
+                       }
+			
+			
+					}
+				}, null, false);
+			});
+		};
+		
+		//单击选中事件
+		function radionOnclick(id,value){
+		
+					api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/addMobileQsbQuaPromSummary.do'),
+				method : 'post',
+				dataType : 'json',
+				data : {
+					values : {
+						roblemFeedbac : $("#roblemFeedbac").val(),
+						problemClass : $("#problemClass").val(),
+						happenTime : $("#happenTime").val(),
+						problemSup : $("#problemSup").val(),
+						models : $("#models").val(),
+						partName : $("#partName").val(),
+						defectMode : $("#defectMode").val(),
+						defectGrade : $("#defectGrade").val(),
+						defectNumber : $("#defectNumber").val(),
+						respTeamLeader : $("#respTeamLeader").val(),
+						isReoccur : $('[name="isReoccur"]:checked').val(),
+						problemDescription : $("#problemDescription").val()
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					} else {
+//						api.sendEvent({
+//							name : 'feedbackCreate'
+//						});
+//						api.closeWin({
+//						});
+						$.alert("提示", obj.data);
+					}
+				}, null, false);
+			});
+		
+		
+		
+		
+		}
+		
+		//时间转换
+		function gettime(t) {
+			var _time = new Date(t);
+			var year = _time.getFullYear();
+			//2017
+			var month = _time.getMonth() + 1;
+			//7
+			var date = _time.getDate();
+			//10
+			var hour = _time.getHours();
+			//10
+			var minute = _time.getMinutes();
+			//56
+			var second = _time.getSeconds();
+			//15
+			//	    return   year+"年"+month+"月"+date+"日   "+hour+":"+minute+":"+second;//这里自己按自己需要的格式拼接
+			return year + "-" + month + "-" + date;
+		}
+
+		//关闭
+		function closeSummaryId(strId) {
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/closeMobile.do'),
+				method : 'post',
+				dataType : 'json',
+				data : {
+					values : {
+						summaryId : strId
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					if ($.isNull(obj)) {
+						return $.alert("异常", $.toStringify(err.body));
+					} else {
+						return $.alert("关闭成功", $.toStringify(err.body));
+					}
+				}, null, false);
+				//刷新当前页
+				location.reload();
+			});
+		}
+
+		//删除
+		function delSummaryId(strId) {
+			api.ajax({
+				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/deleteMobile.do'),
+				method : 'post',
+				dataType : 'json',
+				data : {
+					values : {
+						summaryId : strId
+					}
+				}
+			}, function(obj, err) {
+				//解析响应信息
+				$.responseCall(obj, function() {
+					var toast = new auiToast({});
+					if ($.isNull(obj)) {
+						toast.success({
+							title : err.body,
+							duration : 2000
+						});
+						return false;
+					} else {
+						toast.success({
+							title : err.body,
+							duration : 2000
+						});
+						return true;
+					}
+				}, null, false);
+				//刷新当前页
+				location.reload();
+			});
+		}
+
+		//编辑
+		function updateSummaryId(strId) {
+			openWin('problem_summary_update_win', strId);
+		}
+
+		//明细显示
+		function detailSummaryId(strId) {
+			openWin('detail_main_win', strId);
+		}
+
+		//进度
+		function scheduleSummaryId(strId) {
+			//数据请求等待效果...
+			var toast = new auiToast();
+			toast.success({
+				title : "加载进度中",
+				duration : 2000
+			});
+			//
+			//				api.ajax({
+			//				url : $.ServerUrl('/app/qsb/qua/qsbQuaPromSummary/closeMobile.do'),
+			//				method : 'post',
+			//				dataType : 'json',
+			//				data : {
+			//					values : {
+			//                   summaryId:strId
+			//					}
+			//				}
+			//			}, function(obj, err) {
+			//
+			//				//解析响应信息
+			//				$.responseCall(obj, function() {
+			//					if ($.isNull(obj)) {
+			//						return $.alert("异常", $.toStringify(err.body));
+			//					} else {
+			//						return $.alert("关闭成功", $.toStringify(err.body));
+			//					}
+			//				}, null, false);
+			//
+			//				//刷新当前页
+			//				location.reload();
+			//			});
+		}
+
+		//刷新数据
+		function refresh() {
+			alert("刷新成功");
+			location.reload();
+		}
+
+		function openWin(name, strId) {
+			$api.setStorage("summaryId", strId);
+			//保存ID
+			var delay = 0;
+			if (api.systemType != 'ios') {
+				delay = 300;
+			}
+			api.openWin({
+				name : '' + name + '',
+				url : '' + name + '.html',
+				bounces : false,
+				date : {
+					values : {
+						"summaryId" : "10000149",
+					}
+				},
+				delay : delay,
+				slidBackEnabled : true,
+				vScrollBarEnabled : false
+			});
+		}
+		
+	  function	closeWin(){
+	  api.closeWin({
+      });}
+	</script>
+</html>

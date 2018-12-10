@@ -1,0 +1,89 @@
+@font-face {
+	font-family: 'xs-func-iconfont';
+	src: url('xs-func-iconfont.ttf') format('truetype');
+}
+
+.xs-func-iconfont {
+	/* use !important to prevent issues with browser extensions that change fonts */
+	position: relative;
+	font-family: "xs-func-iconfont" !important;
+	font-size: 1.7rem; 
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/**
+ * 功能按钮文字图标[IconFont]样式定义
+ */
+/*列表详情*/
+.xs-icon-func-list:before {
+	content: "\e612";
+	color: #FFFFFF;
+}
+
+/*页面详情*/
+.xs-icon-func-detail:before {
+	content: "\e660";
+  	color:#FFFFFF
+}
+
+/*页面详情1*/
+.xs-icon-func-detail1:before {
+	content: "\e785";
+  	color:#FFFFFF
+}
+
+/*主页*/
+.xs-icon-func-home:before {
+	content: "\e622";
+  	color:#FFFFFF
+}
+
+/*首页*/
+.xs-icon-func-main:before {
+	content: "\e632";
+  	color:#FFFFFF
+}
+
+/*明细全部*/
+.xs-icon-func-all:before {
+	content: "\e629";
+}
+
+/*切换*/
+.xs-icon-func-switch:before {
+	content: "\e603";
+  	color:#FFFFFF
+}
+
+/*切换2*/
+.xs-icon-func-switch1:before {
+	content: "\e65f";
+  	color:#FFFFFF
+}
+
+/*切换3*/
+.xs-icon-func-switch2:before {
+	content: "\e600";
+  	color:#FFFFFF
+}
+
+/*返回页面*/
+.xs-icon-func-back:before { 
+	content: "\e6f4";
+	color:#FFFFFF
+}
+
+/*关闭界面*/
+.xs-icon-func-close:before {
+	content: "\e654";
+	color:#FFFFFF
+}
+
+/*退出程序*/
+.xs-icon-func-exit:before {
+	content: "\e633";
+  	color: #FFFFFF;
+}
+

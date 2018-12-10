@@ -1,0 +1,159 @@
+@font-face {
+	font-family: 'xs-iconfont';
+	src: url('xs-iconfont.ttf') format('truetype');
+}
+
+.xs-iconfont {
+	/* use !important to prevent issues with browser extensions that change fonts */
+	position: relative;
+	font-family: "xs-iconfont" !important;
+	font-size: 1.7rem; 
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+/*配送确认*/
+.xs-icon-menu-delivery-confirm:before {
+	content: "\e901";
+  	color: rgb(90, 151, 254);
+}
+/*工序委外*/
+.xs-icon-menu-process-outsourcing:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*完工汇报*/
+.xs-icon-menu-manu-complete:before {
+	content: "\e907";
+	color:#27AE60
+}
+/*设备异常*/
+.xs-icon-menu-device-stoppage:before {
+	content: "\e909";
+  	color: rgb(108, 118, 192);
+}
+/*班组交接*/
+.xs-icon-menu-materiel-handover:before {
+	content: "\e913";
+}
+/*成品入库*/
+.xs-icon-menu-product-in-stock:before {
+	content: "\e900";
+	color: #FBB8AF;
+}
+/*检查标签*/
+.xs-icon-menu-check-customer-label:before {
+	content: "\e90b";
+}
+/*设备报修*/
+.xs-icon-menu-equip-repair:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*零箱调整*/
+.xs-icon-menu-box-adjust:before {
+	content: "\e91d";
+}
+/*原材料收货*/
+.xs-icon-menu-raw-material-receive:before {
+	content: "\e916";
+  	color: rgb(80, 87, 102);
+}
+/*外购外协件出库*/
+.xs-icon-menu-raw-material-out:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*采购入库*/
+.xs-icon-menu-purchase-in-storage:before {
+	content: "\e90c";
+}
+/*半成品出库*/
+.xs-icon-menu-semil-finishbed-product-out:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*库位移动*/
+.xs-icon-menu-wh-cell-move:before {
+	content: "\e914";
+  	color: rgb(11, 149, 146);
+}
+/*生产退料*/
+.xs-icon-menu-produce-material-untread:before {
+	content: "\e91b";
+  	color: rgb(79, 145, 235);
+}
+/*半成品收货*/
+.xs-icon-menu-semi-finished-receive:before {
+	content: "\e919";
+}
+/*成品发运*/
+.xs-icon-menu-sale-delivery-out:before {
+	content: "\e911";
+  	margin-left: -1em;
+  	color: rgb(0, 0, 0);
+}
+/*缓冲库出库*/
+.xs-icon-menu-raw-material-two-out:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*交接班采集*/
+.xs-icon-menu-manu-handover:before {
+	content: "\e90e";
+  	color: rgb(18, 150, 219);
+}
+/*成品入库(单向)*/
+.xs-icon-menu-product-in-stock-alone:before {
+	content: "\e918";
+}
+/*原材料出库*/
+.xs-icon-menu-basic-raw-material-out:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*原材料上线接收*/
+.xs-icon-menu-raw-material-line-receive:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*器具绑定*/
+.xs-icon-menu-product-container-bind:before {
+	content: "\e908";
+}
+/*器具解绑*/
+.xs-icon-menu-product-container-unbind:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*下线入缓冲区*/
+.xs-icon-menu-assembly-complete-temp-area:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*下线直接入库*/
+.xs-icon-menu-assembly-complete-bind:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*空框发出扫描*/
+.xs-icon-menu-air-frame-out-scan:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+/*RFID手持入库*/
+.xs-icon-menu-rfid-hand-in:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+
+/*RFID手持入库*/
+.xs-icon-menu-fenceng-shenghe:before {
+	content: "\e900";
+	color: #2ECC71;
+}
+
+.xs-icon-menu-qsb-qua-prom-summary:before {
+	content: "\e91e";
+}
+
